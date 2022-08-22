@@ -13,7 +13,7 @@
 void delay(clock_t n) {
 	clock_t start = clock();
 	while (clock() - start < n);
-
+	
 	return;
 }
 
@@ -45,7 +45,7 @@ int toggle_control_trigger(Controller* afo, int p_to_d, int d_to_p){
 	return 1;
 }
 
-int main(){
+int main(int argc, char** argv){
     int* plantar_parameter = new int[5];
     int* dorsi_parameter = new int[5];
     int rising_time, p_to_d, d_to_p;

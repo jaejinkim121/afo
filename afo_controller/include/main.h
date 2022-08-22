@@ -14,6 +14,8 @@
 #include <ctime>
 #include <sstream>
 
+#include "ros/ros/h"
+#include "std_msgs/Float32MultiArray.h"
 #include "controller.h"
 #include "serial.h"
 #include "sync.h"
