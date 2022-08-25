@@ -32,8 +32,7 @@ class data_Predictor():
         self.model_name = model_name
         self.model_path = model_dir
         self.input_length = input_length
-        self.device = torch.device('cuda') \
-            if torch.cuda.is_available else torch.device('cpu')
+        self.device = torch.device('cpu')
 
     def transform(self, idx):
         if len(self.data) < self.input_length:
@@ -72,15 +71,15 @@ class data_Predictor():
         prediction = np.array([])
 
         for name in sorted_name_list:
-            model.load_state_dict(torch.load(self.model_path + name))
+            model.load_state_dict(torch.load(self.model_path + name,
+                                             map_location=self.device))
             model = model.to(self.device)
             model.eval()
 
             with torch.no_grad():
                 x = self.transform(int(name[-4]))
                 x = x.to(self.device)
-                prediction = np.append(prediction,
-                                       model(x).detach().cpu().numpy())
+                prediction = np.append(prediction, model(x))
 
         prediction = np.expand_dims(prediction, axis=0)
         return prediction
