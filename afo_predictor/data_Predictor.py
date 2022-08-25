@@ -20,12 +20,12 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from include.CNNmodel import *
 from include.utils import *
 
-# input size = required length*8
+# input size = required length*6
 # required length만큼 읽어온다고 가정
-# output size = 1*8 (2D array)
+# output size = 1*6 (2D array)
 class data_Predictor():
     def __init__(self, data_buffer, model_name="CNN", model_dir="./data/RH10/",
-                 sensor_dir="Left", input_length=15, sensor_num=8):
+                 sensor_dir="Left", input_length=15, sensor_num=6):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
@@ -65,6 +65,8 @@ class data_Predictor():
         self.model_path += "CNN_model/"
         _, sensor_name_list = folder_path_name(
             self.model_path, "include", self.sensor_dir)
+        sensor_name_list = [name for name in sensor_name_list if \
+                            int(name[-4]) <= self.sensor_num]
         sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
                                   reverse=False)
         model = Conv1DNet()
@@ -90,7 +92,7 @@ class data_Predictor():
 if __name__ == "__main__":
     # sample data
     data_buffer = [
-        [1.544, 2.024, 1.904, 1.792, 2.012, 1.984, 2.006, 1.658],
-        [1.548, 2.028, 1.906, 1.792, 2.008, 1.982, 2.008, 1.66]
+        [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
+        [1.548, 2.028, 1.906, 1.792, 2.008, 1.982]
         ]
     real_time_predictions = data_Predictor(data_buffer).prediction()
