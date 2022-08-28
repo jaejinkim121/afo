@@ -26,7 +26,7 @@ from include.utils import *
 # input size = required length*6
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
-class data_Predictor():
+class dataPredictor:
     def __init__(self, data_buffer, model_name="CNN", model_dir="./data/RH10/",
                  sensor_dir="Left", input_length=15, sensor_num=6):
         self.data = np.array(data_buffer)
@@ -36,6 +36,20 @@ class data_Predictor():
         self.model_path = model_dir
         self.input_length = input_length
         self.device = torch.device('cpu')
+        self.set_ros_node()
+
+    def set_ros_node(self):
+        if self.sensor_dir == "Left":
+            self.data_sub = rospy.Subscriber('afo_sensor/soleSensor_left', Float32MultiArray, self.callbcak)
+            self.predicted_data_pub = rospy.Publisher('afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=100)
+        else:
+            self.data_sub = rospy.Subscriber('afo_sensor/soleSensor_right', Float32MultiArray, self.callbcak)
+            self.predicted_data_pub = rospy.Publisher('afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=100)
+
+    def callback(self, msg):
+        data = msg.data
+        self.data = np.vstack([self.data, data])
+        return
 
     def transform(self, idx):
         if len(self.data) < self.input_length:
@@ -61,6 +75,9 @@ class data_Predictor():
         #############################################################
         #############################################################
         # 재진 추가
+        msg = Float32MultiArray()
+        msg.data = output
+        self.predicted_data_pub.publish(msg)
         #############################################################
         return output
 
@@ -93,9 +110,20 @@ class data_Predictor():
         pass
 
 if __name__ == "__main__":
+    rospy.init_node('afo_predictor', anonymous=True)
+    r = rospy.Rate(200)
     # sample data
     data_buffer = [
         [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
         [1.548, 2.028, 1.906, 1.792, 2.008, 1.982]
         ]
-    real_time_predictions = data_Predictor(data_buffer).prediction()
+    
+    left_predictor = dataPredictor(data_buffer)
+    right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
+    
+    while not rospy.is_shutdown():
+        left_predictor.prediction()
+        right_predictor.prediction()
+        rospy.spinonce()
+        r.sleep()
+    
