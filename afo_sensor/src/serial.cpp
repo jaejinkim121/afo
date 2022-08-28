@@ -1,8 +1,32 @@
-#include "../include/serial.h"
+#include "afo_sensor/include/afo_sensor/serial.h"
 
 void _delay(clock_t n) {
 	clock_t start = clock();
 	while (clock() - start < n);
+}
+
+vector<string> split(uint8_t *incomingData, char delimiter) {
+    vector<string> answer;
+	string *temp= new string("");
+
+	int i = 0;
+
+	while(true){
+		if (incomingData[i] == delimiter){
+			answer.push_back(&temp);
+			temp = new string("");
+		}
+		else if (incomingData[i] == 0){
+			break;
+		}
+		else{
+			temp += incomingData[i];
+		}
+		i++;
+	}
+	delete temp;
+
+    return answer;
 }
 
 serial::serial(const char *device, const int baud) {
@@ -124,45 +148,18 @@ int serial::serialReadLine(unsigned int limit, uint8_t *buffer) {
 	return bytesRead;
 }
 
-int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
+int serial::readIMU(ostream& datafile) {
 	uint8_t incomingData[255];
 	uint8_t trimData[255];
-
-	cout.precision(8);
-	cout << fixed;
+	
 	int nread;
 	int num = 0;
-	chrono::duration<double> sec;
-	double secD;
 	while (this->continue_signal) {
 		nread = this->serialReadLine(255, incomingData);
 		if (nread > 0) {
 			incomingData[nread - 2] = 0;
-			sec = chrono::system_clock::now() - start;
-			secD = sec.count();
-			datafile << this->marker << ", " << this->test_ind << "," << secD << ", " << incomingData << endl;
-
-			num = 0;
-			if(incomingData[4] != '5') continue;
-			for(int i = 0; i<255; i++){
-					if(incomingData[i] == ','){
-						num++;
-					}
-					if(num == 7){
-						num = i+1;
-						break;
-					}
-			}
-			for (int i = 0; i<255; i++){
-				trimData[i] = incomingData[num];
-				num++;
-				if(num == nread-2) break;
-			}
-			sscanf((char*)trimData, "%f,%f,%f", &this->gyro[0], &this->gyro[1], &this->gyro[2]);
-			this->calculate_target_gyro();
-
+			vector<string> result = split(incomingData, ',');
 		}
-
 	}
 	cout << "IMU Serial Reading End" << endl;
 	return 1;
