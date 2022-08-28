@@ -16,25 +16,6 @@ void delay(clock_t n) {
 	
 	return;
 }
-
-int led(syncPi* sync_pi, serial* leftsole, serial* imu){
-	float gyroAbs, leftsoleAbs;
-	float th_gyro, th_leftsole;
-	th_gyro = 0.3;
-	th_leftsole = 2;
-	while(!stopsign){
-		gyroAbs = imu->get_target_imu();
-		leftsoleAbs = leftsole->get_target_sole();
-
-		if(gyroAbs <= th_gyro) sync_pi->remote_gpio(2, true);
-		else sync_pi->remote_gpio(2, false);
-
-		if(leftsoleAbs >=th_leftsole) sync_pi->remote_gpio(3, true);
-		else sync_pi->remote_gpio(3, false);
-	}
-	return 1;
-}
-
 int init_controller(Controller* afo){
 	afo->initiate_control();
 	return 1;
