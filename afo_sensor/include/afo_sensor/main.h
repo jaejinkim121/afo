@@ -2,6 +2,7 @@
 #include <string.h>
 #include <vector>
 #include <sstream>
+#include <chrono>
 
 #include "afo_sensor/include/afo_sensor/serial.h"
 #include "ros/ros.h"

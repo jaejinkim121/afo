@@ -34,11 +34,8 @@ private:
 	int marker = 0;
 	float gyroAbs = 0;
 	float soleAbs = 0;
-	float* imuData = new float[7];
-	float gyro[3] = {1,1,1};
-	float sole[8] = {1,1,1,1,1,1,1,1};
-	float sole_norm[8] = {1,1,1,1,1,1,1,1};
-
+	float* imuData = new float[9];
+	float* sole = new float[6];
 
 public:
 	serial(const char *device, const int baud);

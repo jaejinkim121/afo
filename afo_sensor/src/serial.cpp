@@ -148,7 +148,7 @@ int serial::serialReadLine(unsigned int limit, uint8_t *buffer) {
 	return bytesRead;
 }
 
-int serial::readIMU(ostream& datafile) {
+int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 	uint8_t incomingData[255];
 	uint8_t trimData[255];
 	
@@ -158,7 +158,13 @@ int serial::readIMU(ostream& datafile) {
 		nread = this->serialReadLine(255, incomingData);
 		if (nread > 0) {
 			incomingData[nread - 2] = 0;
+			sec = chrono::system_clock::now() - start;
+			secD = sec.count();
+			datafile << this->marker << "," << this->test_ind << "," << secD << "," << incomingData << endl;
 			vector<string> result = split(incomingData, ',');
+			for (int i = 0; i <9; i++){
+				this->imuData[i] = stof(result[i+1]);
+			}
 		}
 	}
 	cout << "IMU Serial Reading End" << endl;
@@ -181,9 +187,10 @@ int serial::readSole(ostream& datafile, chrono::system_clock::time_point start) 
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
 			secD = sec.count();
-			datafile << this->marker << ", " << this->test_ind << "," << secD << ", " << incomingData << endl;
-			sscanf((char*)incomingData, "%f %f %f %f %f %f %f %f", &sole[0], &sole[1], &sole[2], &sole[3], &sole[4], &sole[5], &sole[6], &sole[7]);
-			this->calculate_target_sole();
+			datafile << this->marker << " " << this->test_ind << " " << secD << " " << incomingData << endl;
+			sscanf((char*)incomingData, "%f %f %f %f %f %f", 
+				this->sole[0], this->sole[1], this->sole[2], this->sole[3], this->sole[4], this->sole[5]
+			);
 		}
 
 	}
