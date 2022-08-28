@@ -50,10 +50,12 @@ int main(int argc, char** argv){
     serialIMU = new serial(ID_IMU, baudrate);
 
     // 지금은 sensor node에서 Streaming 신호를 주지만, 나중에는 GUI에서 신호를 줄 수 있도록 해보자.
+
     serialSoleLeft->serialWrite("[s]");
 	serialSoleRight->serialWrite("[s]");
+    cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
-    delay(500);
+    usleep(500000);
 
     chrono::system_clock::time_point start = chrono::system_clock::now();
 
@@ -77,8 +79,10 @@ int main(int argc, char** argv){
         loop_rate.sleep();
 	}
 	cout << "afo_sensor Node - ros end - main end" << endl;
-    leftsole->serialWrite("[s]")
-    rightsole->serialWrite("[s]")
+    serialSoleLeft->serialWrite("[s]");
+	serialSoleRight->serialWrite("[s]");
+    cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
+    usleep(500000);
     return 1;
 }
