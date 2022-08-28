@@ -17,6 +17,9 @@ import torch.nn.functional as F
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader, random_split
 
+import rospy
+from std_msgs.msg import Float32MultiArray
+
 from include.CNNmodel import *
 from include.utils import *
 
