@@ -59,7 +59,8 @@ class dataPredictor:
                                   self.input_length - len(self.data), axis=0)
             self.data = np.concatenate((extra_row, self.data), axis=0)
 
-        x = self.data[:, (idx - 1)]
+        x = self.data[(len(self.data) - self.input_length) : len(self.data),
+                      (idx - 1)]
         x = torch.from_numpy(x)
         x = x.unsqueeze(0)
         x = torch.stack([x], dim=0).float()
