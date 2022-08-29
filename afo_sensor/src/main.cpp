@@ -51,8 +51,9 @@ int main(int argc, char** argv){
     // 지금은 sensor node에서 Streaming 신호를 주지만, 나중에는 GUI에서 신호를 줄 수 있도록 해보자.
     leftsole->serialWrite("[s]");
 	rightsole->serialWrite("[s]");
+    cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
-    delay(500);
+    usleep(500000);
 
     while(ros::ok()){
         leftsole->
@@ -61,6 +62,8 @@ int main(int argc, char** argv){
 	cout << "afo_sensor Node - ros end - main end" << endl;
     leftsole->serialWrite("[s]")
     rightsole->serialWrite("[s]")
+    cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
+    usleep(500000);
     return 1;
 }
