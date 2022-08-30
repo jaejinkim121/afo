@@ -107,7 +107,9 @@ catkin_package(
 #  CATKIN_DEPENDS rospy std_msgs
 #  DEPENDS system_lib
 )
-catkin_install_python( PROGRAMS data_predictor.py)
+catkin_install_python( PROGRAMS data_predictor.py
+			DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 ###########
 ## Build ##
 ###########
