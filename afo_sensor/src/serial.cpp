@@ -160,8 +160,9 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 			sec = chrono::system_clock::now() - start;
 			datafile << this->marker << "," << this->test_ind << "," << sec.count() << "," << incomingData << endl;
 			vector<string> result = split_comma(incomingData, ',');
+			num = result.at(0).at(4);
 			for (int i = 0; i <9; i++){
-				this->imuData[i] = stof(result[i+1]);
+				this->imuData[9 * num + i] = stof(result.at(i));
 			}
 		}
 	}

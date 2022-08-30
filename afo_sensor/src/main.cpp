@@ -68,9 +68,18 @@ int main(int argc, char** argv){
     std_msgs::Float32MultiArray msg_sole_right;
 
     while(ros::ok()){
-        msg_imu.data = serialIMU->imuData;
-        msg_sole_left.data = serialSoleLeft->sole;
-        msg_sole_right.data = serialSoleRight->sole;
+        msg_imu.data.clear();
+        msg_sole_left.data.clear();
+        msg_sole_right.data.clear();
+
+        for ( int i = 0; i<63 ; i++){
+            msg_imu.data.push_back(serialIMU->imuData[i]);
+        }
+        for ( int i = 0 ; i < 6 ; i++){
+            msg_sole_left.data.push_back(serialSoleLeft->sole[i]);
+            msg_sole_right.data.push_back(serialSoleRight->sole[i]);
+        }
+
         afo_imu_pub.publish(msg_imu);
         afo_soleSensor_left_pub.publish(msg_sole_left);
         afo_soleSensor_right_pub.publish(msg_sole_right);

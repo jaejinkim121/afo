@@ -39,7 +39,7 @@ private:
 
 public:
 
-	float* imuData = new float[9];
+	float* imuData = new float[63];
 	float* sole = new float[6];
 	serial(const char *device, const int baud);
 	~serial();

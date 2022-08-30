@@ -54,21 +54,21 @@ int main(int argc, char** argv){
 
     usleep(1000000);
 
-	syncPi* sync_pi = new syncPi();
+	// syncPi* sync_pi = new syncPi();
 	
 	bool use_sync, current_sync;
 	cout << "Do you need to sync? yes - 1, no - 0: ";
 	cin >> use_sync;
 
-	if (use_sync) {
-		sync_pi->establish_connect(ip_sync_pi);
-		int tmp_;
-		cout << "Go : " ;
-		cin >> tmp_;
-		sync_pi->send_square(pin_sync, true);
-		current_sync = true;
-		cout << "Sync Signal Sended" << endl;
-	}
+	// if (use_sync) {
+	// 	sync_pi->establish_connect(ip_sync_pi);
+	// 	int tmp_;
+	// 	cout << "Go : " ;
+	// 	cin >> tmp_;
+	// 	sync_pi->send_square(pin_sync, true);
+	// 	current_sync = true;
+	// 	cout << "Sync Signal Sended" << endl;
+	// }
 
 	cout << "********* START *********" << endl;
 
@@ -81,8 +81,8 @@ int main(int argc, char** argv){
     while(tmp){
     	cin >> tmp;
     	if(tmp == 0){
-			sync_pi->remote_gpio(2, false);
-	  	  	sync_pi->remote_gpio(3, false);
+			// sync_pi->remote_gpio(2, false);
+	  	  	// sync_pi->remote_gpio(3, false);
 
     		afo->set_stopsign(true);
     		
