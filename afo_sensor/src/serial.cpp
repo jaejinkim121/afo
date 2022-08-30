@@ -13,7 +13,7 @@ vector<string> split_comma(uint8_t *incomingData, char delimiter) {
 
 	while(true){
 		if (incomingData[i] == delimiter){
-			answer.push_back(&temp);
+			answer.push_back(temp);
 			temp = new string("");
 		}
 		else if (incomingData[i] == 0){
@@ -231,29 +231,29 @@ float serial::get_target_imu(){
 	return this->gyroAbs;
 }
 
-int serial::calculate_target_sole(){
-	float r;
-	for (int i = 0 ; i < 8 ; i++){
-		r += (sole[i] -1) * sole_norm[i];
-	}
-	this->soleAbs = r;
+// int serial::calculate_target_sole(){
+// 	float r;
+// 	for (int i = 0 ; i < 8 ; i++){
+// 		r += (sole[i] -1) * sole_norm[i];
+// 	}
+// 	this->soleAbs = r;
 
-	return 1;
-}
+// 	return 1;
+// }
 
-int serial::calculate_target_gyro(){
-	float g0, g1, g2;
-	g0 = this->gyro[0];
-	g1 = this->gyro[1];
-	g2 = this->gyro[2];
-	this->gyroAbs = sqrt(g0*g0 + g1*g1 + g2*g2);
-	return 1;
-}
+// int serial::calculate_target_gyro(){
+// 	float g0, g1, g2;
+// 	g0 = this->gyro[0];
+// 	g1 = this->gyro[1];
+// 	g2 = this->gyro[2];
+// 	this->gyroAbs = sqrt(g0*g0 + g1*g1 + g2*g2);
+// 	return 1;
+// }
 
-void serial::set_norm(float* sole_norm_t){
-	for (int i = 0; i<8 ; i++){
-		this->sole_norm[i] = sole_norm_t[i] / 100.0;
-	}
-	return;
-}
+// void serial::set_norm(float* sole_norm_t){
+// 	for (int i = 0; i<8 ; i++){
+// 		this->sole_norm[i] = sole_norm_t[i] / 100.0;
+// 	}
+// 	return;
+// }
 

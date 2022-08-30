@@ -37,6 +37,7 @@ private:
 	float soleAbs = 0;
 	float* imuData = new float[9];
 	float* sole = new float[6];
+	chrono::duration sec;
 
 public:
 	serial(const char *device, const int baud);

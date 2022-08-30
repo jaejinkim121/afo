@@ -4,7 +4,7 @@
 #include <sstream>
 #include <chrono>
 
-#include "afo_sensor/include/afo_sensor/serial.h"
+#include "../include/afo_sensor/serial.h"
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/String.h"
