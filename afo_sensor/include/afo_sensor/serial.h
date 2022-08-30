@@ -20,6 +20,7 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 #include <cmath>
+#include <vector>
 
 //#define DEBUG
 

@@ -5,7 +5,7 @@ void _delay(clock_t n) {
 	while (clock() - start < n);
 }
 
-vector<string> split(uint8_t *incomingData, char delimiter) {
+vector<string> split_comma(uint8_t *incomingData, char delimiter) {
     vector<string> answer;
 	string *temp= new string("");
 
@@ -161,7 +161,7 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 			sec = chrono::system_clock::now() - start;
 			secD = sec.count();
 			datafile << this->marker << "," << this->test_ind << "," << secD << "," << incomingData << endl;
-			vector<string> result = split(incomingData, ',');
+			vector<string> result = split_comma(incomingData, ',');
 			for (int i = 0; i <9; i++){
 				this->imuData[i] = stof(result[i+1]);
 			}
