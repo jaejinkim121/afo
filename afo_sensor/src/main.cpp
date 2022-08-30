@@ -45,9 +45,9 @@ int main(int argc, char** argv){
 	outIMU.setf(ios_base::fixed, ios_base::floatfield);
 
     // Open Serial Port and attach to correct sensors.
-	serialSoleLeft = new serial(ID_leftSole, baudrate);
-	serialSoleRight = new serial(ID_rightSole, baudrate);
-    serialIMU = new serial(ID_IMU, baudrate);
+	serial serialSoleLeft = new serial(ID_leftSole, baudrate);
+	serial serialSoleRight = new serial(ID_rightSole, baudrate);
+    serial serialIMU = new serial(ID_IMU, baudrate);
 
     // 지금은 sensor node에서 Streaming 신호를 주지만, 나중에는 GUI에서 신호를 줄 수 있도록 해보자.
 

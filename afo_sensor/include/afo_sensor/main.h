@@ -15,3 +15,10 @@ using namespace std;
 
 string experiment_marking;
 string test_suffix;
+
+
+// Serial Communication Config.
+const char* ID_leftSole = "/dev/ttyACM0";
+const char* ID_rightSole = "/dev/ttyACM1";
+const char* ID_IMU = "/dev/ttyUSB0";
+const int baudrate = 921600;
