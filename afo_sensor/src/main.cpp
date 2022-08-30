@@ -61,7 +61,7 @@ int main(int argc, char** argv){
 
     thread t_serialLeftFoot(&serial::readSole, serialSoleLeft, std::ref(outFileSoleLeft), start);
 	thread t_serialRightFoot(&serial::readSole, serialSoleRight, std::ref(outFileSoleRight), start);
-	thread t_serialIMU(&serial::readIMU, imu, std::ref(outIMU), start);
+	thread t_serialIMU(&serial::readIMU, serialIMU, std::ref(outIMU), start);
 
     std_msgs::Float32MultiArray msg_imu;
     std_msgs::Float32MultiArray msg_sole_left;
