@@ -54,7 +54,7 @@ int main(int argc, char** argv){
     cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
     usleep(500000);
-
+ 
     while(ros::ok()){
         leftsole->
 		ros::spinOnce();
