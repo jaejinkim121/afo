@@ -7,14 +7,14 @@ void _delay(clock_t n) {
 
 vector<string> split_comma(uint8_t *incomingData, char delimiter) {
     vector<string> answer;
-	string *temp= new string("");
+	string temp("");
 
 	int i = 0;
 
 	while(true){
 		if (incomingData[i] == delimiter){
 			answer.push_back(temp);
-			temp = new string("");
+			temp = "";
 		}
 		else if (incomingData[i] == 0){
 			break;
