@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <libssh/libssh.h>
+#include <../src/libssh-0.9.6/include/libssh/libssh.h>
 #include <errno.h>
 #include <chrono>
 #include <string.h>

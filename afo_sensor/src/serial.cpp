@@ -1,4 +1,4 @@
-#include "afo_sensor/include/afo_sensor/serial.h"
+#include "../include/afo_sensor/serial.h"
 
 void _delay(clock_t n) {
 	clock_t start = clock();

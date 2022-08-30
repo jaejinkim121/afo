@@ -1,4 +1,4 @@
-#include "afo_sensor/include/afo_sensor/main.h"
+#include "../include/afo_sensor/main.h"
 
 void syncCallback(const std_msgs::BoolConstPtr& msg){
     return 0;    
