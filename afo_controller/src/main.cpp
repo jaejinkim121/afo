@@ -16,25 +16,6 @@ void delay(clock_t n) {
 	
 	return;
 }
-
-int led(syncPi* sync_pi, serial* leftsole, serial* imu){
-	float gyroAbs, leftsoleAbs;
-	float th_gyro, th_leftsole;
-	th_gyro = 0.3;
-	th_leftsole = 2;
-	while(!stopsign){
-		gyroAbs = imu->get_target_imu();
-		leftsoleAbs = leftsole->get_target_sole();
-
-		if(gyroAbs <= th_gyro) sync_pi->remote_gpio(2, true);
-		else sync_pi->remote_gpio(2, false);
-
-		if(leftsoleAbs >=th_leftsole) sync_pi->remote_gpio(3, true);
-		else sync_pi->remote_gpio(3, false);
-	}
-	return 1;
-}
-
 int init_controller(Controller* afo){
 	afo->initiate_control();
 	return 1;
@@ -73,7 +54,6 @@ int main(int argc, char** argv){
 
     usleep(1000000);
 
-	serial * leftsole, *rightsole, *imu;
 	syncPi* sync_pi = new syncPi();
 	
 	bool use_sync, current_sync;
@@ -96,28 +76,17 @@ int main(int argc, char** argv){
 
     thread t_controller_main(init_controller, afo);
     thread t_toggle_trigger(toggle_control_trigger, afo, p_to_d, d_to_p);
-	thread t_serialLeftFoot(&serial::readSole, leftsole, std::ref(outPointLeft), start);
-	thread t_serialRightFoot(&serial::readSole, rightsole, std::ref(outPointRight), start);
-	thread t_serialIMU(&serial::readIMU, imu, std::ref(outIMU), start);
 	//thread t_ledDisplay(led, sync_pi, leftsole, imu);
     int tmp;
     while(tmp){
     	cin >> tmp;
     	if(tmp == 0){
-			leftsole->serialWrite("[s]");
-			rightsole->serialWrite("[s]");
-
 			sync_pi->remote_gpio(2, false);
 	  	  	sync_pi->remote_gpio(3, false);
 
     		afo->set_stopsign(true);
     		
 			stopsign = true;
-
-    		leftsole->get_endsign();
-			rightsole->get_endsign();
-			imu->get_endsign();
-    		
 			break;
     	}
     	if(tmp==1){
@@ -126,12 +95,6 @@ int main(int argc, char** argv){
     }
 
     usleep(100000);
-
-
-	t_serialLeftFoot.join();
-	t_serialRightFoot.join();
-
-	t_serialIMU.join();
 
 	t_controller_main.join();
 	t_toggle_trigger.join();

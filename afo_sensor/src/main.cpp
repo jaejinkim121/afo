@@ -11,6 +11,7 @@ void experimentMarkingCallback(const std_msgs::String::ConstPtr& msg){
 int main(int argc, char** argv){
     ros::init(argc, argv, "afo_sensor");
 	ros::NodeHandle n;
+    ros::Rate loop_rate(200);
     ros::Subscriber afo_gui_sync_sub = n.subscribe("/afo_gui/sync", 100, syncCallback);
     ros::Subscriber afo_gui_experimentMarking_sub = n.subscribe("/afo_gui/experimentMarking", 100, experimentMarkingCallback);
     ros::Publisher afo_soleSensor_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_left", 100);
@@ -49,19 +50,37 @@ int main(int argc, char** argv){
     serialIMU = new serial(ID_IMU, baudrate);
 
     // 지금은 sensor node에서 Streaming 신호를 주지만, 나중에는 GUI에서 신호를 줄 수 있도록 해보자.
-    leftsole->serialWrite("[s]");
-	rightsole->serialWrite("[s]");
+
+    serialSoleLeft->serialWrite("[s]");
+	serialSoleRight->serialWrite("[s]");
     cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
     usleep(500000);
- 
+
+    chrono::system_clock::time_point start = chrono::system_clock::now();
+
+    thread t_serialLeftFoot(&serial::readSole, serialSoleLeft, std::ref(outFileSoleLeft), start);
+	thread t_serialRightFoot(&serial::readSole, serialSoleRight, std::ref(outFileSoleRight), start);
+	thread t_serialIMU(&serial::readIMU, imu, std::ref(outIMU), start);
+
+    std_msgs::Float32MultiArray msg_imu;
+    std_msgs::Float32MultiArray msg_sole_left;
+    std_msgs::Float32MultiArray msg_sole_right;
+
     while(ros::ok()){
-        leftsole->
+        msg_imu.data = serialIMU->imuData;
+        msg_sole_left.data = serialSoleLeft->sole;
+        msg_sole_right.data = serialSoleRight->sole;
+        afo_imu_pub.publish(msg_imu);
+        afo_soleSensor_left_pub.publish(msg_sole_left);
+        afo_soleSensor_right_pub.publish(msg_sole_right);
+
 		ros::spinOnce();
+        loop_rate.sleep();
 	}
 	cout << "afo_sensor Node - ros end - main end" << endl;
-    leftsole->serialWrite("[s]")
-    rightsole->serialWrite("[s]")
+    serialSoleLeft->serialWrite("[s]");
+	serialSoleRight->serialWrite("[s]");
     cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
     usleep(500000);
