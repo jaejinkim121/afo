@@ -24,7 +24,6 @@ vector<string> split_comma(uint8_t *incomingData, char delimiter) {
 		}
 		i++;
 	}
-	delete temp;
 
     return answer;
 }
@@ -159,8 +158,7 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 		if (nread > 0) {
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
-			secD = sec.count();
-			datafile << this->marker << "," << this->test_ind << "," << secD << "," << incomingData << endl;
+			datafile << this->marker << "," << this->test_ind << "," << sec.count() << "," << incomingData << endl;
 			vector<string> result = split_comma(incomingData, ',');
 			for (int i = 0; i <9; i++){
 				this->imuData[i] = stof(result[i+1]);
@@ -186,8 +184,7 @@ int serial::readSole(ostream& datafile, chrono::system_clock::time_point start) 
 		if (nread > 0) {
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
-			secD = sec.count();
-			datafile << this->marker << " " << this->test_ind << " " << secD << " " << incomingData << endl;
+			datafile << this->marker << " " << this->test_ind << " " << sec.count() << " " << incomingData << endl;
 			sscanf((char*)incomingData, "%f %f %f %f %f %f", 
 				this->sole[0], this->sole[1], this->sole[2], this->sole[3], this->sole[4], this->sole[5]
 			);

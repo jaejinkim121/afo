@@ -35,11 +35,12 @@ private:
 	int marker = 0;
 	float gyroAbs = 0;
 	float soleAbs = 0;
-	float* imuData = new float[9];
-	float* sole = new float[6];
 	chrono::duration<double> sec;
 
 public:
+
+	float* imuData = new float[9];
+	float* sole = new float[6];
 	serial(const char *device, const int baud);
 	~serial();
 	int serialOpen(const char *device, const int baud);
