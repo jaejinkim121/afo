@@ -30,6 +30,10 @@ vector<string> split_comma(uint8_t *incomingData, char delimiter) {
 
 serial::serial(const char *device, const int baud) {
 	this->serialOpen(device, baud);
+	this->sole = {1, 1, 1, 1, 1, 1};
+	for (int i = 0; i < 63 ; i++){
+		this->imuData[i] = 0;
+	}
 }
 
 serial::~serial() {
