@@ -72,7 +72,6 @@ int main(int argc, char** argv){
         msg_sole_right.data.clear();
 
         for ( int i = 0; i<63 ; i++){
-            cout << "IMU data " << i << " : " << serialIMU->imuData[i] << endl;
             msg_imu.data.push_back(serialIMU->imuData[i]);
         }
         for ( int i = 0 ; i < 6 ; i++){
