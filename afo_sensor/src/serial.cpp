@@ -170,12 +170,12 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 			cout << "serial checkpoint 3" << endl;
 			vector<string> result = split_comma(incomingData, ',');
 			cout << "serial checkpoint 4" << endl;
-//			num_temp = result.at(0).at(4);
+			num_temp = result.at(0).at(4);
 			cout << num_temp << endl;
-//			num = stoi(num_temp);
-//			cout << num << endl;
+			num = stoi(num_temp);
+			cout << num << endl;
 			for (int i = 0; i <9; i++){
-//				this->imuData[9 * num + i] = stof(result.at(i));
+				this->imuData[9 * num + i] = stof(result.at(i));
 			}
 		}
 	}
@@ -200,7 +200,7 @@ int serial::readSole(ostream& datafile, chrono::system_clock::time_point start) 
 			sec = chrono::system_clock::now() - start;
 			datafile << this->marker << " " << this->test_ind << " " << sec.count() << " " << incomingData << endl;
 			sscanf((char*)incomingData, "%f %f %f %f %f %f", 
-				this->sole[0], this->sole[1], this->sole[2], this->sole[3], this->sole[4], this->sole[5]
+				this->sole, this->sole + 1, this->sole + 2, this->sole + 3, this->sole + 4, this->sole + 5
 			);
 		}
 
