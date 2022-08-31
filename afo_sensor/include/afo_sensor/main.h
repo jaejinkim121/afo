@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <chrono>
+#include <thread>
 
 #include "serial.h"
 #include "ros/ros.h"
