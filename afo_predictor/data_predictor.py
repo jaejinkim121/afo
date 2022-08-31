@@ -27,7 +27,7 @@ from include.utils import *
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
 class dataPredictor:
-    def __init__(self, data_buffer, model_name="CNN", model_dir="./data/RH10/",
+    def __init__(self, data_buffer, model_name="CNN", model_dir="./data/280/",
                  sensor_dir="Left", input_length=15, sensor_num=6):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
