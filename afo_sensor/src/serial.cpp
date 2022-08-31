@@ -153,6 +153,7 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 	
 	int nread;
 	int num = 0;
+	string num_temp = "";
 	while (this->continue_signal) {
 		nread = this->serialReadLine(255, incomingData);
 		if (nread > 0) {
@@ -160,8 +161,8 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 			sec = chrono::system_clock::now() - start;
 			datafile << this->marker << "," << this->test_ind << "," << sec.count() << "," << incomingData << endl;
 			vector<string> result = split_comma(incomingData, ',');
-			
-			num = stoi(result.at(0).at(4));
+			num_temp = result.at(0).at(4);
+			num = stoi(num_temp);
 			for (int i = 0; i <9; i++){
 				this->imuData[9 * num + i] = stof(result.at(i));
 			}
