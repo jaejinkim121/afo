@@ -150,17 +150,20 @@ int serial::serialReadLine(unsigned int limit, uint8_t *buffer) {
 int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 	uint8_t incomingData[255];
 	uint8_t trimData[255];
-	
+	cout << "serial checkpoint 1" << endl;
 	int nread;
 	int num = 0;
 	string num_temp = "";
 	while (this->continue_signal) {
 		nread = this->serialReadLine(255, incomingData);
+		cout << "serial checkpoint 2 " << endl;
 		if (nread > 0) {
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
 			datafile << this->marker << "," << this->test_ind << "," << sec.count() << "," << incomingData << endl;
+			cout << "serial checkpoint 3" << endl;
 			vector<string> result = split_comma(incomingData, ',');
+			cout << "serial checkpoint 4" << endl;
 //			num_temp = result.at(0).at(4);
 			cout << num_temp << endl;
 //			num = stoi(num_temp);

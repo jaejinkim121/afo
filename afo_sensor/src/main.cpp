@@ -79,7 +79,7 @@ int main(int argc, char** argv){
             msg_sole_left.data.push_back(serialSoleLeft->sole[i]);
             msg_sole_right.data.push_back(serialSoleRight->sole[i]);
         }
-
+        cout << "checkpoint 4" << endl;
         afo_imu_pub.publish(msg_imu);
         afo_soleSensor_left_pub.publish(msg_sole_left);
         afo_soleSensor_right_pub.publish(msg_sole_right);
