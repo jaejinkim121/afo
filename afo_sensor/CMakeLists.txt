@@ -116,7 +116,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
-  include/afo_sensor
+  include/afo_sensor/
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -149,7 +149,7 @@ add_executable(afo_sensor src/main.cpp src/serial.cpp)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-
+target_link_libraries(afo_sensor ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############
