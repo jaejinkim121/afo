@@ -1,7 +1,6 @@
 #include "../include/afo_sensor/main.h"
 
 void syncCallback(const std_msgs::BoolConstPtr& msg){
-    return 0;    
 }
 
 void experimentMarkingCallback(const std_msgs::String::ConstPtr& msg){
