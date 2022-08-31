@@ -23,7 +23,7 @@ int main(int argc, char** argv){
 	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
 
     // 여기에 test_suffix를 ROS에서 받아오는 부분을 추가해서 GUI에서 실험 이름을 넘겨줄 수 있도록 해보자.
-
+    test_suffix = "";
 
     // ------------------------------------------------------------------------------------------------ //
 
@@ -42,7 +42,7 @@ int main(int argc, char** argv){
     outFileSoleLeft.setf(ios_base::fixed, ios_base::floatfield);
 	outFileSoleRight.setf(ios_base::fixed, ios_base::floatfield);
 	outIMU.setf(ios_base::fixed, ios_base::floatfield);
-
+	cout << "Checkpoint 1" << endl;
     // Open Serial Port and attach to correct sensors.
 	serial* serialSoleLeft = new serial(ID_leftSole, baudrate_sole);
 	serial* serialSoleRight = new serial(ID_rightSole, baudrate_sole);
@@ -61,7 +61,7 @@ int main(int argc, char** argv){
     thread t_serialLeftFoot(&serial::readSole, serialSoleLeft, std::ref(outFileSoleLeft), start);
 	thread t_serialRightFoot(&serial::readSole, serialSoleRight, std::ref(outFileSoleRight), start);
 	thread t_serialIMU(&serial::readIMU, serialIMU, std::ref(outIMU), start);
-
+	cout << "checkpoint 2" << endl;
     std_msgs::Float32MultiArray msg_imu;
     std_msgs::Float32MultiArray msg_sole_left;
     std_msgs::Float32MultiArray msg_sole_right;
@@ -74,6 +74,7 @@ int main(int argc, char** argv){
         for ( int i = 0; i<63 ; i++){
             msg_imu.data.push_back(serialIMU->imuData[i]);
         }
+	cout << "checkpoint 3" << endl;
         for ( int i = 0 ; i < 6 ; i++){
             msg_sole_left.data.push_back(serialSoleLeft->sole[i]);
             msg_sole_right.data.push_back(serialSoleRight->sole[i]);
