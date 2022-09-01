@@ -27,7 +27,7 @@ from include.utils import *
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
 class dataPredictor:
-    def __init__(self, data_buffer, model_name="CNN", model_dir="./data/RH10/",
+    def __init__(self, data_buffer, model_name="CNN", model_dir="./data/280/",
                  sensor_dir="Left", input_length=15, sensor_num=6):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
@@ -85,9 +85,8 @@ class dataPredictor:
         return output
 
     def prediction_by_CNN(self):
-        self.model_path += "CNN_model/"
         _, sensor_name_list = folder_path_name(
-            self.model_path, "include", self.sensor_dir)
+            self.model_path + "CNN_model/", "include", self.sensor_dir)
         sensor_name_list = [name for name in sensor_name_list if \
                             int(name[-4]) <= self.sensor_num]
         sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),

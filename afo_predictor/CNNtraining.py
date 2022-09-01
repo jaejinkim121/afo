@@ -93,8 +93,8 @@ print("Using PyTorch version: {}, Device: {}".format(
     torch.__version__, DEVICE))
 
 # define calib data path and model path
-calib_data_path = "./data/RH10/Calibration/"
-model_path = "./data/RH10/CNN_model/"
+calib_data_path = "./data/280/Calibration/"
+model_path = "./data/280/CNN_model/"
 try:
     if not os.path.exists(model_path):
         os.makedirs(model_path)
@@ -105,16 +105,8 @@ except:
 _, sensor_name_list = folder_path_name(calib_data_path)
 
 for name in sensor_name_list:
-    
-    if (name[-1] == "3") | (name[-1] == "5"):
-        # continue
-        print("START 1D CNN MODEL TRAINING!!! %s" % name)
-        data_dir = calib_data_path + name + "/force_conversion_test.csv"
-        model_dir = model_path + name + ".pt"
-        CNNtraining(data_dir, DEVICE, model_dir=model_dir, EPOCHS=EPOCHS)
-    else:
-        # print("START 1D CNN MODEL TRAINING!!! %s" % name)
-        # data_dir = calib_data_path + name + "/force_conversion_test.csv"
-        # model_dir = model_path + name + ".pt"
-        # CNNtraining(data_dir, DEVICE, model_dir=model_dir, EPOCHS=EPOCHS)
-        continue
+
+    print("START 1D CNN MODEL TRAINING!!! %s" % name)
+    data_dir = calib_data_path + name + "/force_conversion_test.csv"
+    model_dir = model_path + name + ".pt"
+    CNNtraining(data_dir, DEVICE, model_dir=model_dir, EPOCHS=EPOCHS)
