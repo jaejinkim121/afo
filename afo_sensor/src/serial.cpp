@@ -166,12 +166,14 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
 			datafile << this->marker << "," << this->test_ind << "," << sec.count() << "," << incomingData << endl;
+			try{
 			vector<string> result = split_comma(incomingData, ',');
 			num_temp += result.at(0).at(4);
 			num = stoi(num_temp);
 			for (int i = 0; i <9; i++){
 				this->imuData[9 * num + i] = stof(result.at(i));
-			}
+			}}
+			catch(...){}
 		}
 	}
 	cout << "IMU Serial Reading End" << endl;
@@ -194,9 +196,14 @@ int serial::readSole(ostream& datafile, chrono::system_clock::time_point start) 
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
 			datafile << this->marker << " " << this->test_ind << " " << sec.count() << " " << incomingData << endl;
+			try{
 			sscanf((char*)incomingData, "%f %f %f %f %f %f", 
 				this->sole, this->sole + 1, this->sole + 2, this->sole + 3, this->sole + 4, this->sole + 5
 			);
+			}
+			catch(...){
+			cout << "SSCANF ERROR" << endl;
+			}
 		}
 
 	}
