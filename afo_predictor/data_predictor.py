@@ -4,7 +4,7 @@ Created on Sun Aug 21 01:38:40 2022
 
 @author: minhee
 """
-
+#!/usr/bin/env python3
 import os
 import numpy as np
 import pandas as pd
