@@ -40,15 +40,16 @@ class dataPredictor:
 
     def set_ros_node(self):
         if self.sensor_dir == "Left":
-            self.data_sub = rospy.Subscriber('afo_sensor/soleSensor_left', Float32MultiArray, self.callbcak)
-            self.predicted_data_pub = rospy.Publisher('afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=100)
+            self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_left', Float32MultiArray, self.callback)
+            self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=100)
         else:
-            self.data_sub = rospy.Subscriber('afo_sensor/soleSensor_right', Float32MultiArray, self.callbcak)
-            self.predicted_data_pub = rospy.Publisher('afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=100)
+            self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback)
+            self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=100)
 
     def callback(self, msg):
         data = msg.data
         self.data = np.vstack([self.data, data])
+        self.prediction()
         return
 
     def transform(self, idx):
@@ -76,6 +77,7 @@ class dataPredictor:
         #############################################################
         #############################################################
         # 재진 추가
+        print(output)
         msg = Float32MultiArray()
         msg.data = output
         self.predicted_data_pub.publish(msg)
@@ -123,8 +125,6 @@ if __name__ == "__main__":
     right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
     
     while not rospy.is_shutdown():
-        left_predictor.prediction()
-        right_predictor.prediction()
-        rospy.spinonce()
+        rospy.spin()
         r.sleep()
     
