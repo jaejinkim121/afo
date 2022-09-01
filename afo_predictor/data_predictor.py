@@ -27,7 +27,7 @@ from include.utils import *
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
 class dataPredictor:
-    def __init__(self, data_buffer, model_name="CNN", model_dir="./data/280/",
+    def __init__(self, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
                  sensor_dir="Left", input_length=15, sensor_num=6):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
@@ -77,9 +77,8 @@ class dataPredictor:
         #############################################################
         #############################################################
         # 재진 추가
-        print(output)
         msg = Float32MultiArray()
-        msg.data = output
+        msg.data = output[0]
         self.predicted_data_pub.publish(msg)
         #############################################################
         return output
