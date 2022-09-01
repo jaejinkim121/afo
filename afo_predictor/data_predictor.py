@@ -93,8 +93,9 @@ class dataPredictor:
         prediction = np.array([])
 
         for name in sorted_name_list:
-            model.load_state_dict(torch.load(self.model_path + name,
-                                             map_location=self.device))
+            model.load_state_dict(torch.load(
+                self.model_path + "CNN_model/" + name,
+                map_location=self.device))
             model = model.to(self.device)
             model.eval()
 
