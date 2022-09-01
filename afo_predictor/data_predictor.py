@@ -83,9 +83,8 @@ class dataPredictor:
         return output
 
     def prediction_by_CNN(self):
-        self.model_path += "CNN_model/"
         _, sensor_name_list = folder_path_name(
-            self.model_path, "include", self.sensor_dir)
+            self.model_path + "CNN_model/", "include", self.sensor_dir)
         sensor_name_list = [name for name in sensor_name_list if \
                             int(name[-4]) <= self.sensor_num]
         sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
