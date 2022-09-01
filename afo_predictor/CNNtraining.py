@@ -77,14 +77,16 @@ def CNNtraining(data_dir, DEVICE, model_dir=None,
     if model_dir is not None:
         torch.save(model.state_dict(), model_dir)
 
+    return test_loss
+
 # hyperparameter settings
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 EPOCHS = 50
 TRAIN_SIZE = 0.85
-LR = 0.00001
+LR = 0.001
 N_WARMUP_STEPS = 5
 DECAY_RATE = 0.98
-INPUT_LENGTH = 15
+INPUT_LENGTH = 15 #1, 3, 5, 10, 13, 15
 
 # device setting
 DEVICE = torch.device('cuda') \
@@ -104,9 +106,23 @@ except:
 # for loop for 12 sensor training
 _, sensor_name_list = folder_path_name(calib_data_path)
 
+# df_loss = pd.DataFrame(columns=["LR", "loss"])
+# for LR in [100, 10, 1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.00001]:
+
 for name in sensor_name_list:
 
+    # if name.endswith("Right_4"):
     print("START 1D CNN MODEL TRAINING!!! %s" % name)
+    # print("LR: %f" % LR)
     data_dir = calib_data_path + name + "/force_conversion_test.csv"
     model_dir = model_path + name + ".pt"
-    CNNtraining(data_dir, DEVICE, model_dir=model_dir, EPOCHS=EPOCHS)
+    final_test_loss = CNNtraining(data_dir, DEVICE,
+                                  model_dir=model_dir,
+                                  BATCH_SIZE=BATCH_SIZE, EPOCHS=EPOCHS,
+                                  LR=LR, N_WARMUP_STEPS=N_WARMUP_STEPS,
+                                  DECAY_RATE=DECAY_RATE,
+                                  INPUT_LENGTH=INPUT_LENGTH)
+    # df_loss = df_loss.append({'LR':LR, 'loss':final_test_loss},
+    #                ignore_index=True)
+    # else:
+    #     pass
