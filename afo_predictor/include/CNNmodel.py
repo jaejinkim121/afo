@@ -96,8 +96,9 @@ class ScheduleOptim():
 class CustomDataset(Dataset):
     def __init__(self, input_length=5, data_dir="../data/RH02/" \
                  + "Calibration/260Left_1/force_conversion_test.csv"):
-        self.data = np.array(
-            pd.read_csv(data_dir,delimiter=",")[["vout", "force"]])
+        data = pd.read_csv(data_dir,delimiter=",")[["vout", "force"]]
+        data["idx"] = data.index
+        self.data = np.array(data[["idx", "vout", "force"]])
         self.input_length = input_length
 
     def __len__(self):
@@ -107,17 +108,17 @@ class CustomDataset(Dataset):
         return self.data[idx]
     
     def transform(self, x, idx):
-        if (idx + 1) < self.input_length:
-            x = np.append(self.data[0, 0] *
-                          np.ones((1, self.input_length - idx - 1)),
-                          self.data[0:(idx + 1), 0])
+        if (int(idx) + 1) < self.input_length:
+            x = np.append(self.data[0, 1] *
+                          np.ones((1, self.input_length - int(idx) - 1)),
+                          self.data[0:int(idx) + 1, 1])
         else:
-            x = self.data[(idx + 1 - self.input_length):(idx + 1), 0]
+            x = self.data[int(idx) + 1 - self.input_length:int(idx) + 1, 1]
         return x
 
     def collate_fn(self, data):
         batch_x, batch_y = [], []
-        for idx, (x, y) in enumerate(data):
+        for (idx, x, y) in data:
             x = self.transform(x, idx)
             x = torch.from_numpy(x)
             x = x.unsqueeze(0)
