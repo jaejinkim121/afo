@@ -139,10 +139,10 @@ if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
     r = rospy.Rate(200)
 
-    threshold_left_hs = rospy.get_param('/afo_predictor/lhs')
-    threshold_left_to = rospy.get_param('/afo_predictor/lto')
-    threshold_right_hs = rospy.get_param('/afo_predictor/rhs')
-    threshold_right_to = rospy.get_param('/afo_predictor/rto')
+    threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
+    threshold_left_to = float(rospy.get_param('/afo_predictor/lto'))
+    threshold_right_hs = float(rospy.get_param('/afo_predictor/rhs'))
+    threshold_right_to = float(rospy.get_param('/afo_predictor/rto'))
     print(type(threshold_left_hs))
     print(threshold_left_hs)
     # sample data
