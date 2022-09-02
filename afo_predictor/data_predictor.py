@@ -122,7 +122,6 @@ class dataPredictor:
     def phase_detection(self):
         if self._is_swing:
             for data in self._predicted_data:
-                print(data)
                 if data > self._threshold_heel_strike:
                     self._is_swing = False
                     print(self.sensor_dir + f"  {Fore.RED}HEEEEEEEEEL STRIKE{Style.RESET_ALL}")
