@@ -12,13 +12,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from colorama import Fore, Style
+import logging
+from time import localtime
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader, random_split
-
 import rospy
 from std_msgs.msg import Float32MultiArray
 
@@ -29,7 +30,7 @@ from include.utils import *
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
 class dataPredictor:
-    def __init__(self, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
+    def __init__(self, start_time, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
                  sensor_dir="Left", input_length=15, sensor_num=6,
                  thres_heel_strike=1, thres_toe_off=1):
         self.data = np.array(data_buffer)
@@ -44,9 +45,23 @@ class dataPredictor:
         self._is_swing = False
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
+        self.start_time = start_time
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(message)s')
+        tm = time.localtime()
+        file_handler = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_{}sole_{}{}.log'.format(sensor_dir, tm.hour, tm.minute))
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
+        if sensor_dir=="Left":
+            self.logger_imu = logging.getLogger()
+            self.logger_imu.setLevel(logging.INFO)
+            file_handler_imu = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_imu_{}{}.log'.format(tm.hour, tm.minute))
+            self.logger_imu.addHandler(file_handler_imu)
 
     def set_ros_node(self):
         if self.sensor_dir == "Left":
+            self.data_imu_sub = rospy.Subscriber('/afo_sensor/imu', Float32MultiArray, self.callback_imu)
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_left', Float32MultiArray, self.callback)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=100)
         else:
@@ -55,9 +70,16 @@ class dataPredictor:
 
     def callback(self, msg):
         data = msg.data
-        self.data = np.vstack([self.data, data])
+        self.data = np.vstack([self.data, data])[-self.input_length:]
+        reel = time.time() - self.start_time
+        self.logger.info('{}, {}, {}'.format(reel, self._is_swing, data))
         self.prediction()
         return
+    
+    def callback_imu(self, msg):
+        data = msg.data
+        reel = time.time() - self.start_time
+        self.logger_imu.info('{}, {}'.format(reel, data))
 
     def transform(self, idx):
         if len(self.data) < self.input_length:
@@ -143,16 +165,17 @@ if __name__ == "__main__":
     threshold_left_to = float(rospy.get_param('/afo_predictor/lto'))
     threshold_right_hs = float(rospy.get_param('/afo_predictor/rhs'))
     threshold_right_to = float(rospy.get_param('/afo_predictor/rto'))
-    print(type(threshold_left_hs))
-    print(threshold_left_hs)
+
     # sample data
     data_buffer = [
         [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
         [1.548, 2.028, 1.906, 1.792, 2.008, 1.982]
         ]
     
-    left_predictor = dataPredictor(data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to)
-    right_predictor = dataPredictor(data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to)
+    start_time = time.time()
+
+    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to)
+    right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to)
     
     while not rospy.is_shutdown():
         rospy.spin()
