@@ -1,6 +1,10 @@
 <launch>
 	<node name="afo_sensor" pkg="afo_sensor" type="afo_sensor" output="screen">
 	</node>
-	<node name="afo_predictor" pkg="afo_predictor" type="data_predictor.py" output="screen">
+	<node name="afo_predictor" pkg="afo_predictor" type="data_predictor.py" output="screen" clear_params="true">
+		<param name="lhs" value="$ (arg lhs)" />
+		<param name="lto" value="$ (arg lto)" />
+		<param name="rhs" value="$ (arg rhs)" />
+		<param name="rto" value="$ (arg rto)" />
 	</node>
 </launch>

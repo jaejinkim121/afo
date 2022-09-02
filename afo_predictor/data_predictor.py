@@ -6,6 +6,7 @@ Created on Sun Aug 21 01:38:40 2022
 @author: minhee
 """
 import os
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -138,14 +139,21 @@ class dataPredictor:
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
     r = rospy.Rate(200)
+
+    threshold_left_hs = rospy.get_param('/afo_predictor/lhs')
+    threshold_left_to = rospy.get_param('/afo_predictor/lto')
+    threshold_right_hs = rospy.get_param('/afo_predictor/rhs')
+    threshold_right_to = rospy.get_param('/afo_predictor/rto')
+    print(type(threshold_left_hs))
+    print(threshold_left_hs)
     # sample data
     data_buffer = [
         [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
         [1.548, 2.028, 1.906, 1.792, 2.008, 1.982]
         ]
     
-    left_predictor = dataPredictor(data_buffer)
-    right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
+    left_predictor = dataPredictor(data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to)
+    right_predictor = dataPredictor(data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to)
     
     while not rospy.is_shutdown():
         rospy.spin()
