@@ -131,7 +131,7 @@ class dataPredictor:
                 if data > self._threshold_toe_off:
                     break
             self._is_swing = True
-            print(f"{Fore.BLUE}TOOOOOOOOOOOOOOOOOOOOOOOOE OFF{Style.RESET_ALL")
+            print(f"{Fore.BLUE}TOOOOOOOOOOOOOOOOOOOOOOOOE OFF{Style.RESET_ALL}")
 
 
 if __name__ == "__main__":
