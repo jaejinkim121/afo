@@ -130,7 +130,7 @@ class dataPredictor:
         else:
             for data in self._predicted_data:
                 if data > self._threshold_toe_off:
-                    break
+                    return
             self._is_swing = True
             print(self.sensor_dir + f"  {Fore.BLUE}TOOOOOE OFF{Style.RESET_ALL}")
 
