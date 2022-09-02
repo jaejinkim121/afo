@@ -120,9 +120,9 @@ if __name__ == "__main__":
     data_buffer = data_load(idx)
     while data_buffer.all() != 0.0:
 
-        left_predictor = dataPredictor(data_buffer)
-        print(left_predictor.prediction())
-        # right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
-        # print(right_predictor.prediction())
+        # left_predictor = dataPredictor(data_buffer)
+        # print(left_predictor.prediction())
+        right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
+        print(right_predictor.prediction())
         idx += 1
         data_buffer = data_load(idx)
