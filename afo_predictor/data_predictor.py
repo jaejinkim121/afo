@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from colorama import Fore, Style
 
 import torch
 import torch.nn as nn
@@ -28,7 +29,8 @@ from include.utils import *
 # output size = 1*6 (2D array)
 class dataPredictor:
     def __init__(self, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
-                 sensor_dir="Left", input_length=15, sensor_num=6):
+                 sensor_dir="Left", input_length=15, sensor_num=6,
+                 thres_heel_strike=1, thres_toe_off=1):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
@@ -37,6 +39,10 @@ class dataPredictor:
         self.input_length = input_length
         self.device = torch.device('cpu')
         self.set_ros_node()
+        self._predicted_data = None
+        self._is_swing = False
+        self._threshold_heel_strike = thres_heel_strike
+        self._threshold_toe_off = thres_toe_off
 
     def set_ros_node(self):
         if self.sensor_dir == "Left":
@@ -79,6 +85,8 @@ class dataPredictor:
         # 재진 추가
         msg = Float32MultiArray()
         msg.data = output[0]
+        self._predicted_data = output[0]
+        self.phase_detection()
         self.predicted_data_pub.publish(msg)
         #############################################################
         return output
@@ -110,6 +118,21 @@ class dataPredictor:
 
     def prediction_by_RNN(self):
         pass
+
+    def phase_detection(self):
+        if self._is_swing:
+            for data in self._predicted_data:
+                if data > self._threshold_heel_strike:
+                    self._is_swing = False
+                    print(f"{Fore.RED}HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEL STRIKE{Style.RESET_ALL}")
+                    break
+        else:
+            for data in self._predicted_data:
+                if data > self._threshold_toe_off:
+                    break
+            self._is_swing = True
+            print(f"{Fore.BLUE}TOOOOOOOOOOOOOOOOOOOOOOOOE OFF{Style.RESET_ALL")
+
 
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
