@@ -28,15 +28,32 @@ from include.utils import *
 # output size = 1*6 (2D array)
 class dataPredictor:
     def __init__(self, data_buffer, model_name="CNN", model_dir="./data/280/",
-                 sensor_dir="Left", input_length=15, sensor_num=6):
+                 sensor_dir="Left", sensor_size="280",
+                 input_length=15, sensor_num=6):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
+        self.sensor_size = sensor_size
         self.model_name = model_name
         self.model_path = model_dir
         self.input_length = input_length
         self.device = torch.device('cpu')
         self.set_ros_node()
+        self.model_load()
+
+    def model_load(self):
+        self.model = np.array([])
+        for num in np.arange(self.sensor_num):
+            if self.model_name == "CNN":
+                model = Conv1DNet()
+            else:
+                pass
+            model.load_state_dict(torch.load(
+                self.model_path + self.model_name + "_model/" +
+                self.sensor_size + self.sensor_dir + "_" +
+                str(num + 1) + ".pt",
+                map_location=self.device))
+            self.model = np.append(self.model, model)
 
     def set_ros_node(self):
         if self.sensor_dir == "Left":
@@ -89,19 +106,14 @@ class dataPredictor:
                             int(name[-4]) <= self.sensor_num]
         sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
                                   reverse=False)
-        model = Conv1DNet()
         prediction = np.array([])
 
         for name in sorted_name_list:
-            model.load_state_dict(torch.load(
-                self.model_path + "CNN_model/" + name,
-                map_location=self.device))
-            model = model.to(self.device)
-            model.eval()
 
+            model = self.model[int(name[-4]) - 1]
+            model.eval()
             with torch.no_grad():
                 x = self.transform(int(name[-4]))
-                x = x.to(self.device)
                 prediction = np.append(prediction, model(x))
 
         prediction = np.expand_dims(prediction, axis=0)
