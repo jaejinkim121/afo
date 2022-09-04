@@ -110,25 +110,26 @@ df_loss = pd.DataFrame(columns=["sensor_name", "LR", "loss"])
 # for LR in [100, 10, 1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.00001]:
 
 for n, name in enumerate(sensor_name_list):
-
+    
     LR_list = [0.0011,0.0011,0.011,0.0009,0.001,0.0012,
-               0.001,0.09,0.011,0.0011,0.011,0.001]
+                0.001,0.09,0.011,0.0011,0.011,0.001]
     lr = LR_list[n]
     
-    # for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
-        # if name.endswith("Right_4"):
-    print("START 1D CNN MODEL TRAINING!!! %s" % name)
-    print("LR: %f" % lr)
-    data_dir = calib_data_path + name + "/force_conversion_test.csv"
-    model_dir = model_path + name + ".pt"
-    final_test_loss = CNNtraining(data_dir, DEVICE,
-                                  model_dir=model_dir,
-                                  BATCH_SIZE=BATCH_SIZE, EPOCHS=EPOCHS,
-                                  LR=lr, N_WARMUP_STEPS=N_WARMUP_STEPS,
-                                  DECAY_RATE=DECAY_RATE,
-                                  INPUT_LENGTH=INPUT_LENGTH)
-    df_loss = df_loss.append({'sensor_name':name, 'LR':lr,
-                              'loss':final_test_loss},
-                    ignore_index=True)
-        # else:
-        #     pass
+    for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
+        if name.endswith("Right_1"):
+            lr = LR
+            print("START 1D CNN MODEL TRAINING!!! %s" % name)
+            print("LR: %f" % lr)
+            data_dir = calib_data_path + name + "/force_conversion_test.csv"
+            model_dir = model_path + name + ".pt"
+            final_test_loss = CNNtraining(data_dir, DEVICE,
+                                          model_dir=model_dir,
+                                          BATCH_SIZE=BATCH_SIZE, EPOCHS=EPOCHS,
+                                          LR=lr, N_WARMUP_STEPS=N_WARMUP_STEPS,
+                                          DECAY_RATE=DECAY_RATE,
+                                          INPUT_LENGTH=INPUT_LENGTH)
+            df_loss = df_loss.append({'sensor_name':name, 'LR':lr,
+                                      'loss':final_test_loss},
+                            ignore_index=True)
+        else:
+            pass
