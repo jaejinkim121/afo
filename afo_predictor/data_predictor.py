@@ -14,6 +14,7 @@ from tqdm import tqdm
 from colorama import Fore, Style
 import logging
 from time import localtime
+import time
 
 import torch
 import torch.nn as nn
@@ -46,17 +47,19 @@ class dataPredictor:
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
         self.start_time = start_time
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(sensor_dir+'sole')
         self.logger.setLevel(logging.INFO)
         formatter = logging.Formatter('%(message)s')
         tm = time.localtime()
-        file_handler = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_{}sole_{}{}.log'.format(sensor_dir, tm.hour, tm.minute))
+        file_handler = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_{}sole_{}{}.log'.format(sensor_dir, tm.tm_hour, tm.tm_min))
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
+        self.logger_imu = None
         if sensor_dir=="Left":
-            self.logger_imu = logging.getLogger()
+            self.logger_imu = logging.getLogger('imu')
             self.logger_imu.setLevel(logging.INFO)
-            file_handler_imu = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_imu_{}{}.log'.format(tm.hour, tm.minute))
+            file_handler_imu = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_imu_{}{}.log'.format(tm.tm_hour, tm.tm_min))
+            file_handler_imu.setFormatter(formatter)
             self.logger_imu.addHandler(file_handler_imu)
 
     def set_ros_node(self):
