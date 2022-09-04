@@ -33,15 +33,31 @@ def data_load(idx=0, path="./data/280/Test/test_data_left.csv"):
 # output size = 1*6 (2D array)
 class dataPredictor:
     def __init__(self, data_buffer, model_name="CNN", model_dir="./data/280/",
-                 sensor_dir="Left", input_length=15, sensor_num=6):
+                 sensor_dir="Left", sensor_size="280",
+                 input_length=15, sensor_num=6):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
+        self.sensor_size = sensor_size
         self.model_name = model_name
         self.model_path = model_dir
         self.input_length = input_length
-        self.device = torch.device('cuda') \
-            if torch.cuda.is_available else torch.device('cpu')
+        self.device = torch.device('cpu')
+        self.model_load()
+                
+    def model_load(self):
+        self.model = np.array([])
+        for num in np.arange(self.sensor_num):
+            if self.model_name == "CNN":
+                model = Conv1DNet()
+            else:
+                pass
+            model.load_state_dict(torch.load(
+                self.model_path + self.model_name + "_model/" +
+                self.sensor_size + self.sensor_dir + "_" +
+                str(num + 1) + ".pt",
+                map_location=self.device))
+            self.model = np.append(self.model, model)
 
     def transform(self, idx):
         if len(self.data) < self.input_length:
@@ -59,70 +75,37 @@ class dataPredictor:
         return x
 
     def prediction(self):
-        if self.model_name == "CNN":
-            output = self.prediction_by_CNN()
-        elif self.model_name == "RNN":
-            output = self.prediction_by_RNN()
-        else:
-            pass
-        #############################################################
-        #############################################################
-        # 재진 추가
-
-        #############################################################
-        return output
-
-    def prediction_by_CNN(self):
         _, sensor_name_list = folder_path_name(
-            self.model_path + "CNN_model/", "include", self.sensor_dir)
+            self.model_path + self.model_name +
+            "_model/", "include", self.sensor_dir)
         sensor_name_list = [name for name in sensor_name_list if \
                             int(name[-4]) <= self.sensor_num]
         sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
                                   reverse=False)
-        model = Conv1DNet()
-        prediction = np.array([])
+        output = np.array([])
 
         for name in sorted_name_list:
-            model.load_state_dict(torch.load(
-                self.model_path + "CNN_model/" + name,
-                map_location=self.device))
-            model = model.to(self.device)
-            model.eval()
 
+            model = self.model[int(name[-4]) - 1]
+            model.eval()
             with torch.no_grad():
                 x = self.transform(int(name[-4]))
-                x = x.to(self.device)
-                prediction = np.append(prediction,
-                                       model(x).detach().cpu().numpy())
+                output = np.append(output, model(x))
 
-        prediction = np.expand_dims(prediction, axis=0)
-        return prediction
+        output = np.expand_dims(output, axis=0)
 
-    def prediction_by_RNN(self):
-        pass
+        return output
+
 
 if __name__ == "__main__":
-    # sample data
-    # data_buffer = [
-    #     [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
-    #     [1.548, 2.028, 1.906, 1.792, 2.008, 1.982]
-    #     ]
 
-    # left_predictor = dataPredictor(data_buffer)
-    # right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
-
-    # while not rospy.is_shutdown():
-    #     left_predictor.prediction()
-    #     right_predictor.prediction()
-    #     rospy.spinonce()
-    #     r.sleep()
     idx = 0
     data_buffer = data_load(idx)
+    left_predictor = dataPredictor(data_buffer)
+    right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
     while data_buffer.all() != 0.0:
 
-        left_predictor = dataPredictor(data_buffer)
-        print(left_predictor.prediction())
-        # right_predictor = dataPredictor(data_buffer, sensor_dir="Right")
-        # print(right_predictor.prediction())
-        idx += 1
-        data_buffer = data_load(idx)
+        # print(left_predictor.prediction())
+        print(right_predictor.prediction())
+        # idx += 1
+        # data_buffer = data_load(idx)
