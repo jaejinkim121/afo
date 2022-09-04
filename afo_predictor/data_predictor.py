@@ -64,12 +64,12 @@ class dataPredictor:
 
     def set_ros_node(self):
         if self.sensor_dir == "Left":
-            self.data_imu_sub = rospy.Subscriber('/afo_sensor/imu', Float32MultiArray, self.callback_imu)
-            self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_left', Float32MultiArray, self.callback)
-            self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=100)
+            self.data_imu_sub = rospy.Subscriber('/afo_sensor/imu', Float32MultiArray, self.callback_imu, queue_size=1)
+            self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_left', Float32MultiArray, self.callback, queue_size=1)
+            self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=10)
         else:
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback)
-            self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=100)
+            self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=10)
 
     def callback(self, msg):
         data = msg.data
