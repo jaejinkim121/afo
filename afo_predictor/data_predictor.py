@@ -42,6 +42,7 @@ class dataPredictor:
         self.model_path = model_dir
         self.input_length = input_length
         self.device = torch.device('cpu')
+        self.model_load()
         self.set_ros_node()
         self._predicted_data = None
         self._is_swing = False
@@ -62,7 +63,6 @@ class dataPredictor:
             file_handler_imu = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_imu_{}{}.log'.format(tm.tm_hour, tm.tm_min))
             file_handler_imu.setFormatter(formatter)
             self.logger_imu.addHandler(file_handler_imu)
-        self.model_load()
 
     def model_load(self):
         self.model = np.array([])
@@ -84,7 +84,7 @@ class dataPredictor:
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_left', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=10)
         else:
-            self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback)
+            self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=10)
 
     def callback(self, msg):
@@ -163,7 +163,7 @@ class dataPredictor:
 
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
-    r = rospy.Rate(200)
+    r = rospy.Rate(100)
 
     threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
     threshold_left_to = float(rospy.get_param('/afo_predictor/lto'))
@@ -184,4 +184,4 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         rospy.spin()
         r.sleep()
-    
+   
