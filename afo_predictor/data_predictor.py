@@ -116,12 +116,24 @@ class dataPredictor:
         return x
 
     def prediction(self):
-        if self.model_name == "CNN":
-            output = self.prediction_by_CNN()
-        elif self.model_name == "RNN":
-            output = self.prediction_by_RNN()
-        else:
-            pass
+        _, sensor_name_list = folder_path_name(
+            self.model_path + self.model_name +
+            "_model/", "include", self.sensor_dir)
+        sensor_name_list = [name for name in sensor_name_list if \
+                            int(name[-4]) <= self.sensor_num]
+        sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
+                                  reverse=False)
+        output = np.array([])
+
+        for name in sorted_name_list:
+
+            model = self.model[int(name[-4]) - 1]
+            model.eval()
+            with torch.no_grad():
+                x = self.transform(int(name[-4]))
+                output = np.append(output, model(x))
+
+        output = np.expand_dims(output, axis=0)
         #############################################################
         #############################################################
         # 재진 추가
@@ -133,28 +145,6 @@ class dataPredictor:
         #############################################################
         return output
 
-    def prediction_by_CNN(self):
-        _, sensor_name_list = folder_path_name(
-            self.model_path + "CNN_model/", "include", self.sensor_dir)
-        sensor_name_list = [name for name in sensor_name_list if \
-                            int(name[-4]) <= self.sensor_num]
-        sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
-                                  reverse=False)
-        prediction = np.array([])
-
-        for name in sorted_name_list:
-
-            model = self.model[int(name[-4]) - 1]
-            model.eval()
-            with torch.no_grad():
-                x = self.transform(int(name[-4]))
-                prediction = np.append(prediction, model(x))
-
-        prediction = np.expand_dims(prediction, axis=0)
-        return prediction
-
-    def prediction_by_RNN(self):
-        pass
 
     def phase_detection(self):
         if self._is_swing:
