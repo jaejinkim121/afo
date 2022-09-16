@@ -87,8 +87,8 @@ class dataPredictor:
         else:
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=10)
-        self.sync_sub = rospy.Subscriber('/afo_sync/sync', Bool, self.callback_sync, queue_size=1)
-        self.sync_pub = rospy.Publisher('/afo_predictor/sync', Bool, 100);
+            self.sync_sub = rospy.Subscriber('/afo_sync/sync', Bool, self.callback_sync, queue_size=1)
+            self.sync_pub = rospy.Publisher('/afo_predictor/sync_pred', Bool, queue_size=10);
 
     def callback(self, msg):
         data = msg.data
@@ -102,7 +102,9 @@ class dataPredictor:
         self.current_sync = msg.data
         reel = time.time() - self.start_time
         self.logger.info('{}, {}'.format(reel, self.current_sync))
-        self.sync_pub.publish(msg)
+        msg_new = Bool()
+        msg_new.data = self.current_sync
+        self.sync_pub.publish(msg_new)
 
     def callback_imu(self, msg):
         data = msg.data
