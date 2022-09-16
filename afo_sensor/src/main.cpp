@@ -63,12 +63,13 @@ int main(int argc, char** argv){
     std_msgs::Float32MultiArray msg_imu;
     std_msgs::Float32MultiArray msg_sole_left;
     std_msgs::Float32MultiArray msg_sole_right;
+    std_msgs::Bool msg_sync;
+
 
     while(ros::ok()){
         msg_imu.data.clear();
         msg_sole_left.data.clear();
         msg_sole_right.data.clear();
-
         for ( int i = 0; i<63 ; i++){
             msg_imu.data.push_back(serialIMU->imuData[i]);
         }

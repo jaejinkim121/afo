@@ -13,6 +13,9 @@
 #include <thread>
 #include <ctime>
 #include <sstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <errno.h>
 
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"

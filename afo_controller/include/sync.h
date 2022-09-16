@@ -1,8 +1,9 @@
 #pragma once
-
+#define LIBSSH_STATIC 1
 #include <iostream>
 #include <stdio.h>
 #include <libssh/libssh.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <chrono>
 #include <string.h>
