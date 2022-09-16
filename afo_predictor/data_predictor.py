@@ -22,7 +22,7 @@ import torch.nn.functional as F
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader, random_split
 import rospy
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32MultiArray, Bool
 
 from include.CNNmodel import *
 from include.utils import *
@@ -46,6 +46,7 @@ class dataPredictor:
         self.set_ros_node()
         self._predicted_data = None
         self._is_swing = False
+        self.current_sync = False
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
         self.start_time = start_time
@@ -86,19 +87,27 @@ class dataPredictor:
         else:
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=10)
+        self.sync_sub = rospy.Subscriber('/afo_sync/sync', Bool, self.callback_sync, queue_size=1)
+        self.sync_pub = rospy.Publisher('/afo_predictor/sync', Bool, 100);
 
     def callback(self, msg):
         data = msg.data
         self.data = np.vstack([self.data, data])[-self.input_length:]
         reel = time.time() - self.start_time
-        self.logger.info('{}, {}, {}'.format(reel, self._is_swing, data))
+        self.logger.info('{}, {}, {}, {}'.format(reel, self.current_sync, self._is_swing, data))
         self.prediction()
         return
     
+    def callback_sync(self, msg):
+        self.current_sync = msg.data
+        reel = time.time() - self.start_time
+        self.logger.info('{}, {}'.format(reel, self.current_sync))
+        self.sync_pub.publish(msg)
+
     def callback_imu(self, msg):
         data = msg.data
         reel = time.time() - self.start_time
-        self.logger_imu.info('{}, {}'.format(reel, data))
+        self.logger_imu.info('{}, {}, {}, {}'.format(reel, self.current_sync, self._is_swing, data))
 
     def transform(self, idx):
         if len(self.data) < self.input_length:
