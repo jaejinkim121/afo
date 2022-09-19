@@ -54,14 +54,15 @@ class dataPredictor:
         self.logger.setLevel(logging.INFO)
         formatter = logging.Formatter('%(message)s')
         tm = time.localtime()
-        file_handler = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_{}sole_{}{}.log'.format(sensor_dir, tm.tm_hour, tm.tm_min))
+        logging_path = '/home/srbl/catkin_ws/src/afo/log/' + logging_prefix
+        file_handler = logging.FileHandler(logging_path + '_{}sole_{}{}.log'.format(sensor_dir, str(tm.tm_hour).zfill(2), str(tm.tm_min).zfill(2)))
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
         self.logger_imu = None
         if sensor_dir=="Left":
             self.logger_imu = logging.getLogger('imu')
             self.logger_imu.setLevel(logging.INFO)
-            file_handler_imu = logging.FileHandler('/home/srbl/catkin_ws/src/afo/log/220902_detection_test_imu_{}{}.log'.format(tm.tm_hour, tm.tm_min))
+            file_handler_imu = logging.FileHandler(logging_path+'_imu_{}{}.log'.format(str(tm.tm_hour).zfill(2), str(tm.tm_min).zfill(2)))
             file_handler_imu.setFormatter(formatter)
             self.logger_imu.addHandler(file_handler_imu)
 
@@ -175,12 +176,11 @@ class dataPredictor:
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
     r = rospy.Rate(100)
-    test_label = sys.argv[1]
     threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
     threshold_left_to = float(rospy.get_param('/afo_predictor/lto'))
     threshold_right_hs = float(rospy.get_param('/afo_predictor/rhs'))
     threshold_right_to = float(rospy.get_param('/afo_predictor/rto'))
-
+    test_label = rospy.get_param('/afo_predictor/tl')
     # sample data
     data_buffer = [
         [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
