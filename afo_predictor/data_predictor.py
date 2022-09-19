@@ -175,7 +175,7 @@ class dataPredictor:
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
     r = rospy.Rate(100)
-
+    test_label = sys.argv[1]
     threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
     threshold_left_to = float(rospy.get_param('/afo_predictor/lto'))
     threshold_right_hs = float(rospy.get_param('/afo_predictor/rhs'))
@@ -189,8 +189,8 @@ if __name__ == "__main__":
     
     start_time = time.time()
 
-    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to)
-    right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to)
+    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to, logging_prefix=test_label)
+    right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to, logging_prefix=test_label)
     
     while not rospy.is_shutdown():
         rospy.spin()

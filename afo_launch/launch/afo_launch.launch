@@ -10,6 +10,7 @@
 		<param name="lto" value="$(arg lto)" />
 		<param name="rhs" value="$(arg rhs)" />
 		<param name="rto" value="$(arg rto)" />
+		<param name="tl" value="$(arg tl)" />
 	</node>
 	<node name="afo_arduino" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" output="screen">
 	</node>
