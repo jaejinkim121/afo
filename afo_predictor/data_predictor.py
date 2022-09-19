@@ -33,7 +33,7 @@ from include.utils import *
 class dataPredictor:
     def __init__(self, start_time, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
                  sensor_dir="Left", input_length=15, sensor_num=6, sensor_size="280",
-                 thres_heel_strike=1, thres_toe_off=1):
+                 thres_heel_strike=1, thres_toe_off=1, logging_prefix=""):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
