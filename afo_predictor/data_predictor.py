@@ -49,20 +49,27 @@ class dataPredictor:
         self.current_sync = False
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
+        self._heel_strike_detected = False
+        self._toe_off_detected = False
+        self._hs_num = 0
+        self._to_num = 0
+        self._hs_detected = False
+        self._to_detected = False
         self.start_time = start_time
         self.logger = logging.getLogger(sensor_dir+'sole')
         self.logger.setLevel(logging.INFO)
         formatter = logging.Formatter('%(message)s')
         tm = time.localtime()
-        logging_path = '/home/srbl/catkin_ws/src/afo/log/' + logging_prefix
-        file_handler = logging.FileHandler(logging_path + '_{}sole_{}{}.log'.format(sensor_dir, str(tm.tm_hour).zfill(2), str(tm.tm_min).zfill(2)))
+        logging_path = '/home/srbl/catkin_ws/src/afo/log/' + logging_prefix + '_' + time.strftime('%m%d%H%M', tm)
+        file_handler = logging.FileHandler(logging_path + '_{}sole.log'.format(sensor_dir))
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
         self.logger_imu = None
+        self.zero = False
         if sensor_dir=="Left":
             self.logger_imu = logging.getLogger('imu')
             self.logger_imu.setLevel(logging.INFO)
-            file_handler_imu = logging.FileHandler(logging_path+'_imu_{}{}.log'.format(str(tm.tm_hour).zfill(2), str(tm.tm_min).zfill(2)))
+            file_handler_imu = logging.FileHandler(logging_path+'_imu.log')
             file_handler_imu.setFormatter(formatter)
             self.logger_imu.addHandler(file_handler_imu)
 
@@ -85,6 +92,7 @@ class dataPredictor:
             self.data_imu_sub = rospy.Subscriber('/afo_sensor/imu', Float32MultiArray, self.callback_imu, queue_size=1)
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_left', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=10)
+            self.zero_sub = rospy.Subscriber('/afo_sync/zero', Bool, self.callback_zero, queue_size=1)
         else:
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=10)
@@ -107,10 +115,13 @@ class dataPredictor:
         msg_new.data = self.current_sync
         self.sync_pub.publish(msg_new)
 
+    def callback_zero(self, msg):
+        self.zero = msg.data
+        
     def callback_imu(self, msg):
         data = msg.data
         reel = time.time() - self.start_time
-        self.logger_imu.info('{}, {}, {}, {}'.format(reel, self.current_sync, self._is_swing, data))
+        self.logger_imu.info('{}, {}, {}, {}, {}'.format(reel, self.zero, self.current_sync, self._is_swing, data))
 
     def transform(self, idx):
         if len(self.data) < self.input_length:
@@ -157,21 +168,32 @@ class dataPredictor:
         #############################################################
         return output
 
-
+    def print_info(self):
+        print('*     ' + str(self._heel_strike_detected) + ', num= ' + str(self._hs_num) + '  *** ' + str(self._toe_off_detected) + ', num= ' + str(self._to_num))
+        self._heel_strike_detected = False
+        self._toe_off_detected = False
     def phase_detection(self):
+        print_arr = ["--------", "--------"]
         if self._is_swing:
             for data in self._predicted_data:
                 if data > self._threshold_heel_strike:
                     self._is_swing = False
-                    print(self.sensor_dir + f"  {Fore.RED}HEEEEEEEEEL STRIKE{Style.RESET_ALL}")
+                    self._hs_num += 1
+                    self._hs_detected = True
+                    print_arr[0] = "detected"
                     break
         else:
             for data in self._predicted_data:
                 if data > self._threshold_toe_off:
                     return
             self._is_swing = True
-            print(self.sensor_dir + f"  {Fore.BLUE}TOOOOOE OFF{Style.RESET_ALL}")
-
+            self._to_num += 1
+            self._to_detected = True
+            print_arr[1] = "detected"
+        if self._hs_detected or self._to_detected:
+            print(self.sensor_dir + f"  {Fore.RED}HS{Style.RESET_ALL} " + print_arr[0] + " count: " + str(self._hs_num) + f"   {Fore.GREEN}TO{Style.RESET_ALL}: " + print_arr[1] + " count: " + str(self._to_num))
+            self._hs_detected = False
+            self._to_detected = False
 
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
