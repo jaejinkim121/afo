@@ -10,7 +10,7 @@ void experimentMarkingCallback(const std_msgs::String::ConstPtr& msg){
 int main(int argc, char** argv){
     ros::init(argc, argv, "afo_sensor");
 	ros::NodeHandle n;
-    ros::Rate loop_rate(100);
+    ros::Rate loop_rate(1000);
     ros::Subscriber afo_gui_sync_sub = n.subscribe("/afo_gui/sync", 100, syncCallback);
     ros::Subscriber afo_gui_experimentMarking_sub = n.subscribe("/afo_gui/experimentMarking", 100, experimentMarkingCallback);
     ros::Publisher afo_soleSensor_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_left", 100);
@@ -31,7 +31,7 @@ int main(int argc, char** argv){
     // GUI 노드로 넘어가야할 가능성이 있음.
     ofstream outFileSoleRight, outFileSoleLeft, outIMU;
 
-	outFileSoleRight.open("../log/data/soleSensor_right_" + now_str + test_suffix + ".csv");
+	outFileSoleRight.open("/home/srbl/catkin_ws/src/afo/log/raw_data/soleSensor_right_" + now_str + test_suffix + ".csv");
 	outFileSoleLeft.open("../log/data/soleSensor_left_" + now_str + test_suffix + ".csv");
 	outIMU.open("../log/data/IMU_" + now_str + test_suffix + ".csv");
 

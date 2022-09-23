@@ -33,7 +33,7 @@ from include.utils import *
 class dataPredictor:
     def __init__(self, start_time, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
                  sensor_dir="Left", input_length=15, sensor_num=6, sensor_size="280",
-                 thres_heel_strike=1, thres_toe_off=1, logging_prefix=""):
+                 thres_heel_strike=1, thres_toe_off=1, logging_prefix="", is_calibration=False):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
@@ -41,31 +41,40 @@ class dataPredictor:
         self.model_name = model_name
         self.model_path = model_dir
         self.input_length = input_length
+        self.is_calibration = is_calibration
+        self._threshold_heel_strike = thres_heel_strike
+        self._threshold_toe_off = thres_toe_off
+
         self.device = torch.device('cpu')
         self.model_load()
         self.set_ros_node()
+
         self._predicted_data = None
         self._is_swing = False
         self.current_sync = False
-        self._threshold_heel_strike = thres_heel_strike
-        self._threshold_toe_off = thres_toe_off
+
         self._heel_strike_detected = False
         self._toe_off_detected = False
         self._hs_num = 0
         self._to_num = 0
         self._hs_detected = False
         self._to_detected = False
+
         self.start_time = start_time
+
         self.logger = logging.getLogger(sensor_dir+'sole')
         self.logger.setLevel(logging.INFO)
+
         formatter = logging.Formatter('%(message)s')
         tm = time.localtime()
         logging_path = '/home/srbl/catkin_ws/src/afo/log/' + logging_prefix + '_' + time.strftime('%m%d%H%M', tm)
         file_handler = logging.FileHandler(logging_path + '_{}sole.log'.format(sensor_dir))
         file_handler.setFormatter(formatter)
+
         self.logger.addHandler(file_handler)
         self.logger_imu = None
         self.zero = False
+
         if sensor_dir=="Left":
             self.logger_imu = logging.getLogger('imu')
             self.logger_imu.setLevel(logging.INFO)
@@ -104,7 +113,8 @@ class dataPredictor:
         self.data = np.vstack([self.data, data])[-self.input_length:]
         reel = time.time() - self.start_time
         self.logger.info('{}, {}, {}, {}'.format(reel, self.current_sync, self._is_swing, data))
-        self.prediction()
+        if not self.is_calibration:
+            self.prediction()
         return
     
     def callback_sync(self, msg):
@@ -196,12 +206,13 @@ class dataPredictor:
 
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
-    r = rospy.Rate(100)
+    r = rospy.Rate(1000)
     threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
     threshold_left_to = float(rospy.get_param('/afo_predictor/lto'))
     threshold_right_hs = float(rospy.get_param('/afo_predictor/rhs'))
     threshold_right_to = float(rospy.get_param('/afo_predictor/rto'))
     test_label = rospy.get_param('/afo_predictor/tl')
+    is_calibration = rospy.get_param('/afo_predictor/ic')
     # sample data
     data_buffer = [
         [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
@@ -209,9 +220,10 @@ if __name__ == "__main__":
         ]
     
     start_time = time.time()
+    is_calibration = is_calibration == 1
 
-    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to, logging_prefix=test_label)
-    right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to, logging_prefix=test_label)
+    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to, logging_prefix=test_label, is_calibration=is_calibration)
+    right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to, logging_prefix=test_label, is_calibration=is_calibration)
     
     while not rospy.is_shutdown():
         rospy.spin()

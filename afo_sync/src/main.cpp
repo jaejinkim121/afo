@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char** argv){
     ros::init(argc, argv, "afo_sync");
 	ros::NodeHandle n;
-    ros::Rate loop_rate(100);
+    ros::Rate loop_rate(1000);
     ros::Publisher afo_sync_pub = n.advertise<std_msgs::Bool>("/afo_sync/sync", 100);
     ros::Publisher afo_zero_pub = n.advertise<std_msgs::Bool>("/afo_sync/zero", 100);
 
