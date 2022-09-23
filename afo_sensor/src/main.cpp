@@ -10,7 +10,9 @@ void experimentMarkingCallback(const std_msgs::String::ConstPtr& msg){
 int main(int argc, char** argv){
     ros::init(argc, argv, "afo_sensor");
 	ros::NodeHandle n;
-    ros::Rate loop_rate(1000);
+	int rr;
+    n.getParam("/rr", rr);
+    ros::Rate loop_rate(rr);
     ros::Subscriber afo_gui_sync_sub = n.subscribe("/afo_gui/sync", 100, syncCallback);
     ros::Subscriber afo_gui_experimentMarking_sub = n.subscribe("/afo_gui/experimentMarking", 100, experimentMarkingCallback);
     ros::Publisher afo_soleSensor_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_left", 100);

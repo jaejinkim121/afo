@@ -45,10 +45,6 @@ class dataPredictor:
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
 
-        self.device = torch.device('cpu')
-        self.model_load()
-        self.set_ros_node()
-
         self._predicted_data = None
         self._is_swing = False
         self.current_sync = False
@@ -81,6 +77,10 @@ class dataPredictor:
             file_handler_imu = logging.FileHandler(logging_path+'_imu.log')
             file_handler_imu.setFormatter(formatter)
             self.logger_imu.addHandler(file_handler_imu)
+        
+        self.device = torch.device('cpu')
+        self.model_load()
+        self.set_ros_node()
 
     def model_load(self):
         self.model = np.array([])
@@ -206,13 +206,17 @@ class dataPredictor:
 
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
-    r = rospy.Rate(1000)
     threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
     threshold_left_to = float(rospy.get_param('/afo_predictor/lto'))
     threshold_right_hs = float(rospy.get_param('/afo_predictor/rhs'))
     threshold_right_to = float(rospy.get_param('/afo_predictor/rto'))
     test_label = rospy.get_param('/afo_predictor/tl')
     is_calibration = rospy.get_param('/afo_predictor/ic')
+    ros_rate = rospy.get_param('/rr')
+
+    r = rospy.Rate(ros_rate)
+
+
     # sample data
     data_buffer = [
         [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
