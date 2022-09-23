@@ -110,7 +110,6 @@ class dataPredictor:
     def callback_sync(self, msg):
         self.current_sync = msg.data
         reel = time.time() - self.start_time
-        self.logger.info('{}, {}'.format(reel, self.current_sync))
         msg_new = Bool()
         msg_new.data = self.current_sync
         self.sync_pub.publish(msg_new)
