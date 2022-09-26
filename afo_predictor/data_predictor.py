@@ -33,7 +33,7 @@ from include.utils import *
 class dataPredictor:
     def __init__(self, start_time, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
                  sensor_dir="Left", input_length=15, sensor_num=6, sensor_size="280",
-                 thres_heel_strike=1, thres_toe_off=1, logging_prefix="", is_calibration=False):
+                 thres_heel_strike=1, thres_toe_off=1, logging_prefix="", is_calibration=False, right_object=None):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
@@ -44,6 +44,7 @@ class dataPredictor:
         self.is_calibration = is_calibration
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
+        self._right_one = right_object
 
         self._predicted_data = None
         self._is_swing = False
@@ -102,17 +103,22 @@ class dataPredictor:
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_left', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_left_predicted', Float32MultiArray, queue_size=10)
             self.zero_sub = rospy.Subscriber('/afo_sync/zero', Bool, self.callback_zero, queue_size=1)
+            self.logger.info('{}, {}, {}, {}'.format('swing_phase', 'Sync', 'time', 'data'))
         else:
             self.data_sub = rospy.Subscriber('/afo_sensor/soleSensor_right', Float32MultiArray, self.callback, queue_size=1)
             self.predicted_data_pub = rospy.Publisher('/afo_predictor/soleSensor_right_predicted', Float32MultiArray, queue_size=10)
             self.sync_sub = rospy.Subscriber('/afo_sync/sync', Bool, self.callback_sync, queue_size=1)
-            self.sync_pub = rospy.Publisher('/afo_predictor/sync_pred', Bool, queue_size=10);
+            self.sync_pub = rospy.Publisher('/afo_predictor/sync_pred', Bool, queue_size=10)
+            self.logger.info('{}, {}, {}, {}'.format('swing_phase', 'Sync', 'time', 'data'))
 
     def callback(self, msg):
         data = msg.data
         self.data = np.vstack([self.data, data])[-self.input_length:]
         reel = time.time() - self.start_time
-        self.logger.info('{}, {}, {}, {}'.format(reel, self.current_sync, self._is_swing, data))
+        if self.sensor_dir == "Left":
+            self.logger.info('{}, {}, {}, {} {} {} {} {} {}'.format(int(self._is_swing), int(self._right_one.current_sync), reel, data[0], data[1], data[2], data[3], data[4], data[5]))
+        else:
+            self.logger.info('{}, {}, {}, {} {} {} {} {} {}'.format(int(self._is_swing), int(self.current_sync), reel, data[0], data[1], data[2], data[3], data[4], data[5]))
         if not self.is_calibration:
             self.prediction()
         return
@@ -130,7 +136,7 @@ class dataPredictor:
     def callback_imu(self, msg):
         data = msg.data
         reel = time.time() - self.start_time
-        self.logger_imu.info('{}, {}, {}, {}, {}'.format(reel, self.zero, self.current_sync, self._is_swing, data))
+        self.logger_imu.info('{}, {}, {}, {}, {}'.format(int(self.zero), int(self.current_sync), int(self._is_swing), reel, data))
 
     def transform(self, idx):
         if len(self.data) < self.input_length:
@@ -226,8 +232,8 @@ if __name__ == "__main__":
     start_time = time.time()
     is_calibration = is_calibration == 1
 
-    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to, logging_prefix=test_label, is_calibration=is_calibration)
     right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to, logging_prefix=test_label, is_calibration=is_calibration)
+    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to, logging_prefix=test_label, is_calibration=is_calibration, right_object=right_predictor)
     
     while not rospy.is_shutdown():
         rospy.spin()
