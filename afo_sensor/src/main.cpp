@@ -13,13 +13,12 @@ int main(int argc, char** argv){
 	int rr;
     n.getParam("/rr", rr);
     ros::Rate loop_rate(rr);
-    ros::Subscriber afo_gui_sync_sub = n.subscribe("/afo_gui/sync", 100, syncCallback);
-    ros::Subscriber afo_gui_experimentMarking_sub = n.subscribe("/afo_gui/experimentMarking", 100, experimentMarkingCallback);
+    // ros::Subscriber afo_gui_sync_sub = n.subscribe("/afo_gui/sync", 100, syncCallback);
+    // ros::Subscriber afo_gui_experimentMarking_sub = n.subscribe("/afo_gui/experimentMarking", 100, experimentMarkingCallback);
     ros::Publisher afo_soleSensor_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_left", 100);
     ros::Publisher afo_soleSensor_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_right", 100);
     ros::Publisher afo_imu_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/imu", 100);
 
-    
     std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
 	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
@@ -55,7 +54,7 @@ int main(int argc, char** argv){
 	serialSoleRight->serialWrite("[s]");
     cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
-    usleep(500000);
+    usleep(200000);
 
     chrono::system_clock::time_point start = chrono::system_clock::now();
 
