@@ -24,14 +24,14 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import rospy
 from std_msgs.msg import Float32MultiArray, Bool
 
-from include.CNNmodel import *
+from include.model import *
 from include.utils import *
 
 # input size = required length*6
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
 class dataPredictor:
-    def __init__(self, start_time, data_buffer, model_name="CNN", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/280/",
+    def __init__(self, start_time, data_buffer, model_name="LSTM", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/CHAR_1010_280/",
                  sensor_dir="Left", input_length=15, sensor_num=6, sensor_size="280",
                  thres_heel_strike=1, thres_toe_off=1, logging_prefix="", is_calibration=False, right_object=None):
         self.data = np.array(data_buffer)
@@ -88,6 +88,8 @@ class dataPredictor:
         for num in np.arange(self.sensor_num):
             if self.model_name == "CNN":
                 model = Conv1DNet()
+            elif self.model_name == "LSTM":
+                model = LSTM()
             else:
                 pass
             model.load_state_dict(torch.load(
@@ -138,7 +140,7 @@ class dataPredictor:
         reel = time.time() - self.start_time
         self.logger_imu.info('{}, {}, {}, {}, {}'.format(int(self.zero), int(self.current_sync), int(self._is_swing), reel, data))
 
-    def transform(self, idx):
+    def CNNtransform(self, idx):
         if len(self.data) < self.input_length:
             # Buffer에 데이터가 없어서 required length만큼 읽어오지 못했을 경우
             # 0열을 부족한만큼 복사
@@ -150,6 +152,21 @@ class dataPredictor:
                       (idx - 1)]
         x = torch.from_numpy(x)
         x = x.unsqueeze(0)
+        x = torch.stack([x], dim=0).float()
+        return x
+
+    def LSTMtransform(self, idx):
+        if len(self.data) < self.input_length:
+            # Buffer에 데이터가 없어서 required length만큼 읽어오지 못했을 경우
+            # 0열을 부족한만큼 복사
+            extra_row = np.repeat([self.data[0]], repeats=
+                                  self.input_length - len(self.data), axis=0)
+            self.data = np.concatenate((extra_row, self.data), axis=0)
+
+        x = self.data[(len(self.data) - self.input_length) : len(self.data),
+                      (idx - 1)]
+        x = torch.from_numpy(x)
+        x = x.unsqueeze(1)
         x = torch.stack([x], dim=0).float()
         return x
 
@@ -168,7 +185,12 @@ class dataPredictor:
             model = self.model[int(name[-4]) - 1]
             model.eval()
             with torch.no_grad():
-                x = self.transform(int(name[-4]))
+                if self.model_name == "CNN":
+                    x = self.CNNtransform(int(name[-4]))
+                elif self.model_name == "LSTM":
+                    x = self.LSTMtransform(int(name[-4]))
+                else:
+                    pass
                 output = np.append(output, model(x))
 
         output = np.expand_dims(output, axis=0)
