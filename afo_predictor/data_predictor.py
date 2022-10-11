@@ -31,9 +31,12 @@ from include.utils import *
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
 class dataPredictor:
-    def __init__(self, start_time, data_buffer, model_name="LSTM", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/CHAR_1010_280/",
-                 sensor_dir="Left", input_length=15, sensor_num=6, sensor_size="280",
-                 thres_heel_strike=1, thres_toe_off=1, logging_prefix="", is_calibration=False, right_object=None):
+    def __init__(self, start_time, data_buffer, model_name="LSTM",
+                 model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/CHAR_1010_280/",
+                 sensor_dir="Left", input_length=15, sensor_num=6,
+                 sensor_size="280",
+                 thres_heel_strike=1.0, thres_toe_off=1.0,
+                 logging_prefix="", is_calibration=False, right_object=None):
         self.data = np.array(data_buffer)
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
@@ -72,7 +75,7 @@ class dataPredictor:
         self.logger_imu = None
         self.zero = False
 
-        if sensor_dir=="Left":
+        if sensor_dir == "Left":
             self.logger_imu = logging.getLogger('imu')
             self.logger_imu.setLevel(logging.INFO)
             file_handler_imu = logging.FileHandler(logging_path+'_imu.log')
@@ -209,6 +212,7 @@ class dataPredictor:
         print('*     ' + str(self._heel_strike_detected) + ', num= ' + str(self._hs_num) + '  *** ' + str(self._toe_off_detected) + ', num= ' + str(self._to_num))
         self._heel_strike_detected = False
         self._toe_off_detected = False
+
     def phase_detection(self):
         print_arr = ["--------", "--------"]
         if self._is_swing:
@@ -232,6 +236,7 @@ class dataPredictor:
             self._hs_detected = False
             self._to_detected = False
 
+
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
     threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
@@ -244,7 +249,6 @@ if __name__ == "__main__":
 
     r = rospy.Rate(ros_rate)
 
-
     # sample data
     data_buffer = [
         [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
@@ -252,12 +256,20 @@ if __name__ == "__main__":
         ]
     
     start_time = time.time()
-    is_calibration = is_calibration == 1
+    is_calibration = (is_calibration == 1)
 
-    right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to, logging_prefix=test_label, is_calibration=is_calibration)
-    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to, logging_prefix=test_label, is_calibration=is_calibration, right_object=right_predictor)
+    right_predictor = dataPredictor(
+        start_time, data_buffer,
+        sensor_dir="Right",
+        thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to,
+        logging_prefix=test_label, is_calibration=is_calibration)
+
+    left_predictor = dataPredictor(
+        start_time, data_buffer,
+        thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to,
+        logging_prefix=test_label, is_calibration=is_calibration,
+        right_object=right_predictor)
     
     while not rospy.is_shutdown():
         rospy.spin()
         r.sleep()
-   
