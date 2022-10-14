@@ -8,19 +8,12 @@ Created on Sun Aug 21 01:38:40 2022
 import os
 import sys
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from tqdm import tqdm
+
 from colorama import Fore, Style
 import logging
-from time import localtime
 import time
+from enum import Enum
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader, random_split
 import rospy
 from std_msgs.msg import Float32MultiArray, Bool
 
@@ -30,11 +23,27 @@ from include.utils import *
 # input size = required length*6
 # required length만큼 읽어온다고 가정
 # output size = 1*6 (2D array)
-class dataPredictor:
-    def __init__(self, start_time, data_buffer, model_name="LSTM", model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/CHAR_1010_280/",
-                 sensor_dir="Left", input_length=15, sensor_num=6, sensor_size="280",
-                 thres_heel_strike=1, thres_toe_off=1, logging_prefix="", is_calibration=False, right_object=None):
+
+
+class GaitPhase(Enum):
+    LOADING_RESPONSE = 0
+    MID_STANCE = 1
+    TERMINAL_STANCE = 2
+    PRE_SWING = 3
+    INITIAL_SWING = 4
+    MID_SWING = 5
+    TERMINAL_SWING = 6
+
+
+class DataPredictor:
+    def __init__(self, start_time, data_buffer, model_name="LSTM",
+                 model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/CHAR_1010_280/",
+                 sensor_dir="Left", input_length=15, sensor_num=6,
+                 sensor_size="280",
+                 thres_heel_strike=1.0, thres_toe_off=1.0,
+                 logging_prefix="", is_calibration=False, right_object=None):
         self.data = np.array(data_buffer)
+        self.data_imu = np.zeros((7, 9))
         self.sensor_num = sensor_num
         self.sensor_dir = sensor_dir
         self.sensor_size = sensor_size
@@ -50,6 +59,7 @@ class dataPredictor:
         self._is_swing = False
         self.current_sync = False
 
+        self._current_phase = GaitPhase.LOADING_RESPONSE
         self._heel_strike_detected = False
         self._toe_off_detected = False
         self._hs_num = 0
@@ -62,6 +72,12 @@ class dataPredictor:
         self.logger = logging.getLogger(sensor_dir+'sole')
         self.logger.setLevel(logging.INFO)
 
+        self._is_heel_on = False
+        self._is_heel_off = False
+        self._is_foot_off = False
+        self._is_feet_adjacent = False
+        self._is_tibia_vertical = False
+
         formatter = logging.Formatter('%(message)s')
         tm = time.localtime()
         logging_path = '/home/srbl/catkin_ws/src/afo/log/' + logging_prefix + '_' + time.strftime('%m%d%H%M', tm)
@@ -72,7 +88,7 @@ class dataPredictor:
         self.logger_imu = None
         self.zero = False
 
-        if sensor_dir=="Left":
+        if sensor_dir == "Left":
             self.logger_imu = logging.getLogger('imu')
             self.logger_imu.setLevel(logging.INFO)
             file_handler_imu = logging.FileHandler(logging_path+'_imu.log')
@@ -137,6 +153,9 @@ class dataPredictor:
         
     def callback_imu(self, msg):
         data = msg.data
+        for i in range(7):
+            for j in range(9):
+                self.data_imu[i][j] = data[i*9 + j]
         reel = time.time() - self.start_time
         self.logger_imu.info('{}, {}, {}, {}, {}'.format(int(self.zero), int(self.current_sync), int(self._is_swing), reel, data))
 
@@ -209,6 +228,7 @@ class dataPredictor:
         print('*     ' + str(self._heel_strike_detected) + ', num= ' + str(self._hs_num) + '  *** ' + str(self._toe_off_detected) + ', num= ' + str(self._to_num))
         self._heel_strike_detected = False
         self._toe_off_detected = False
+
     def phase_detection(self):
         print_arr = ["--------", "--------"]
         if self._is_swing:
@@ -232,6 +252,33 @@ class dataPredictor:
             self._hs_detected = False
             self._to_detected = False
 
+    """ 
+    Detect 5 gait events - all but opposite foot on/off 
+    1. Initial Contact
+    2. Heel-off
+    3. Foot-off
+    4. Feet Adjacent
+    5. Tibia Vertical
+    """
+    def phase_detection_seven(self):
+        is_heel_on = False
+        is_heel_off = True
+        is_foot_off = True
+        is_feet_adjacent = False
+        is_tibia_vertical = False
+
+        for data in self._predicted_data:
+            if data > self._threshold_heel_strike:
+                is_heel_on = True
+        for data in self._predicted_data:
+            if data > self._threshold_toe_off:
+                is_foot_off = False
+        if self._predicted_data[-1] > self._threshold_toe_off:
+            is_heel_off = False
+        if (self.data_imu[2][0] - 90) < 1:
+            is_tibia_vertical = True
+
+
 if __name__ == "__main__":
     rospy.init_node('afo_predictor', anonymous=True)
     threshold_left_hs = float(rospy.get_param('/afo_predictor/lhs'))
@@ -244,20 +291,27 @@ if __name__ == "__main__":
 
     r = rospy.Rate(ros_rate)
 
-
     # sample data
     data_buffer = [
-        [1.544, 2.024, 1.904, 1.792, 2.012, 1.984],
-        [1.548, 2.028, 1.906, 1.792, 2.008, 1.982]
+        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
         ]
     
     start_time = time.time()
-    is_calibration = is_calibration == 1
+    is_calibration = (is_calibration == 1)
 
-    right_predictor = dataPredictor(start_time, data_buffer, sensor_dir="Right", thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to, logging_prefix=test_label, is_calibration=is_calibration)
-    left_predictor = dataPredictor(start_time, data_buffer, thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to, logging_prefix=test_label, is_calibration=is_calibration, right_object=right_predictor)
+    right_predictor = DataPredictor(
+        start_time, data_buffer,
+        sensor_dir="Right",
+        thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to,
+        logging_prefix=test_label, is_calibration=is_calibration)
+
+    left_predictor = DataPredictor(
+        start_time, data_buffer,
+        thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to,
+        logging_prefix=test_label, is_calibration=is_calibration,
+        right_object=right_predictor)
     
     while not rospy.is_shutdown():
         rospy.spin()
         r.sleep()
-   
