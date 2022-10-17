@@ -21,7 +21,7 @@ from include.model import *
 from include.utils import *
 
 
-class dataPredictionReplay:
+class DataPredictionReplay:
     def __init__(self, data, model_name="LSTM",
                  model_dir="./data/CHAR_1010_280/",
                  sensor_dir="Left", sensor_size="280",
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         # left sensor replay
         left_data, left_data_front, left_header = vout_preprocessing(
             left_sensor_path[0])
-        left_predictor = dataPredictionReplay(left_data,
+        left_predictor = DataPredictionReplay(left_data,
                                               model_name = model_name,
                                               model_dir="./data/"+calibration_path+"/",
                                               sensor_size=calibration_size)
@@ -166,11 +166,11 @@ if __name__ == "__main__":
         # right sensor replay
         right_data, right_data_front, right_header = vout_preprocessing(
             right_sensor_path[0])
-        right_predictor = dataPredictionReplay(right_data,
-                                              model_name = model_name,
-                                              model_dir="./data/"+calibration_path+"/",
-                                              sensor_size=calibration_size,
-                                              sensor_dir="Right")
+        right_predictor = DataPredictionReplay(right_data,
+                                               model_name = model_name,
+                                               model_dir="./data/"+calibration_path+"/",
+                                               sensor_size=calibration_size,
+                                               sensor_dir="Right")
         right_force_data = right_predictor.prediction(idx=0)
         right_idx = 1
         while len(right_predictor.total_data)-right_idx >= 1:
