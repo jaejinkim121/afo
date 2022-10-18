@@ -37,7 +37,8 @@ class GaitPhase(Enum):
 
 class DataPredictor:
     def __init__(self, start_time, data_buffer, model_name="LSTM",
-                 model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/data/CHAR_1010_280/",
+                 model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/"\
+                     + "bin/model/CHAR_1010_280/",
                  sensor_dir="Left", input_length=15, sensor_num=6,
                  sensor_size="280",
                  thres_heel_strike=1.0, thres_toe_off=1.0,
@@ -109,7 +110,7 @@ class DataPredictor:
             else:
                 pass
             model.load_state_dict(torch.load(
-                self.model_path + self.model_name + "_model/" +
+                self.model_path + self.model_name + "/" +
                 self.sensor_size + self.sensor_dir + "_" +
                 str(num + 1) + ".pt",
                 map_location=self.device))
@@ -192,7 +193,7 @@ class DataPredictor:
     def prediction(self):
         _, sensor_name_list = folder_path_name(
             self.model_path + self.model_name +
-            "_model/", "include", self.sensor_dir)
+            "/", "include", self.sensor_dir)
         sensor_name_list = [name for name in sensor_name_list if \
                             int(name[-4]) <= self.sensor_num]
         sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
