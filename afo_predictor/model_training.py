@@ -187,7 +187,7 @@ print("Using PyTorch version: {}, Device: {}".format(
 calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
     + "calibration/CHAR_0927_260/Calibration/"
 model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
-    + "model/CHAR_0927_260/LSTM/"
+    + "model/CHAR_0927_260/LSTM_optim/"
 
 try:
     if not os.path.exists(model_path):
@@ -233,7 +233,7 @@ for n, name in enumerate(sensor_name_list):
 calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
     + "calibration/CHAR_0927_260/Calibration/"
 model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
-    + "model/CHAR_0927_260/CNN/"
+    + "model/CHAR_0927_260/CNN_optim/"
 try:
     if not os.path.exists(model_path):
         os.makedirs(model_path)
