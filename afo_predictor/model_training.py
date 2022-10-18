@@ -184,8 +184,11 @@ print("Using PyTorch version: {}, Device: {}".format(
     torch.__version__, DEVICE))
 
 # define calib data path and model path
-calib_data_path = "./data/CHAR_1010_280/Calibration/"
-model_path = "./data/CHAR_1010_280/LSTM_model/"
+calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+    + "calibration/CHAR_0927_260/Calibration/"
+model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+    + "model/CHAR_0927_260/LSTM/"
+
 try:
     if not os.path.exists(model_path):
         os.makedirs(model_path)
@@ -218,16 +221,19 @@ for n, name in enumerate(sensor_name_list):
                                       LR=lr, N_WARMUP_STEPS=N_WARMUP_STEPS,
                                       DECAY_RATE=DECAY_RATE,
                                       INPUT_LENGTH=INPUT_LENGTH)
-        df_loss = df_loss.append({'Date': "221010_280_LSTM", 'sensor_name':name,
+        df_loss = df_loss.append({'Date': "220927_260_LSTM", 'sensor_name':name,
                                   'LR':lr, 'loss':final_test_loss},
                         ignore_index=True)
-        plot_history(history, "221010_LSTM_LR_%s_" % str(lr) + name)
+        plot_history(history, "220927_LSTM_LR_%s_" % str(lr) + name)
         # else:
         #     pass
 
+
 # define calib data path and model path
-calib_data_path = "./data/CHAR_1010_280/Calibration/"
-model_path = "./data/CHAR_1010_280/CNN_model/"
+calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+    + "calibration/CHAR_0927_260/Calibration/"
+model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+    + "model/CHAR_0927_260/CNN/"
 try:
     if not os.path.exists(model_path):
         os.makedirs(model_path)
@@ -261,9 +267,9 @@ for n, name in enumerate(sensor_name_list):
                                       LR=lr, N_WARMUP_STEPS=N_WARMUP_STEPS,
                                       DECAY_RATE=DECAY_RATE,
                                       INPUT_LENGTH=INPUT_LENGTH)
-        df_loss2 = df_loss2.append({'Date': "221010_280_CNN", 'sensor_name':name,
+        df_loss2 = df_loss2.append({'Date': "220927_260_CNN", 'sensor_name':name,
                                   'LR':lr, 'loss':final_test_loss},
                         ignore_index=True)
-        plot_history(history, "221010_CNN_LR_%s_" % str(lr) + name)
+        plot_history(history, "220927_CNN_LR_%s_" % str(lr) + name)
 # else:
 #     pass
