@@ -33,32 +33,32 @@ for (file, name) in zip(exp_list, exp_name_list):
         # internal path - individual sensor
         int_name_path = str(test_list)+"/"
         (int_list, int_name_list) = folder_path_name(int_name_path)
-        # # interpolation preprocessing
-        # for (int_path, int_name) in zip(int_list, int_name_list):
-        #     # instron data
-        #     if int_name.startswith("interlink") == 1:
-        #         # instron data sync, preprocessing
-        #         sync_time = instron_interp_preprocessing(
-        #             int_path, int_name_path + "instron_cycle300um_mod.csv")
-        #         df_sync = df_sync.append({"folder_name": name_list,
-        #                                   "pre_post": str(name),
-        #                                   "time": sync_time},
-        #                                  ignore_index=True)
-        #     # sensor data
-        #     elif int_name.startswith("pointSensor") == 1:
-        #         # sensor numbering from 1
-        #         num = int(sensor_num)
-        #         # sensor data preprocessing
-        #         # sensor_data = pd.read_csv(int_path, sep=" |,", header=1)
-        #         raspi_interp_preprocessing(int_path, num,
-        #                                    int_name_path +
-        #                                    "sensor_cycle300um_mod.csv")
+        # interpolation preprocessing
+        for (int_path, int_name) in zip(int_list, int_name_list):
+            # instron data
+            if int_name.startswith("interlink") == 1:
+                # instron data sync, preprocessing
+                sync_time = instron_interp_preprocessing(
+                    int_path, int_name_path + "instron_cycle300um_mod.csv")
+                df_sync = df_sync.append({"folder_name": name_list,
+                                          "pre_post": str(name),
+                                          "time": sync_time},
+                                          ignore_index=True)
+            # sensor data
+            elif int_name.startswith("pointSensor") == 1:
+                # sensor numbering from 1
+                num = int(sensor_num)
+                # sensor data preprocessing
+                # sensor_data = pd.read_csv(int_path, sep=" |,", header=1)
+                raspi_interp_preprocessing(int_path, num,
+                                            int_name_path +
+                                            "sensor_cycle300um_mod.csv")
 
-        # # interpolation
-        # calib_interp(int_name_path + "instron_cycle300um_mod.csv",
-        #              sync_time,
-        #              int_name_path + "sensor_cycle300um_mod.csv",
-        #              int_name_path + "force_conversion_test.csv")
+        # interpolation
+        calib_interp(int_name_path + "instron_cycle300um_mod.csv",
+                      sync_time,
+                      int_name_path + "sensor_cycle300um_mod.csv",
+                      int_name_path + "force_conversion_test.csv")
 
         # individual sensor for loop - interpolation check 
         for (int_path, int_name) in zip(int_list, int_name_list):
