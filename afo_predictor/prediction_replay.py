@@ -52,7 +52,7 @@ class DataPredictionReplay:
                 self.model_path + self.model_name + "/" +
                 self.sensor_size + self.sensor_dir + "_" +
                 str(num + 1) + ".pt",
-                map_location=self.device))
+                map_location=torch.device('cpu')))
             self.model = np.append(self.model, model)
 
     def CNNtransform(self, idx):
@@ -113,9 +113,10 @@ class DataPredictionReplay:
 if __name__ == "__main__":
 
     # TRIAL NUMBER
-    trial_num_list = [11, 13, 14]
+    trial_num_list = [11, 12, 13, 14]
     # Model name list
-    model_list = ["LSTM", "CNN"]
+    # model_list = ["LSTM", "CNN"]
+    model_list = ["CNN"]
     # TEST INDEX
     test_index_list = ["main_", "main2_", "main3_", "main4_",
                        "stance_", "sensor_test_"]
