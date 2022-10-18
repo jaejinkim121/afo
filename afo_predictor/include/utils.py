@@ -59,15 +59,32 @@ def vout_preprocessing(path):
 
     sensor_csv = path
 
+    # RH-11 exception
+    if "RH-11" in sensor_csv:
+        dict_ = {",": " ", "  ": " ", "(": "", ")": "",
+                 "False": "0", "True": "1"}
+    else:
+        dict_ = {",": " ", "  ": " "}
+
     # Multiple delimiter
     with open(sensor_csv) as data:
-        conv_data = [replace_multiple_text(line) for line in data]
+        conv_data = [replace_multiple_text(line, dict_) for line in data]
 
-    sensor_data = np.loadtxt(conv_data, delimiter=" ", skiprows=1)
-    # sensor_vout_header = ["swing_phase", "sync", "time",
-    #                   "v1" ,"v2", "v3", "v4", "v5", "v6"]
+    sensor_vout_header = ["swing_phase", "sync", "time",
+                      "v1" ,"v2", "v3", "v4", "v5", "v6"]
     sensor_force_header = ["swing_phase", "sync", "time",
                       "f1" ,"f2", "f3", "f4", "f5", "f6"]
+
+    # RH-11 exception data loading
+    if "RH-11" in sensor_csv:
+        data_pre = np.loadtxt(conv_data, delimiter=" ")
+        sensor_vout_header_pre = ["time", "sync", "swing_phase",
+                                  "v1" ,"v2", "v3", "v4", "v5", "v6"]
+        data_1 = pd.DataFrame(data_pre, columns=sensor_vout_header_pre)
+        data_ = data_1[sensor_vout_header]
+        sensor_data = np.array(data_)
+    else:
+        sensor_data = np.loadtxt(conv_data, delimiter=" ", skiprows=1)
 
     data_buffer = sensor_data[:,3:]
     data_front = sensor_data[:,:3]
