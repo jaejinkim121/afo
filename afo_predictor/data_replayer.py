@@ -1,127 +1,95 @@
-import os
-import sys
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import logging
-from time import localtime
-import time
+import os
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader, random_split
 
-from include.CNNmodel import *
-from include.utils import *
+LEFT = "LEFT"
+RIGHT = "RIGHT"
+IMU = "imu"
 
 class Replayer:
-    def __init__(self, start_time, data_buffer, model_name="CNN",
-                 model_dir="./data/280/",
-                 sensor_dir="Left", input_length=15, sensor_num=6,
-                 sensor_size="280",
-                 thres_heel_strike=1, thres_toe_off=1
-                 ):
+    def __init__(self, imu_path, left_sole_path, right_sole_path,
+                 affected_side="LEFT", output_path=None):
+        self._data_imu = np.zeros(64)   # numpy array: [64, t]
+        self._data_sole = {LEFT: np.zeros(7), RIGHT: np.zeros(7)}  # numpy array: [2, 6, t]
+        self.load_imu_data(imu_path)
+        self.load_force_data(left_sole_path, right_sole_path)
+        self.current_data = \
+            {LEFT: np.zeros(7), RIGHT: np.zeros(7), IMU: np.zeros(64)}
 
-        self.data = np.array(data_buffer)
-        self.sensor_num = sensor_num
-        self.sensor_dir = sensor_dir
-        self.sensor_size = sensor_size
-        self.model_name = model_name
-        self.model_path = model_dir
-        self.input_length = input_length
-        self._threshold_heel_strike = thres_heel_strike
-        self._threshold_toe_off = thres_toe_off
+    def load_force_data(self, left_path, right_path):
+        file = open(left_path, 'r')
+        lines = file.read().splitlines()
+        file.close()
 
-        self._predicted_data = None
-        self._is_swing = False
+        for line in lines:
+            if not line:
+                continue
+            try:
+                columns = np.array([col.strip() for col in line.split(',') if col], dtype=float)
+            except ValueError:
+                continue
+            self._data_sole[LEFT] = \
+                np.vstack([self._data_sole[LEFT], columns[2:]])
+        self._data_sole[LEFT] = self._data_sole[LEFT][1:]
 
-        self._heel_strike_detected = False
-        self._toe_off_detected = False
-        self._hs_detected = False
-        self._to_detected = False
+        file = open(right_path, 'r')
+        lines = file.read().splitlines()
+        file.close()
 
-        self.device = torch.device('cpu')
-        self.model_load()
+        for line in lines:
+            if not line:
+                continue
+            try:
+                columns = np.array(
+                    [col.strip() for col in line.split(',') if col],
+                    dtype=float)
+            except ValueError:
+                continue
+            self._data_sole[RIGHT] = \
+                np.vstack([self._data_sole[RIGHT], columns[2:]])
+        self._data_sole[RIGHT] = self._data_sole[RIGHT][1:]
 
-    def model_load(self):
-        self.model = np.array([])
-        for num in np.arange(self.sensor_num):
-            if self.model_name == "CNN":
-                model = Conv1DNet()
-            else:
-                pass
-            model.load_state_dict(torch.load(
-                self.model_path + self.model_name + "_model/" +
-                self.sensor_size + self.sensor_dir + "_" +
-                str(num + 1) + ".pt",
-                map_location=self.device))
-            self.model = np.append(self.model, model)
+    def load_imu_data(self, path):
+        file = open(path, 'r')
+        lines = file.read().splitlines()
+        file.close()
 
-    def transform(self, idx):
-        if len(self.data) < self.input_length:
-            # Buffer에 데이터가 없어서 required length만큼 읽어오지 못했을 경우
-            # 0열을 부족한만큼 복사
-            extra_row = np.repeat([self.data[0]], repeats=
-            self.input_length - len(self.data), axis=0)
-            self.data = np.concatenate((extra_row, self.data), axis=0)
+        for line in lines:
+            if not line:
+                continue
+            columns = np.array([col.strip() for col in line.split(',') if col], dtype=float)
+            self._data_imu = np.vstack([self._data_imu, columns[3:]])
+        self._data_imu = self._data_imu[1:]
 
-        x = self.data[(len(self.data) - self.input_length): len(self.data),
-            (idx - 1)]
-        x = torch.from_numpy(x)
-        x = x.unsqueeze(0)
-        x = torch.stack([x], dim=0).float()
-        return x
+    def replay(self):
+        id_left, id_right, id_imu = 0, 0, 0
+        for left in self._data_sole[LEFT]:
 
-    def prediction(self):
-        _, sensor_name_list = folder_path_name(
-            self.model_path + self.model_name +
-            "_model/", "include", self.sensor_dir)
-        sensor_name_list = [name for name in sensor_name_list if \
-                            int(name[-4]) <= self.sensor_num]
-        sorted_name_list = sorted(sensor_name_list, key=lambda x: int(x[-4]),
-                                  reverse=False)
-        output = np.array([])
 
-        for name in sorted_name_list:
-            model = self.model[int(name[-4]) - 1]
-            model.eval()
-            with torch.no_grad():
-                x = self.transform(int(name[-4]))
-                output = np.append(output, model(x))
 
-        output = np.expand_dims(output, axis=0)
-        #############################################################
-        #############################################################
-        # 재진 추가
-        self._predicted_data = output[0]
-        self.phase_detection()
-        #############################################################
-        return output
+    def run_phase_detection(self):
+        ...
 
-    def phase_detection(self):
-        if self._is_swing:
-            for data in self._predicted_data:
-                if data > self._threshold_heel_strike:
-                    self._is_swing = False
-                    self._hs_detected = True
-                    break
-        else:
-            for data in self._predicted_data:
-                if data > self._threshold_toe_off:
-                    return
-            self._is_swing = True
-            self._to_detected = True
+    def export_event_temporal_data(self, path):
+        ...
 
-        if self._hs_detected or self._to_detected:
-            self._hs_detected = False
-            self._to_detected = False
-
-    def load_data(self, data):
-        self.data = np.vstack([self.data, data])[-self.input_length:]
-        self.prediction()
+    def draw_temporal_graph(self, path):
+        ...
 
 
 def main():
-    ...
+    data_directory = os.getcwd()
+    imu_path = data_directory + "\\data\\imu\\main_10111615_imu.log"
+    left_sole_path = data_directory + "\\bin\\prediction\\RH-14\\main_Leftsole.csv"
+    right_sole_path = data_directory + "\\bin\\prediction\\RH-14\\main_Rightsole.csv"
+    output_path = None
+
+    replayer = Replayer(
+        imu_path, left_sole_path, right_sole_path, affected_side="LEFT")
+
+    replayer.replay()
+    replayer.export_event_temporal_data(output_path)
+
+
+if __name__ == "__main__":
+    main()
