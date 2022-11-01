@@ -26,8 +26,7 @@ class DataPredictionReplay:
         self.model_name = model_name
         self.model_path = model_dir
         self.input_length = input_length
-        self.device = torch.device('cuda') \
-            if torch.cuda.is_available else torch.device('cpu')
+        self.device = torch.device('cpu')
         print("Using PyTorch version: {}, Device: {}".format(
             torch.__version__, self.device))
         self.model_load()
@@ -113,7 +112,7 @@ class DataPredictionReplay:
 if __name__ == "__main__":
 
     # TRIAL NUMBER
-    trial_num_list = [11, 12, 13, 14]
+    trial_num_list = [12, 13, 14, 11]
     # Model name list
     # model_list = ["LSTM", "CNN"]
     model_list = ["CNN"]

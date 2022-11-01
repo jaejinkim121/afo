@@ -17,7 +17,7 @@ df_sync = pd.DataFrame(columns=["folder_name", "pre_post", "time"])
 
 # read the folder name
 (exp_list, exp_name_list) = folder_path_name(
-    "../bin/calibration/CHAR_0927_260/", "start", "Calibration", 1)
+    "../bin/calibration/CHAR_1031_260/", "start", "Calibration", 1)
 
 for (file, name) in zip(exp_list, exp_name_list):
 
