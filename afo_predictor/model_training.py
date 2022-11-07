@@ -170,7 +170,7 @@ def CNNtraining(data_dir, DEVICE, model_dir=None,
 
 # hyperparameter settings
 BATCH_SIZE = 32
-EPOCHS = 50
+EPOCHS = 150
 TRAIN_SIZE = 0.85
 LR = 0.001
 N_WARMUP_STEPS = 5
@@ -185,9 +185,9 @@ print("Using PyTorch version: {}, Device: {}".format(
 
 # define calib data path and model path
 calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
-    + "calibration/CHAR_0927_260/Calibration/"
+    + "calibration/CHAR_1031_260/Calibration/"
 model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
-    + "model/CHAR_0927_260/LSTM_optim/"
+    + "model/CHAR_1031_260/LSTM_optim/"
 
 try:
     if not os.path.exists(model_path):
@@ -207,7 +207,7 @@ for n, name in enumerate(sensor_name_list):
                 0.001,0.001,0.001,0.001,0.001,0.001]
     LR = LR_list[n]
     
-    for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
+    for lr in [LR-LR/2, LR-LR/4, LR+LR, LR+LR*2, LR+LR*4, LR+LR*8, LR+LR*16, LR+LR*32]:
     # for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
     # if (name.endswith("Left_1") == 1):
         # lr = LR
@@ -221,19 +221,65 @@ for n, name in enumerate(sensor_name_list):
                                       LR=lr, N_WARMUP_STEPS=N_WARMUP_STEPS,
                                       DECAY_RATE=DECAY_RATE,
                                       INPUT_LENGTH=INPUT_LENGTH)
-        df_loss = df_loss.append({'Date': "220927_260_LSTM", 'sensor_name':name,
+        df_loss = df_loss.append({'Date': "221031_260_LSTM", 'sensor_name':name,
                                   'LR':lr, 'loss':final_test_loss},
                         ignore_index=True)
-        plot_history(history, "220927_LSTM_LR_%s_" % str(lr) + name)
+        plot_history(history, "221031_260_LSTM_LR_%s_" % str(lr) + name)
         # else:
         #     pass
 
 
+# # define calib data path and model path
+# calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+#     + "calibration/CHAR_0927_260/Calibration/"
+# model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+#     + "model/CHAR_0927_260/CNN_optim/"
+# try:
+#     if not os.path.exists(model_path):
+#         os.makedirs(model_path)
+# except:
+#     pass
+
+# # for loop for 12 sensor training
+# _, sensor_name_list = folder_path_name(calib_data_path)
+
+# df_loss2 = pd.DataFrame(columns=["Date", "sensor_name", "LR", "loss"])
+# # for LR in [100, 10, 1, 0.1, 0.01, 0.001, 0.0001, 0.00001]:
+
+# for n, name in enumerate(sensor_name_list):
+    
+#     LR_list = [0.001,0.001,0.001,0.001,0.001,0.001,
+#                 0.001,0.001,0.001,0.001,0.001,0.001]
+#     LR = LR_list[n]
+    
+#     for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
+#     # for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
+#     # if (name.endswith("Right_4") == 1) | (name.endswith("Left_3") == 1):
+#     # if (name.endswith("Left_1") == 1):
+#         # lr = LR
+#         print("START 1D CNN MODEL TRAINING!!! %s" % name)
+#         print("LR: %f" % lr)
+#         data_dir = calib_data_path + name + "/force_conversion_test.csv"
+#         model_dir = model_path + name + "LR%s.pt" % lr
+#         final_test_loss, history = CNNtraining(data_dir, DEVICE,
+#                                       model_dir=model_dir,
+#                                       BATCH_SIZE=BATCH_SIZE, EPOCHS=EPOCHS,
+#                                       LR=lr, N_WARMUP_STEPS=N_WARMUP_STEPS,
+#                                       DECAY_RATE=DECAY_RATE,
+#                                       INPUT_LENGTH=INPUT_LENGTH)
+#         df_loss2 = df_loss2.append({'Date': "220927_260_CNN", 'sensor_name':name,
+#                                   'LR':lr, 'loss':final_test_loss},
+#                         ignore_index=True)
+#         plot_history(history, "220927_CNN_LR_%s_" % str(lr) + name)
+# # else:
+# #     pass
+
 # define calib data path and model path
 calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
-    + "calibration/CHAR_0927_260/Calibration/"
+    + "calibration/CHAR_1031_280/Calibration/"
 model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
-    + "model/CHAR_0927_260/CNN_optim/"
+    + "model/CHAR_1031_280/LSTM_optim/"
+
 try:
     if not os.path.exists(model_path):
         os.makedirs(model_path)
@@ -243,33 +289,31 @@ except:
 # for loop for 12 sensor training
 _, sensor_name_list = folder_path_name(calib_data_path)
 
-df_loss2 = pd.DataFrame(columns=["Date", "sensor_name", "LR", "loss"])
+df_loss3 = pd.DataFrame(columns=["Date", "sensor_name", "LR", "loss"])
 # for LR in [100, 10, 1, 0.1, 0.01, 0.001, 0.0001, 0.00001]:
 
 for n, name in enumerate(sensor_name_list):
     
-    LR_list = [0.001,0.001,0.001,0.001,0.001,0.001,
-                0.001,0.001,0.001,0.001,0.001,0.001]
+    LR_list = [0.001,0.001,0.001,0.001,0.001,0.001]
     LR = LR_list[n]
     
-    for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
+    for lr in [LR-LR/2, LR-LR/4, LR+LR, LR+LR*2, LR+LR*4, LR+LR*8, LR+LR*16, LR+LR*32]:
     # for lr in [LR-LR/5, LR-LR/10, LR, LR+LR/10, LR+LR/5]:
-    # if (name.endswith("Right_4") == 1) | (name.endswith("Left_3") == 1):
     # if (name.endswith("Left_1") == 1):
         # lr = LR
-        print("START 1D CNN MODEL TRAINING!!! %s" % name)
+        print("START LSTM MODEL TRAINING!!! %s" % name)
         print("LR: %f" % lr)
         data_dir = calib_data_path + name + "/force_conversion_test.csv"
         model_dir = model_path + name + "LR%s.pt" % lr
-        final_test_loss, history = CNNtraining(data_dir, DEVICE,
+        final_test_loss, history = LSTMtraining(data_dir, DEVICE,
                                       model_dir=model_dir,
                                       BATCH_SIZE=BATCH_SIZE, EPOCHS=EPOCHS,
                                       LR=lr, N_WARMUP_STEPS=N_WARMUP_STEPS,
                                       DECAY_RATE=DECAY_RATE,
                                       INPUT_LENGTH=INPUT_LENGTH)
-        df_loss2 = df_loss2.append({'Date': "220927_260_CNN", 'sensor_name':name,
+        df_loss3 = df_loss3.append({'Date': "221031_280_LSTM", 'sensor_name':name,
                                   'LR':lr, 'loss':final_test_loss},
                         ignore_index=True)
-        plot_history(history, "220927_CNN_LR_%s_" % str(lr) + name)
-# else:
-#     pass
+        plot_history(history, "221031_280_LSTM_LR_%s_" % str(lr) + name)
+        # else:
+        #     pass
