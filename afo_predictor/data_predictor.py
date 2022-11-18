@@ -38,7 +38,7 @@ class GaitPhase(Enum):
 class DataPredictor:
     def __init__(self, start_time, data_buffer, model_name="LSTM",
                  model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/"\
-                     + "bin/model/CHAR_1031_260/",
+                     + "bin/model/CHAR_1114_260/",
                  sensor_dir="Left", input_length=15, sensor_num=6,
                  sensor_size="260",
                  thres_heel_strike=1.0, thres_toe_off=1.0,
