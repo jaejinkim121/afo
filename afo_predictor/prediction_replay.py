@@ -16,8 +16,8 @@ from include.utils import *
 
 class DataPredictionReplay:
     def __init__(self, data, model_name="LSTM",
-                 model_dir="./bin/model/CHAR_1010_280/",
-                 sensor_dir="Left", sensor_size="280",
+                 model_dir="./bin/model/CHAR_1114_260/",
+                 sensor_dir="Left", sensor_size="260",
                  input_length=15, sensor_num=6):
         self.total_data = data
         self.sensor_num = sensor_num
@@ -112,10 +112,10 @@ class DataPredictionReplay:
 if __name__ == "__main__":
 
     # TRIAL NUMBER
-    trial_num_list = [12, 13, 14, 11]
+    trial_num_list = [15]
     # Model name list
     # model_list = ["LSTM", "CNN"]
-    model_list = ["CNN"]
+    model_list = ["LSTM"]
     # TEST INDEX
     test_index_list = ["main_", "main2_", "main3_", "main4_",
                        "stance_", "sensor_test_"]
@@ -123,7 +123,8 @@ if __name__ == "__main__":
     calib_dict = {"11": ["CHAR_0919_280", "280"],
                   "12": ["CHAR_0927_260", "260"],
                   "13": ["CHAR_1004_280", "280"],
-                  "14": ["CHAR_1010_280", "280"]}
+                  "14": ["CHAR_1010_280", "280"],
+                  "15": ["CHAR_1114_260", "260"]}
 
     ###########################################################################
     ###########################################################################
