@@ -2,7 +2,6 @@ log/
 devel/
 logs/
 build/
-lib/
 msg_gen/
 srv_gen/
 msg/*Action.msg

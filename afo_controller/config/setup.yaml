@@ -1,0 +1,17 @@
+ethercat_master:
+  time_step:                          0.0025
+  update_rate_too_low_warn_threshold: 50
+
+ethercat_devices:
+  - type:               Maxon
+    name:               Plantar
+    configuration_file: plantar.yaml
+    ethercat_bus:       enp2s0
+    ethercat_address:   1
+
+  - type:               Maxon
+    name:               Dorsi
+    configuration_file: dorsi.yaml
+    ethercat_bus:       enp2s0
+    ethercat_address:   2
+
