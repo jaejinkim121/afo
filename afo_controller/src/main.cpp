@@ -46,13 +46,14 @@ void pathPlanner(){
     return;
 }
 
-void callbackInitialContact(){
-    timeIC = high_resolution_clock::now();
-    return;
-}
-
-void callbackOppositeFootOff(){
-    timeOFO = high_resolution_clock::now();
+void callbackGaitPhase(const std_msgs::Bool::ConstPtr& msg){
+    if (msg->data == true){     
+        timeIC = high_resolution_clock::now();
+    }
+    else {
+        timeOFO = high_resolution_clock::now();
+    }
+    
     return;
 }
 
@@ -186,7 +187,7 @@ int main(int argc, char**argv)
     int rr;
     n.getParam("/rr", rr);
     ros::Rate loop_rate(rr);
-    ros::Subscriber afo_gaitPhase = n.subscribe<std_msgs::Bool>("/afo_predictor/gaitEvent", 1);
+    ros::Subscriber afo_gaitPhase = n.subscribe<std_msgs::Bool>("/afo_predictor/gaitEvent", 1, callbackGaitPhase);
 
     std::signal(SIGINT, signal_handler);
 
