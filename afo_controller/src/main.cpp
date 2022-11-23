@@ -1,17 +1,60 @@
-#include "main.h"
+#include "../include/main.hpp"
 
-#include "ethercat_device_configurator/EthercatDeviceConfigurator.hpp"
+void pathPlanner(){
+    auto time = high_resolution_clock::now();
+    auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
+    auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
+    double currentCyclePercentage = currentTimegap / eventTimeGap * 0.12;
 
-#include <maxon_epos_ethercat_sdk/Maxon.hpp>
-#include <thread>
-#include <csignal>
+    if (currentCyclePercentage < 0.35){
+        plantarPosition = 0;
+        plantarTorque = 0;
+        dorsiPosition = 0;
+        dorsiTorque = 0;
+    }
+    else if (currentCyclePercentage < 0.5){
+        plantarPosition = 0;
+        plantarTorque = 3 * (currentCyclePercentage - 0.35) ^ 2 - 2 * (currentCyclePercentage - 0.35) ^ 3;
+        dorsiPosition = 0;
+        dorsiTorque = 0;
+    }
+    else if (currentCyclePercentage < 0.6){
+        plantarPosition = 0;
+        plantarTorque = 1 - 3 * (currentCyclePercentage - 0.5) ^ 2 + 2 * (currentCyclePercentage - 0.5) ^ 3;
+        dorsiPosition = 0;
+        dorsiTorque = 0;
+    }
+    else if (currentCyclePercentage < 0.7){
+        plantarPosition = 0;
+        plantarTorque = 0;
+        dorsiPosition = currentCyclePercentage - 0.7;
+        dorsiTorque = 0;
+    }
+    else if (currentCyclePercentage < 0.75){
+        plantarPosition = 0;
+        plantarTorque = 0;
+        dorsiPosition = 2.4 - 2 * currentCyclePercentage;
+        dorsiTorque = 0;
+    }
+    else {
+        plantarPosition = 0;
+        plantarTorque = 0;
+        dorsiPosition = 0;
+        dorsiTorque = 0;
+    }
 
-std::unique_ptr<std::thread> worker_thread;
-bool abrt = false;
+    return;
+}
 
-EthercatDeviceConfigurator::SharedPtr configurator;
+void callbackInitialContact(){
+    timeIC = high_resolution_clock::now();
+    return;
+}
 
-unsigned int counter = 0;
+void callbackOppositeFootOff(){
+    timeOFO = high_resolution_clock::now();
+    return;
+}
 
 void worker()
 {
@@ -58,12 +101,25 @@ void worker()
             if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
                     maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
             {
-                maxon::Command command;
-                command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                auto reading = maxon_slave_ptr->getReading();
-                command.setTargetPosition(reading.getActualPosition() + 10);
-                command.setTargetTorque(-0.5);
-                maxon_slave_ptr->stageCommand(command);
+                // CONTROL LOOP MAIN BODY
+                if (slave->getName() == "Plantar"){
+                    auto reading = maxon_slave_ptr->getReading();
+                    // Find and switch correct control mode for current command.
+
+                    // 
+
+                    maxon::Command command;
+                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                    command.setTargetPosition(reading.getActualPosition() + 10);
+                    command.setTargetTorque(-0.5);
+                    maxon_slave_ptr->stageCommand(command);
+                }
+                else if (slave->getName() == "Dorsi"){
+
+                }
+                else {
+                    std::cout << slave->getName() << " is not our target device" << std::endl;
+                }
             }
             else
             {
@@ -125,15 +181,15 @@ void signal_handler(int sig)
  */
 int main(int argc, char**argv)
 {
-    // Set the abrt_ flag upon receiving an interrupt signal (e.g. Ctrl-c)
+    ros::init(argc, argv, "afo_controller");
+    ros::NodeHandle n;
+    int rr;
+    n.getParam("/rr", rr);
+    ros::Rate loop_rate(rr);
+    ros::Subscriber afo_gaitPhase = n.subscribe<std_msgs::Bool>("/afo_predictor/gaitEvent", 1);
+
     std::signal(SIGINT, signal_handler);
 
-    if(argc < 2)
-    {
-        std::cerr << "pass path to 'setup.yaml' as command line argument" << std::endl;
-        return EXIT_FAILURE;
-    }
-    // a new EthercatDeviceConfigurator object (path to setup.yaml as constructor argument)
     configurator = std::make_shared<EthercatDeviceConfigurator>(argv[1]);
 
     /*
