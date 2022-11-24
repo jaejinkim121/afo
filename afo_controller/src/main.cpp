@@ -94,14 +94,19 @@ void pathPlannerDorsiflexion(Reading reading){
     return;
 }
 
-void callbackGaitPhase(const std_msgs::Bool::ConstPtr& msg){
-    if (msg->data == true){     
+void callbackGaitPhase(const std_msgs::int::ConstPtr& msg){
+    if (msg->data == 0){     
         timeIC = high_resolution_clock::now();
     }
-    else {
+    else if (msg->data == 1){
         timeOFO = high_resolution_clock::now();
     }
-    
+    else if (msg->data == 2){
+        timeFO = high_resolution_clock::now();
+    }   
+    else {
+        std::cout << "Wrong Gait Phase detected" << std::endl;
+    }
     return;
 }
 
@@ -237,13 +242,15 @@ int main(int argc, char**argv)
     ros::init(argc, argv, "afo_controller");
     ros::NodeHandle n;
     int rr;
+    String configPath;
     n.getParam("/rr", rr);
+    n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
-    ros::Subscriber afo_gaitPhase = n.subscribe<std_msgs::Bool>("/afo_predictor/gaitEvent", 1, callbackGaitPhase);
+    ros::Subscriber afo_gaitPhase = n.subscribe<std_msgs::Int>("/afo_predictor/gaitEvent", 1, callbackGaitPhase);
 
     std::signal(SIGINT, signal_handler);
 
-    configurator = std::make_shared<EthercatDeviceConfigurator>(argv[1]);
+    configurator = std::make_shared<EthercatDeviceConfigurator>(configPath);
 
     /*
     ** Start all masters.
