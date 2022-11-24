@@ -1,6 +1,6 @@
 #include "../include/main.hpp"
 
-void pathPlannerPlantarflexion(Reading reading){
+void pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
     auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
     auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
@@ -56,7 +56,7 @@ void pathPlannerPlantarflexion(Reading reading){
     return;
 }
 
-void pathPlannerDorsiflexion(Reading reading){
+void pathPlannerDorsiflexion(){
     auto time = high_resolution_clock::now();
     auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
     auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
@@ -84,12 +84,11 @@ void pathPlannerDorsiflexion(Reading reading){
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
     // Hold dorsiflexion
-    else{
+    else {
         dorsiPosition = dorsiNeutralPosition;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-
 
     return;
 }
@@ -162,7 +161,7 @@ void worker()
                     // Find and switch correct control mode for current command.
 
                     // 
-                    pathPlanner(reading);
+                    pathPlanner();
                     maxon::Command command;
                     command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                     command.setTargetPosition(plantarNeutralPosition + dirPlantar * plantarPosition);
