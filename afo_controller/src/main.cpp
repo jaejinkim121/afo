@@ -1,47 +1,95 @@
 #include "../include/main.hpp"
 
-void pathPlanner(){
+void pathPlannerPlantarflexion(Reading reading){
     auto time = high_resolution_clock::now();
     auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
     auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
     double currentCyclePercentage = currentTimegap / eventTimeGap * 0.12;
 
-    if (currentCyclePercentage < 0.35){
-        plantarPosition = 0;
+    // Dummy variable to simplify formulation.
+    double t;   
+
+    // Before actuation
+    if (currentCyclePercentage < startTime){
+        plantarPosition = plantarNeutralPosition;
         plantarTorque = 0;
-        dorsiPosition = 0;
-        dorsiTorque = 0;
+        plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-    else if (currentCyclePercentage < 0.5){
+    // Start plantarflexion, torque increasing
+    else if (currentCyclePercentage < startTime + onTime * upTimeRatio){
+        t = currentCyclePercentage - startTime;
+        
         plantarPosition = 0;
-        plantarTorque = 3 * (currentCyclePercentage - 0.35) ^ 2 - 2 * (currentCyclePercentage - 0.35) ^ 3;
-        dorsiPosition = 0;
-        dorsiTorque = 0;
+        // Acceleration
+        if (t < 0.5 * upTimeRatio * onTime){
+            plantarTorque = 0.5 * acc * t^2;
+        }
+        // Deceleration
+        else{
+            plantarTorque = 1 - 0.5 * acc * (t - onTime * upTimeRatio) ^ 2;
+        }
+        plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;     
     }
-    else if (currentCyclePercentage < 0.6){
+    // Still Plantarflexion, torque decreasing
+    else if (currentCyclePercentage < endTime){
+        t = currentCyclePercentage - startTime - onTime * upTimeRatio;
+
         plantarPosition = 0;
-        plantarTorque = 1 - 3 * (currentCyclePercentage - 0.5) ^ 2 + 2 * (currentCyclePercentage - 0.5) ^ 3;
-        dorsiPosition = 0;
-        dorsiTorque = 0;
+
+        // Acceleration
+        if (t < 0.5 * (1 - upTimeRatio) * onTime) {
+            plantarTorque = 1 - 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * t ^ 2;
+        }
+        // Deceleration
+        else {
+            plantarTorque = 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * (t - onTime * (1 - upTimeRatio)) ^ 2;
+        }
+        plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
-    else if (currentCyclePercentage < 0.7){
-        plantarPosition = 0;
-        plantarTorque = 0;
-        dorsiPosition = currentCyclePercentage - 0.7;
-        dorsiTorque = 0;
-    }
-    else if (currentCyclePercentage < 0.75){
-        plantarPosition = 0;
-        plantarTorque = 0;
-        dorsiPosition = 2.4 - 2 * currentCyclePercentage;
-        dorsiTorque = 0;
-    }
+    // After end of plantarflexion
     else {
-        plantarPosition = 0;
+        plantarPosition = plantarNeutralPosition;
         plantarTorque = 0;
-        dorsiPosition = 0;
-        dorsiTorque = 0;
+        plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
+
+    return;
+}
+
+void pathPlannerDorsiflexion(Reading reading){
+    auto time = high_resolution_clock::now();
+    auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
+    auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
+    auto footOffTimeGap = duration_cast<microseconds>(timeFO - timeIC);
+
+    double currentCyclePercentage = currentTimegap / eventTimeGap * 0.12;
+    double footOffPercentage = footOffTimeGap / eventTimeGap * 0.12;
+
+    // After Initial Contact, deactivate dorsiflexion.
+    if (currentCyclePercentage < downTimeDF){
+        dorsiPosition = dorsiNeutralPosition + (downTimeDF - currentCyclePercentage);
+        dorsiTorque = 0;
+        dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
+    }
+    // Zero torque control mode until foot off
+    else if (footOffPercentage < 0) {
+        dorsiPosition = dorsiNeutralPosition;
+        dorsiTorque = 0;
+        dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
+    }
+    // Activate dorsiflexion
+    else if (currentCyclePercentage < footOffPercentage + upTimeDF){
+        dorsiPosition = dorsiNeutralPosition;
+        dorsiTorque = 0;
+        dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
+    }
+    // Hold dorsiflexion
+    else{
+        dorsiPosition = dorsiNeutralPosition;
+        dorsiTorque = 0;
+        dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
+    }
+
 
     return;
 }
@@ -59,6 +107,7 @@ void callbackGaitPhase(const std_msgs::Bool::ConstPtr& msg){
 
 void worker()
 {
+    dorsiNeutralPosition = 0;
     bool rtSuccess = true;
     for(const auto & master: configurator->getMasters())
     {
@@ -108,15 +157,18 @@ void worker()
                     // Find and switch correct control mode for current command.
 
                     // 
-
+                    pathPlanner(reading);
                     maxon::Command command;
                     command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                    command.setTargetPosition(reading.getActualPosition() + 10);
-                    command.setTargetTorque(-0.5);
+                    command.setTargetPosition(plantarNeutralPosition + dirPlantar * plantarPosition);
+                    command.setTargetTorque(dirPlantar * plantarTorque);
                     maxon_slave_ptr->stageCommand(command);
+
                 }
                 else if (slave->getName() == "Dorsi"){
-
+                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
+                    command.setTargetPosition(dorsiPosition + dorsiNeutralPosition);
+                    maxon_slave_ptr->stageCommand(command);
                 }
                 else {
                     std::cout << slave->getName() << " is not our target device" << std::endl;
