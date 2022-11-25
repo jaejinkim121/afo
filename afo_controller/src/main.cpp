@@ -11,7 +11,7 @@ void pathPlannerPlantarflexion(){
 
     // Before actuation
     if (currentCyclePercentage < startTime){
-        plantarPosition = plantarNeutralPosition;
+        plantarPosition = 0;
         plantarTorque = 0;
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
@@ -48,7 +48,7 @@ void pathPlannerPlantarflexion(){
     }
     // After end of plantarflexion
     else {
-        plantarPosition = plantarNeutralPosition;
+        plantarPosition = 0;
         plantarTorque = 0;
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
@@ -67,25 +67,25 @@ void pathPlannerDorsiflexion(){
 
     // After Initial Contact, deactivate dorsiflexion.
     if (currentCyclePercentage < downTimeDF){
-        dorsiPosition = dorsiNeutralPosition + (downTimeDF - currentCyclePercentage);
+        dorsiPosition = (downTimeDF - currentCyclePercentage);
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
     // Zero torque control mode until foot off
     else if (footOffPercentage < 0) {
-        dorsiPosition = dorsiNeutralPosition;
+        dorsiPosition = 0;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // Activate dorsiflexion
     else if (currentCyclePercentage < footOffPercentage + upTimeDF){
-        dorsiPosition = dorsiNeutralPosition;
+        dorsiPosition = 0;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
     // Hold dorsiflexion
     else {
-        dorsiPosition = dorsiNeutralPosition;
+        dorsiPosition = 0;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
@@ -158,20 +158,21 @@ void worker()
                 // CONTROL LOOP MAIN BODY
                 if (slave->getName() == "Plantar"){
                     auto reading = maxon_slave_ptr->getReading();
-                    // Find and switch correct control mode for current command.
 
-                    // 
-                    pathPlanner();
+                    pathPlannerPlantarflexion();
                     maxon::Command command;
-                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                    command.setModeOfOperation(plantarMode);
                     command.setTargetPosition(plantarNeutralPosition + dirPlantar * plantarPosition);
                     command.setTargetTorque(dirPlantar * plantarTorque);
                     maxon_slave_ptr->stageCommand(command);
 
                 }
                 else if (slave->getName() == "Dorsi"){
-                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
-                    command.setTargetPosition(dorsiPosition + dorsiNeutralPosition);
+                    auto reading = maxon_slave_ptr->getReading();
+                    pathPlannerDorsiflexion();
+                    command.setModeOfOperation(dorsiMode);
+                    command.setTargetPosition(dorsiNeutralPosition + dirDorsi * dorsiPosition);
+                    command.setTargetTorque(dirDorsi * dorsiTorque);
                     maxon_slave_ptr->stageCommand(command);
                 }
                 else {
