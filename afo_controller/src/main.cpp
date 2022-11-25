@@ -4,7 +4,7 @@ void pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
     auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
     auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
-    double currentCyclePercentage = currentTimegap / eventTimeGap * 0.12;
+    double currentCyclePercentage = currentTimeGap / eventTimeGap * 0.12;
 
     // Dummy variable to simplify formulation.
     double t;   
@@ -22,11 +22,11 @@ void pathPlannerPlantarflexion(){
         plantarPosition = 0;
         // Acceleration
         if (t < 0.5 * upTimeRatio * onTime){
-            plantarTorque = 0.5 * acc * t^2;
+            plantarTorque = 0.5 * acc * pow(t,2);
         }
         // Deceleration
         else{
-            plantarTorque = 1 - 0.5 * acc * (t - onTime * upTimeRatio) ^ 2;
+            plantarTorque = 1 - 0.5 * acc * pow(t - onTime * upTimeRatio, 2);
         }
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;     
     }
@@ -38,11 +38,11 @@ void pathPlannerPlantarflexion(){
 
         // Acceleration
         if (t < 0.5 * (1 - upTimeRatio) * onTime) {
-            plantarTorque = 1 - 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * t ^ 2;
+            plantarTorque = 1 - 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * pow(t, 2);
         }
         // Deceleration
         else {
-            plantarTorque = 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * (t - onTime * (1 - upTimeRatio)) ^ 2;
+            plantarTorque = 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * pow(t - onTime * (1 - upTimeRatio), 2);
         }
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
@@ -62,12 +62,12 @@ void pathPlannerDorsiflexion(){
     auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
     auto footOffTimeGap = duration_cast<microseconds>(timeFO - timeIC);
 
-    double currentCyclePercentage = currentTimegap / eventTimeGap * 0.12;
+    double currentCyclePercentage = currentTimeGap / eventTimeGap * 0.12;
     double footOffPercentage = footOffTimeGap / eventTimeGap * 0.12;
 
     // After Initial Contact, deactivate dorsiflexion.
-    if (currentCyclePercentage < downTimeDF){
-        dorsiPosition = (downTimeDF - currentCyclePercentage);
+    if (currentCyclePercentage < downtimeDF){
+        dorsiPosition = (downtimeDF - currentCyclePercentage);
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
@@ -78,7 +78,7 @@ void pathPlannerDorsiflexion(){
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // Activate dorsiflexion
-    else if (currentCyclePercentage < footOffPercentage + upTimeDF){
+    else if (currentCyclePercentage < footOffPercentage + uptimeDF){
         dorsiPosition = 0;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
@@ -93,7 +93,7 @@ void pathPlannerDorsiflexion(){
     return;
 }
 
-void callbackGaitPhaseAffected(const std_msgs::int::ConstPtr& msg){
+void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
     if (msg->data == 0){     
         timeIC = high_resolution_clock::now();
     }
@@ -106,7 +106,7 @@ void callbackGaitPhaseAffected(const std_msgs::int::ConstPtr& msg){
     return;
 }
 
-void callbackGaitPhaseNonAffected(const std_msgs::int::ConstPtr& msg){
+void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
     if (msg->data == 1){
         timeOFO = high_resolution_clock::now();
     }
@@ -124,7 +124,6 @@ void worker()
     {
         rtSuccess &= master->setRealtimePriority(99);
     }
-
     bool maxonEnabledAfterStartup = false;
     /*
     ** The communication update loop.
@@ -144,7 +143,6 @@ void worker()
         {
             master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
         }
-
         for(const auto & slave:configurator->getSlaves())
         {  
             // Keep constant update rate
@@ -157,17 +155,17 @@ void worker()
                 // Set maxons to operation enabled state, do not block the call!
                 maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
             }
-
             // set commands if we can
             if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
                     maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
             {
+		maxon::Command command;
                 // CONTROL LOOP MAIN BODY
                 if (slave->getName() == "Plantar"){
                     auto reading = maxon_slave_ptr->getReading();
-
+			std::cout << "Plantar label" << std::endl;
                     pathPlannerPlantarflexion();
-                    maxon::Command command;
+                    std::cout << "plantar parameters : " << plantarPosition << ", " << plantarTorque << ", " << plantarMode << std::endl;
                     command.setModeOfOperation(plantarMode);
                     command.setTargetPosition(plantarNeutralPosition + dirPlantar * plantarPosition);
                     command.setTargetTorque(dirPlantar * plantarTorque);
@@ -176,7 +174,9 @@ void worker()
                 }
                 else if (slave->getName() == "Dorsi"){
                     auto reading = maxon_slave_ptr->getReading();
+			std::cout <<"Dorsi label" << std::endl;
                     pathPlannerDorsiflexion();
+			std::cout <<"dorsi parameters: " << dorsiPosition << ", " << dorsiTorque << ", " << dorsiMode << std::endl;
                     command.setModeOfOperation(dorsiMode);
                     command.setTargetPosition(dorsiNeutralPosition + dirDorsi * dorsiPosition);
                     command.setTargetTorque(dirDorsi * dorsiTorque);
@@ -249,17 +249,19 @@ int main(int argc, char**argv)
     ros::init(argc, argv, "afo_controller");
     ros::NodeHandle n;
     int rr;
-    String configPath;
+    string configPath;
     n.getParam("/rr", rr);
     n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
-    ros::Subscriber afo_gaitPhaseAffected = n.subscribe<std_msgs::Int>("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
-    ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe<std_msgs::Int>("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
+    ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
+    ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
 
     std::signal(SIGINT, signal_handler);
 
-    configurator = std::make_shared<EthercatDeviceConfigurator>(configPath);
+    configurator = std::make_shared<EthercatDeviceConfigurator>(configPath); 
 
+    dorsiNeutralPosition = 0;
+    plantarNeutralPosition = 0;
     /*
     ** Start all masters.
     ** There is exactly one bus per master which is also started.

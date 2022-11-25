@@ -1,12 +1,14 @@
 
-#include "ethercat_device_configurator/EthercatDeviceConfigurator.hpp"
+#include "EthercatDeviceConfigurator.hpp"
 
 #include <maxon_epos_ethercat_sdk/Maxon.hpp>
 #include <thread>
 #include <chrono>
 #include <csignal>
+#include <cmath>
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
+#include "std_msgs/Int16.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -18,9 +20,11 @@ EthercatDeviceConfigurator::SharedPtr configurator;
 
 unsigned int counter = 0;
 
-double plantarPosition, plantarTorque, plantarMode;
-double dorsiPosition, dorsiTorque, dorsiMode;
+double plantarPosition, plantarTorque;
+double dorsiPosition, dorsiTorque;
 double plantarNeutralPosition, dorsiNeutralPosition;
+
+maxon::ModeOfOperationEnum plantarMode, dorsiMode;
 
 bool isPlantar, isDorsi;
 system_clock::time_point timeIC, timeOFO, timeFO;
@@ -33,7 +37,7 @@ double startTime = 0.25;
 double endTime = 0.65;
 double onTime = endTime - startTime;
 double upTimeRatio = 0.75;
-double acc = 4 / (upTimeRatio * onTime)^2;
+double acc = 4 / pow(upTimeRatio * onTime, 2);
 double maxTorque = 0.3; // Nm at lowest level of motor.
 
 // Dorsiflexion

@@ -15,7 +15,7 @@ import time
 from enum import Enum
 
 import rospy
-from std_msgs.msg import Float32MultiArray, Bool, Int
+from std_msgs.msg import Float32MultiArray, Bool, Int16
 
 from include.model import *
 from include.utils import *
@@ -133,11 +133,11 @@ class DataPredictor:
 
         if self._is_affected:
             self.gait_event_pub = rospy.Publisher(
-                    '/afo_predictor/gaitEventAffected', Int, queue_size=10
+                    '/afo_predictor/gaitEventAffected', Int16, queue_size=10
                 )
         else:
             self.gait_event_pub = rospy.Publisher(
-                '/afo_predictor/gaitEventNonAffected', Int, queue_size=10
+                '/afo_predictor/gaitEventNonAffected', Int16, queue_size=10
             )
 
     def callback(self, msg):
@@ -250,7 +250,7 @@ class DataPredictor:
                     self._hs_detected = True
                     print_arr[0] = "detected"
                     if self._is_affected:
-                        msg = Int()
+                        msg = Int16()
                         msg.data = 0
                         self.gait_event_pub.publish(msg)
                     break
@@ -262,7 +262,7 @@ class DataPredictor:
             self._to_num += 1
             self._to_detected = True
             print_arr[1] = "detected"
-            msg = Int()
+            msg = Int16()
             msg.data = 1
             self.gait_event_pub.publish(msg)
 
