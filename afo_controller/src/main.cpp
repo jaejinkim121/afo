@@ -93,18 +93,25 @@ void pathPlannerDorsiflexion(){
     return;
 }
 
-void callbackGaitPhase(const std_msgs::int::ConstPtr& msg){
+void callbackGaitPhaseAffected(const std_msgs::int::ConstPtr& msg){
     if (msg->data == 0){     
         timeIC = high_resolution_clock::now();
     }
     else if (msg->data == 1){
+        timeFO = high_resolution_clock::now();
+    }
+    else {
+        std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
+    }
+    return;
+}
+
+void callbackGaitPhaseNonAffected(const std_msgs::int::ConstPtr& msg){
+    if (msg->data == 1){
         timeOFO = high_resolution_clock::now();
     }
-    else if (msg->data == 2){
-        timeFO = high_resolution_clock::now();
-    }   
     else {
-        std::cout << "Wrong Gait Phase detected" << std::endl;
+        std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;
     }
     return;
 }
@@ -246,7 +253,8 @@ int main(int argc, char**argv)
     n.getParam("/rr", rr);
     n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
-    ros::Subscriber afo_gaitPhase = n.subscribe<std_msgs::Int>("/afo_predictor/gaitEvent", 1, callbackGaitPhase);
+    ros::Subscriber afo_gaitPhaseAffected = n.subscribe<std_msgs::Int>("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
+    ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe<std_msgs::Int>("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
 
     std::signal(SIGINT, signal_handler);
 

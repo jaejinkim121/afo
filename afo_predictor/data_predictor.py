@@ -15,7 +15,7 @@ import time
 from enum import Enum
 
 import rospy
-from std_msgs.msg import Float32MultiArray, Bool
+from std_msgs.msg import Float32MultiArray, Bool, Int
 
 from include.model import *
 from include.utils import *
@@ -36,7 +36,7 @@ class GaitPhase(Enum):
 
 
 class DataPredictor:
-    def __init__(self, start_time, data_buffer, model_name="LSTM",
+    def __init__(self, start_time, data_buffer, is_affected, model_name="LSTM",
                  model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/"\
                      + "bin/model/CHAR_1121_260/",
                  sensor_dir="Left", input_length=15, sensor_num=6,
@@ -55,6 +55,7 @@ class DataPredictor:
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
         self._right_one = right_object
+        self._is_affected = is_affected
 
         self._predicted_data = None
         self._is_swing = False
@@ -129,6 +130,15 @@ class DataPredictor:
             self.sync_sub = rospy.Subscriber('/afo_sync/sync', Bool, self.callback_sync, queue_size=1)
             self.sync_pub = rospy.Publisher('/afo_predictor/sync_pred', Bool, queue_size=10)
             self.logger.info('{}, {}, {}, {}'.format('swing_phase', 'Sync', 'time', 'data'))
+
+        if self._is_affected:
+            self.gait_event_pub = rospy.Publisher(
+                    '/afo_predictor/gaitEventAffected', Int, queue_size=10
+                )
+        else:
+            self.gait_event_pub = rospy.Publisher(
+                '/afo_predictor/gaitEventNonAffected', Int, queue_size=10
+            )
 
     def callback(self, msg):
         data = msg.data
@@ -239,6 +249,10 @@ class DataPredictor:
                     self._hs_num += 1
                     self._hs_detected = True
                     print_arr[0] = "detected"
+                    if self._is_affected:
+                        msg = Int()
+                        msg.data = 0
+                        self.gait_event_pub.publish(msg)
                     break
         else:
             for data in self._predicted_data:
@@ -248,6 +262,10 @@ class DataPredictor:
             self._to_num += 1
             self._to_detected = True
             print_arr[1] = "detected"
+            msg = Int()
+            msg.data = 1
+            self.gait_event_pub.publish(msg)
+
         if self._hs_detected or self._to_detected:
             print(self.sensor_dir + f"  {Fore.RED}HS{Style.RESET_ALL} " + print_arr[0] + " count: " + str(self._hs_num) + f"   {Fore.GREEN}TO{Style.RESET_ALL}: " + print_arr[1] + " count: " + str(self._to_num))
             self._hs_detected = False
@@ -288,6 +306,7 @@ if __name__ == "__main__":
     threshold_right_to = float(rospy.get_param('/afo_predictor/rto'))
     test_label = rospy.get_param('/afo_predictor/tl')
     is_calibration = rospy.get_param('/afo_predictor/ic')
+    affected_side = rospy.get_param('/afo_predictor/as')
     ros_rate = rospy.get_param('/rr')
 
     r = rospy.Rate(ros_rate)
@@ -302,13 +321,13 @@ if __name__ == "__main__":
     is_calibration = (is_calibration == 1)
 
     right_predictor = DataPredictor(
-        start_time, data_buffer,
+        start_time, data_buffer, is_affected=(affected_side == 1),
         sensor_dir="Right",
         thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to,
         logging_prefix=test_label, is_calibration=is_calibration)
 
     left_predictor = DataPredictor(
-        start_time, data_buffer,
+        start_time, data_buffer, is_affected=(affected_side == 0),
         thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to,
         logging_prefix=test_label, is_calibration=is_calibration,
         right_object=right_predictor)
