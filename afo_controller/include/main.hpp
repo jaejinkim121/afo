@@ -23,7 +23,8 @@ unsigned int counter = 0;
 double plantarPosition, plantarTorque;
 double dorsiPosition, dorsiTorque;
 double plantarNeutralPosition, dorsiNeutralPosition;
-
+bool setGaitEventAffected = false;
+bool setGaitEventNonAffected = false;
 maxon::ModeOfOperationEnum plantarMode, dorsiMode;
 
 bool isPlantar, isDorsi;

@@ -96,12 +96,18 @@ void pathPlannerDorsiflexion(){
 void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
     if (msg->data == 0){     
         timeIC = high_resolution_clock::now();
+        std::cout << "IC detected and sent to controller" << std::endl;
     }
     else if (msg->data == 1){
         timeFO = high_resolution_clock::now();
+        std::cout << "FO detected and sent to controller" << std::endl;
+
     }
     else {
         std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
+    }
+    if (!setGaitEventAffected){
+        setGaitEventAffected = true;
     }
     return;
 }
@@ -109,9 +115,14 @@ void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
 void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
     if (msg->data == 1){
         timeOFO = high_resolution_clock::now();
+        std::cout << "OFO detected and sent to controller" << std::endl;
+
     }
     else {
         std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;
+    }
+    if (!setGaitEventNonAffected){
+        setGaitEventNonAffected = true;
     }
     return;
 }
@@ -163,8 +174,10 @@ void worker()
                 // CONTROL LOOP MAIN BODY
                 if (slave->getName() == "Plantar"){
                     auto reading = maxon_slave_ptr->getReading();
-			std::cout << "Plantar label" << std::endl;
-                    pathPlannerPlantarflexion();
+			        std::cout << "Plantar label" << std::endl;
+                    if (setGaitEventNonAffected && setGaitEventAffected){
+                        pathPlannerPlantarflexion();
+                    }
                     std::cout << "plantar parameters : " << plantarPosition << ", " << plantarTorque << ", " << plantarMode << std::endl;
                     command.setModeOfOperation(plantarMode);
                     command.setTargetPosition(plantarNeutralPosition + dirPlantar * plantarPosition);
@@ -174,9 +187,11 @@ void worker()
                 }
                 else if (slave->getName() == "Dorsi"){
                     auto reading = maxon_slave_ptr->getReading();
-			std::cout <<"Dorsi label" << std::endl;
-                    pathPlannerDorsiflexion();
-			std::cout <<"dorsi parameters: " << dorsiPosition << ", " << dorsiTorque << ", " << dorsiMode << std::endl;
+			        std::cout <<"Dorsi label" << std::endl;
+                    if (setGaitEventNonAffected && setGaitEventAffected){
+                        pathPlannerDorsiflexion();
+                    }
+			        std::cout <<"dorsi parameters: " << dorsiPosition << ", " << dorsiTorque << ", " << dorsiMode << std::endl;
                     command.setModeOfOperation(dorsiMode);
                     command.setTargetPosition(dorsiNeutralPosition + dirDorsi * dorsiPosition);
                     command.setTargetTorque(dirDorsi * dorsiTorque);
@@ -262,6 +277,13 @@ int main(int argc, char**argv)
 
     dorsiNeutralPosition = 0;
     plantarNeutralPosition = 0;
+    dorsiPosition = 0;
+    dorsiTorque = 0;
+    plantarPosition = 0;
+    plantarTorque = 0;
+    plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
+    dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
+
     /*
     ** Start all masters.
     ** There is exactly one bus per master which is also started.
