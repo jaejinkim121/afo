@@ -1,11 +1,12 @@
 #include "../include/main.hpp"
 
 void pathPlannerPlantarflexion(){
+std::cout <<"pf path planning" << std::endl;
     auto time = high_resolution_clock::now();
     auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
     auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
     double currentCyclePercentage = currentTimeGap / eventTimeGap * 0.12;
-
+	
     // Dummy variable to simplify formulation.
     double t;   
 
@@ -94,6 +95,7 @@ void pathPlannerDorsiflexion(){
 }
 
 void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
+	std::cout << "senssenssensens" << std::endl;
     if (msg->data == 0){     
         timeIC = high_resolution_clock::now();
         std::cout << "IC detected and sent to controller" << std::endl;
@@ -174,27 +176,23 @@ void worker()
                 // CONTROL LOOP MAIN BODY
                 if (slave->getName() == "Plantar"){
                     auto reading = maxon_slave_ptr->getReading();
-			        std::cout << "Plantar label" << std::endl;
                     if (setGaitEventNonAffected && setGaitEventAffected){
                         pathPlannerPlantarflexion();
                     }
-                    std::cout << "plantar parameters : " << plantarPosition << ", " << plantarTorque << ", " << plantarMode << std::endl;
                     command.setModeOfOperation(plantarMode);
                     command.setTargetPosition(plantarNeutralPosition + dirPlantar * plantarPosition);
-                    command.setTargetTorque(dirPlantar * plantarTorque);
+                    command.setTargetTorque(dirPlantar * plantarTorque * maxTorque);
                     maxon_slave_ptr->stageCommand(command);
 
                 }
                 else if (slave->getName() == "Dorsi"){
                     auto reading = maxon_slave_ptr->getReading();
-			        std::cout <<"Dorsi label" << std::endl;
                     if (setGaitEventNonAffected && setGaitEventAffected){
                         pathPlannerDorsiflexion();
                     }
-			        std::cout <<"dorsi parameters: " << dorsiPosition << ", " << dorsiTorque << ", " << dorsiMode << std::endl;
                     command.setModeOfOperation(dorsiMode);
                     command.setTargetPosition(dorsiNeutralPosition + dirDorsi * dorsiPosition);
-                    command.setTargetTorque(dirDorsi * dorsiTorque);
+                    command.setTargetTorque(dirDorsi * dorsiTorque * maxTorque);
                     maxon_slave_ptr->stageCommand(command);
                 }
                 else {
@@ -309,7 +307,9 @@ int main(int argc, char**argv)
      */
 
     std::cout << "Startup finished" << std::endl;
-
+    while(ros::ok()){
+	ros::spinOnce();
+}
     // nothing further to do in this thread.
     pause();
 }
