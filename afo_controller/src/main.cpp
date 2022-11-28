@@ -1,6 +1,6 @@
 #include "../include/main.hpp"
 
-void pathPlannerPlantarflexion(){
+double pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> eventTimeGap = timeOFO - timeIC;
@@ -54,10 +54,10 @@ void pathPlannerPlantarflexion(){
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
 
-    return;
+    return currentCyclePercentage;
 }
 
-void pathPlannerDorsiflexion(){
+double pathPlannerDorsiflexion(){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> eventTimeGap = timeOFO - timeIC;
@@ -91,38 +91,30 @@ void pathPlannerDorsiflexion(){
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
 
-    return;
+    return currentCyclePercentage;
 }
 
 void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
-    if (msg->data == 0){     
+    if (msg->data == 0) 
         timeIC = high_resolution_clock::now();
-std::cout << "IC" << std::endl;
-    }
-    else if (msg->data == 1){
+    else if (msg->data == 1) 
         timeFO = high_resolution_clock::now();
-std::cout << "FO" << std::endl;
-    }
-    else {
+    else
         std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
-    }
-    if (!setGaitEventAffected){
-        setGaitEventAffected = true;
-    }
+
+    setGaitEventAffected = true;
+
     return;
 }
 
 void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
-    if (msg->data == 1){
+    if (msg->data == 1)
         timeOFO = high_resolution_clock::now();
-std::cout << "OFO" << std::endl;
-    }
-    else {
+    else
         std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;
-    }
-    if (!setGaitEventNonAffected){
-        setGaitEventNonAffected = true;
-    }
+
+    setGaitEventNonAffected = true;
+
     return;
 }
 
@@ -169,7 +161,7 @@ void worker()
             if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
                     maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
             {
-		maxon::Command command;
+		        maxon::Command command;
                 // CONTROL LOOP MAIN BODY
                 if (slave->getName() == "Plantar"){
                     auto reading = maxon_slave_ptr->getReading();
@@ -177,8 +169,8 @@ void worker()
                         pathPlannerPlantarflexion();
                     }
                     command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                    command.setTargetPosition(plantarNeutralPosition);
-                    command.setTargetTorque(dirPlantar * maxTorque);
+                    command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
+                    command.setTargetTorque(dirPlantar * maxTorque * plantarTorque);
                     maxon_slave_ptr->stageCommand(command);
 
                 }
@@ -188,8 +180,8 @@ void worker()
                         pathPlannerDorsiflexion();
                     }
                     command.setModeOfOperation(dorsiMode);
-                    command.setTargetPosition(dorsiNeutralPosition + dirDorsi * dorsiPosition);
-                    command.setTargetTorque(dirDorsi * dorsiTorque * maxTorque);
+                    command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
+                    command.setTargetTorque(dirDorsi * maxTorque * dorsiTorque);
                     maxon_slave_ptr->stageCommand(command);
                 }
                 else {
