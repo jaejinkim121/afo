@@ -6,6 +6,7 @@
 #include <chrono>
 #include <csignal>
 #include <cmath>
+#include <iostream>
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
 #include "std_msgs/Int16.h"

@@ -2,9 +2,9 @@
 
 void pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
-    auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
-    auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
-    double currentCyclePercentage = currentTimeGap / eventTimeGap * 0.12;
+    duration<double, micro> currentTimeGap = time - timeIC;
+    duration<double, micro> eventTimeGap = timeOFO - timeIC;
+    double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
 
     // Dummy variable to simplify formulation.
     double t;   
@@ -58,12 +58,12 @@ void pathPlannerPlantarflexion(){
 
 void pathPlannerDorsiflexion(){
     auto time = high_resolution_clock::now();
-    auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
-    auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
-    auto footOffTimeGap = duration_cast<microseconds>(timeFO - timeIC);
+    duration<double, micro> currentTimeGap = time - timeIC;
+    duration<double, micro> eventTimeGap = timeOFO - timeIC;
+    duration<double, micro> footOffTimeGap = timeFO - timeIC;
 
-    double currentCyclePercentage = currentTimeGap / eventTimeGap * 0.12;
-    double footOffPercentage = footOffTimeGap / eventTimeGap * 0.12;
+    double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
+    double footOffPercentage = footOffTimeGap.count() / eventTimeGap.count() * 0.12;
 
     // After Initial Contact, deactivate dorsiflexion.
     if (currentCyclePercentage < downtimeDF){
