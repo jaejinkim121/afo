@@ -10,6 +10,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
 #include "std_msgs/Int16.h"
+#include "spdlog/spdlog.h"
 
 using namespace std;
 using namespace std::chrono;

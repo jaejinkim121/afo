@@ -250,6 +250,9 @@ void signal_handler(int sig)
  */
 int main(int argc, char**argv)
 {    
+    time_t t = time(0);
+    tm* now = localtime(&t);
+    auto file_logger = spdlog::basic_logger_mt("controller", "/home/srbl/catkin_ws/afo/afo_controller/log/"+to_string(now->tm_min) + to_string(now->tm_sec));
     ros::init(argc, argv, "afo_controller");
     ros::NodeHandle n;
     int rr;
