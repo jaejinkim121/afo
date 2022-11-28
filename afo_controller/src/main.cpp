@@ -68,7 +68,9 @@ double pathPlannerDorsiflexion(){
 
     // After Initial Contact, deactivate dorsiflexion.
     if (currentCyclePercentage < downtimeDF){
-        dorsiPosition = (downtimeDF - currentCyclePercentage);
+        dorsiPosition = 0
+        
+        ;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
@@ -247,7 +249,7 @@ void signal_handler(int sig)
 ** Pass the path to the setup.yaml file as first command line argument.
  */
 int main(int argc, char**argv)
-{
+{    
     ros::init(argc, argv, "afo_controller");
     ros::NodeHandle n;
     int rr;
