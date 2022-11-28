@@ -39,12 +39,12 @@ double endTime = 0.65;
 double onTime = endTime - startTime;
 double upTimeRatio = 0.75;
 double acc = 4 / pow(upTimeRatio * onTime, 2);
-double maxTorque = 0.3; // Nm at lowest level of motor.
+double maxTorque = 1.0; // Nm at lowest level of motor.
 
 // Dorsiflexion
 double uptimeDF = 0.1;
 double downtimeDF = 0.1;
 
 // To switch target direction easily. CW = 1, CCW = -1
-double dirPlantar = 1;
-double dirDorsi = -1;
+double dirPlantar = -1;
+double dirDorsi = 1;

@@ -1,12 +1,11 @@
 #include "../include/main.hpp"
 
 void pathPlannerPlantarflexion(){
-std::cout <<"pf path planning" << std::endl;
     auto time = high_resolution_clock::now();
     auto currentTimeGap = duration_cast<microseconds>(time-timeIC);
     auto eventTimeGap = duration_cast<microseconds>(timeOFO - timeIC);
     double currentCyclePercentage = currentTimeGap / eventTimeGap * 0.12;
-	
+    std::cout << currentCyclePercentage << std::endl;	
     // Dummy variable to simplify formulation.
     double t;   
 
@@ -95,15 +94,13 @@ void pathPlannerDorsiflexion(){
 }
 
 void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
-	std::cout << "senssenssensens" << std::endl;
     if (msg->data == 0){     
         timeIC = high_resolution_clock::now();
-        std::cout << "IC detected and sent to controller" << std::endl;
+std::cout << "IC" << std::endl;
     }
     else if (msg->data == 1){
         timeFO = high_resolution_clock::now();
-        std::cout << "FO detected and sent to controller" << std::endl;
-
+std::cout << "FO" << std::endl;
     }
     else {
         std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
@@ -117,8 +114,7 @@ void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
 void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
     if (msg->data == 1){
         timeOFO = high_resolution_clock::now();
-        std::cout << "OFO detected and sent to controller" << std::endl;
-
+std::cout << "OFO" << std::endl;
     }
     else {
         std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;
@@ -179,9 +175,9 @@ void worker()
                     if (setGaitEventNonAffected && setGaitEventAffected){
                         pathPlannerPlantarflexion();
                     }
-                    command.setModeOfOperation(plantarMode);
-                    command.setTargetPosition(plantarNeutralPosition + dirPlantar * plantarPosition);
-                    command.setTargetTorque(dirPlantar * plantarTorque * maxTorque);
+                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                    command.setTargetPosition(plantarNeutralPosition);
+                    command.setTargetTorque(dirPlantar * maxTorque);
                     maxon_slave_ptr->stageCommand(command);
 
                 }
