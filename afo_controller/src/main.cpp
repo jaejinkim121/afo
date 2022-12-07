@@ -125,7 +125,7 @@ void worker()
     std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
 	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
-    ostream outFileController;
+    ofstream outFileController;
     outFileController.open("/home/srbl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
     outFileController << 
         "Maximum Torque=" << maxTorque << 
