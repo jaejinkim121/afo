@@ -185,7 +185,7 @@ void worker()
                     command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
                     command.setTargetTorque(dirPlantar * maxTorque * plantarTorque);
                     maxon_slave_ptr->stageCommand(command);
-                    outFileController << ros::Time::now() << "0, " << plantarTorque << ", " << plantarPosition << ", " 
+                    outFileController << ros::Time::now() << ", 0, " << plantarMode << ", " << plantarTorque << ", " << plantarPosition << ", " 
                         << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
                         << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
                         << reading.getBusVoltage() << endl;
@@ -200,7 +200,7 @@ void worker()
                     command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
                     command.setTargetTorque(dirDorsi * maxTorque * dorsiTorque);
                     maxon_slave_ptr->stageCommand(command);
-                    outFileController << ros::Time::now() << "1, " << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
+                    outFileController << ros::Time::now() << ", 1, " << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
                         << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
                         << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
                         << reading.getBusVoltage() << endl;
