@@ -143,7 +143,7 @@ class DataPredictor:
     def callback(self, msg):
         data = msg.data
         self.data = np.vstack([self.data, data])[-self.input_length:]
-        reel = time.time() - self.start_time
+        reel = rospy.Time.now().to_sec()
         if self.sensor_dir == "Left":
             self.logger.info('{}, {}, {}, {} {} {} {} {} {}'.format(int(self._is_swing), int(self._right_one.current_sync), reel, data[0], data[1], data[2], data[3], data[4], data[5]))
         else:
@@ -154,7 +154,7 @@ class DataPredictor:
     
     def callback_sync(self, msg):
         self.current_sync = msg.data
-        reel = time.time() - self.start_time
+        reel = rospy.Time.now().to_sec()
         msg_new = Bool()
         msg_new.data = self.current_sync
         self.sync_pub.publish(msg_new)
@@ -167,7 +167,7 @@ class DataPredictor:
         for i in range(7):
             for j in range(9):
                 self.data_imu[i][j] = data[i*9 + j]
-        reel = time.time() - self.start_time
+        reel = rospy.Time.now().to_sec()
         self.logger_imu.info('{}, {}, {}, {}, {}'.format(int(self.zero), int(self.current_sync), int(self._is_swing), reel, data))
 
     def CNNtransform(self, idx):
@@ -317,7 +317,7 @@ if __name__ == "__main__":
         [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
         ]
     
-    start_time = time.time()
+    start_time = rospy.Time.now()
     is_calibration = (is_calibration == 1)
 
     right_predictor = DataPredictor(

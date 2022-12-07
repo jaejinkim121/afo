@@ -122,6 +122,17 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
 
 void worker()
 {
+    std::time_t t = std::time(0);
+	std::tm* now = std::localtime(&t);
+	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
+    ostream outFileController;
+    outFileController.open("/home/srbl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
+    outFileController << 
+        "Maximum Torque=" << maxTorque << 
+        ", start time=" << startTime << 
+        ", endTime=" << endTime <<
+        ", upTimeRatio=" << upTimeRatio <<
+        ", dirPlantar=" << dirPlantar << endl;
     dorsiNeutralPosition = 0;
     bool rtSuccess = true;
     for(const auto & master: configurator->getMasters())
@@ -174,6 +185,10 @@ void worker()
                     command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
                     command.setTargetTorque(dirPlantar * maxTorque * plantarTorque);
                     maxon_slave_ptr->stageCommand(command);
+                    outFileController << ros::Time::now() << "0, " << plantarTorque << ", " << plantarPosition << ", " 
+                        << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
+                        << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
+                        << reading.getBusVoltage() << endl;
 
                 }
                 else if (slave->getName() == "Dorsi"){
@@ -185,6 +200,10 @@ void worker()
                     command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
                     command.setTargetTorque(dirDorsi * maxTorque * dorsiTorque);
                     maxon_slave_ptr->stageCommand(command);
+                    outFileController << ros::Time::now() << "1, " << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
+                        << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
+                        << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
+                        << reading.getBusVoltage() << endl;
                 }
                 else {
                     std::cout << slave->getName() << " is not our target device" << std::endl;
@@ -250,9 +269,6 @@ void signal_handler(int sig)
  */
 int main(int argc, char**argv)
 {    
-    time_t t = time(0);
-    tm* now = localtime(&t);
-    auto file_logger = spdlog::basic_logger_mt("controller", "/home/srbl/catkin_ws/afo/afo_controller/log/"+to_string(now->tm_min) + to_string(now->tm_sec));
     ros::init(argc, argv, "afo_controller");
     ros::NodeHandle n;
     int rr;
