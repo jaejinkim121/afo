@@ -43,9 +43,11 @@ double endTime = 0.65;
 double onTime = endTime - startTime;
 double upTimeRatio = 0.75;
 double acc = 4 / pow(upTimeRatio * onTime, 2);
-double maxTorque = 1.0; // Nm at lowest level of motor.
+double maxTorquePlantar = 1.0; // Nm at lowest level of motor.
+double maxTorqueDorsi = 0.3;
+double maxPositionDorsi = 10;
 double dorsiZeroingIncrement = 0.1;
-double dorsiPreTension = 1;
+double dorsiPreTension = 0.1;
 // Dorsiflexion
 double uptimeDF = 0.1;
 double downtimeDF = 0.1;

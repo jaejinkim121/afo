@@ -53,7 +53,7 @@ double pathPlannerPlantarflexion(){
         plantarTorque = 0;
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-    plantarTorque = 
+    plantarTorque = min(max(plantarTorque, 0), 1);
     return currentCyclePercentage;
 }
 
@@ -68,29 +68,29 @@ double pathPlannerDorsiflexion(){
 
     // After Initial Contact, deactivate dorsiflexion.
     if (currentCyclePercentage < downtimeDF){
-        dorsiPosition = 0;
+        dorsiPosition = 1 - currentCyclePercentage / downtimeDF;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-    // Zero torque control mode until foot off
+    // Pretension torque control mode until foot off
     else if (footOffPercentage < 0) {
         dorsiPosition = 0;
-        dorsiTorque = 0;
+        dorsiTorque = dorsiPreTension;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // Activate dorsiflexion
     else if (currentCyclePercentage < footOffPercentage + uptimeDF){
-        dorsiPosition = 0;
+        dorsiPosition = (currentCyclePercentage - footOffPercentage) / uptimeDF;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
     // Hold dorsiflexion
     else {
-        dorsiPosition = 0;
+        dorsiPosition = 1;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-
+    dorsiTorque = min(max(dorsiTorque, dorsiPreTension), 1);
     return currentCyclePercentage;
 }
 
@@ -231,27 +231,41 @@ void worker()
                     }
                     command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                     command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
-                    command.setTargetTorque(dirPlantar * maxTorque * plantarTorque);
+                    command.setTargetTorque(dirPlantar * maxTorquePlantar * plantarTorque);
                     maxon_slave_ptr->stageCommand(command);
                     outFileController << ros::Time::now() << ", 0, " << plantarMode << ", " << plantarTorque << ", " << plantarPosition << ", " 
                         << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
                         << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
                         << reading.getBusVoltage() << endl;
-
                 }
                 else if (slave->getName() == "Dorsi"){
                     auto reading = maxon_slave_ptr->getReading();
                     if (setGaitEventNonAffected && setGaitEventAffected){
                         pathPlannerDorsiflexion();
                     }
-                    command.setModeOfOperation(dorsiMode);
-                    command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
-                    command.setTargetTorque(dirDorsi * maxTorque * dorsiTorque);
-                    maxon_slave_ptr->stageCommand(command);
-                    outFileController << ros::Time::now() << ", 1, " << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
+                    
+                    if (reading.getActualTorque() > maxTorqueDorsi){
+                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                        command.setTargetTorque(maxTorqueDorsi);
+                        command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
+                        outFileController << ros::Time::now() << ", 1, " 
+                        << maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode << ", " 
+                        << maxTorqueDorsi << ", " << dorsiPosition << ", " 
                         << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
                         << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
                         << reading.getBusVoltage() << endl;
+                    }
+                    else{
+                        command.setModeOfOperation(dorsiMode);
+                        command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
+                        command.setTargetTorque(dirDorsi * maxTorqueDorsi * dorsiTorque);
+                        outFileController << ros::Time::now() << ", 1, " << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
+                        << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
+                        << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
+                        << reading.getBusVoltage() << endl;
+                    }
+                    maxon_slave_ptr->stageCommand(command);
+                    
                 }
                 else {
                     std::cout << slave->getName() << " is not our target device" << std::endl;
