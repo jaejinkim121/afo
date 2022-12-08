@@ -53,7 +53,7 @@ double pathPlannerPlantarflexion(){
         plantarTorque = 0;
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-    plantarTorque = min(max(plantarTorque, 0), 1);
+    plantarTorque = min(max(plantarTorque, 0.0), 1.0);
     return currentCyclePercentage;
 }
 
@@ -90,7 +90,7 @@ double pathPlannerDorsiflexion(){
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-    dorsiTorque = min(max(dorsiTorque, dorsiPreTension), 1);
+    dorsiTorque = min(max(dorsiTorque, dorsiPreTension), 1.0);
     return currentCyclePercentage;
 }
 
@@ -126,7 +126,8 @@ void worker()
     ofstream outFileController;
     outFileController.open("/home/srbl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
     outFileController << 
-        "Maximum Torque=" << maxTorque << 
+        "Max Plantar Torque=" << maxTorquePlantar << 
+        ", Max Dorsi Torque=" << maxTorqueDorsi << 
         ", start time=" << startTime << 
         ", endTime=" << endTime <<
         ", upTimeRatio=" << upTimeRatio <<
