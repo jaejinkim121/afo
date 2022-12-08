@@ -53,7 +53,7 @@ double pathPlannerPlantarflexion(){
         plantarTorque = 0;
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
-
+    plantarTorque = 
     return currentCyclePercentage;
 }
 
@@ -68,9 +68,7 @@ double pathPlannerDorsiflexion(){
 
     // After Initial Contact, deactivate dorsiflexion.
     if (currentCyclePercentage < downtimeDF){
-        dorsiPosition = 0
-        
-        ;
+        dorsiPosition = 0;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
@@ -132,8 +130,9 @@ void worker()
         ", start time=" << startTime << 
         ", endTime=" << endTime <<
         ", upTimeRatio=" << upTimeRatio <<
-        ", dirPlantar=" << dirPlantar << endl;
-    dorsiNeutralPosition = 0;
+        ", dirPlantar=" << dirPlantar <<
+        ", ";
+
     bool rtSuccess = true;
     for(const auto & master: configurator->getMasters())
     {
@@ -148,6 +147,55 @@ void worker()
      */
     while(!abrt)
     {
+        if (!isDorsiZeroing){
+            for(const auto & master: configurator->getMasters() ){
+                master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
+            }               
+            for(const auto & slave:configurator->getSlaves())
+            {  
+                // Keep constant update rate
+                // auto start_time = std::chrono::steady_clock::now();
+
+                std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
+
+                if (!maxonEnabledAfterStartup)
+                {
+                    // Set maxons to operation enabled state, do not block the call!
+                    maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
+                }
+                // set commands if we can
+                if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
+                        maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
+                {
+                    maxon::Command command;
+                    // CONTROL LOOP MAIN BODY
+                    if (slave->getName() == "Dorsi"){
+                        auto reading = maxon_slave_ptr->getReading();
+                        if (reading.getActualTorque() > dorsiPreTension * dirDorsi){
+                            isDorsiZeroing = true;
+                            dorsiNeutralPosition = reading.getActualPosition();
+                            break;
+
+                        }
+                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
+                        command.setTargetPosition(reading.getActualPosition() + dorsiZeroingIncrement * dirDorsi);
+                        command.setTargetTorque(0);
+                        maxon_slave_ptr->stageCommand(command);
+
+
+                    }
+                    else {
+                        std::cout << slave->getName() << " is not our target device" << std::endl;
+                    }
+                }
+                else
+                {
+                    MELO_WARN_STREAM("Maxon '" << maxon_slave_ptr->getName()
+                                                                            << "': " << maxon_slave_ptr->getReading().getDriveState());
+                }
+            }
+            maxonEnabledAfterStartup = true;
+        }
         /*
         ** Update each master.
         ** This sends tha last staged commands and reads the latest readings over EtherCAT.

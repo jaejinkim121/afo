@@ -28,6 +28,7 @@ double dorsiPosition, dorsiTorque;
 double plantarNeutralPosition, dorsiNeutralPosition;
 bool setGaitEventAffected = false;
 bool setGaitEventNonAffected = false;
+bool isDorsiZeroing = false;
 maxon::ModeOfOperationEnum plantarMode, dorsiMode;
 
 bool isPlantar, isDorsi;
@@ -43,7 +44,8 @@ double onTime = endTime - startTime;
 double upTimeRatio = 0.75;
 double acc = 4 / pow(upTimeRatio * onTime, 2);
 double maxTorque = 1.0; // Nm at lowest level of motor.
-
+double dorsiZeroingIncrement = 0.1;
+double dorsiPreTension = 1;
 // Dorsiflexion
 double uptimeDF = 0.1;
 double downtimeDF = 0.1;
