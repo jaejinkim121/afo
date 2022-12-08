@@ -18,7 +18,7 @@ Hardware:
   - CyclicSynchronousPositionMode
   - CyclicSynchronousVelocityMode
   position_encoder_resolution: 4096
-  gear_ratio: [169, 9]
+  gear_ratio: [9,169]
   motor_constant: 1.0
   working_voltage: 24
   pole_pairs: 7
@@ -32,3 +32,11 @@ Hardware:
   quick_stop_decel: 1000
   profile_decel: 1000
   follow_error_window: 4294967295
+  motor_rated_torque: 0.258
+  current_p_gain: 0.382429 #8.426858
+  current_i_gain: 760.955 #10699.972
+  position_p_gain: 16.984530
+  position_i_gain: 347.798341
+  position_d_gain: 0.271994 #0.099505
+  velocity_p_gain: 0.258725 #0.119284
+  velocity_i_gain: 11.208479 #9.654194

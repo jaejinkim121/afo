@@ -34,7 +34,7 @@ maxon::ModeOfOperationEnum plantarMode, dorsiMode;
 
 bool isPlantar, isDorsi;
 system_clock::time_point timeIC, timeOFO, timeFO;
-
+int tmptmp = 0;
 // Configuration
 //
 
@@ -45,10 +45,10 @@ double onTime = endTime - startTime;
 double upTimeRatio = 0.75;
 double acc = 4 / pow(upTimeRatio * onTime, 2);
 double maxTorquePlantar = 1.0; // Nm at lowest level of motor.
-double maxTorqueDorsi = 0.3;
+double maxTorqueDorsi = 0.2;
 double maxPositionDorsi = 10;
 double dorsiZeroingIncrement = 0.1;
-double dorsiPreTension = 0.1;
+double dorsiPreTension = 0.09;
 // Dorsiflexion
 double uptimeDF = 0.1;
 double downtimeDF = 0.1;
