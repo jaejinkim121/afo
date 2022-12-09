@@ -48,7 +48,8 @@ double maxTorquePlantar = 1.0; // Nm at lowest level of motor.
 double maxTorqueDorsi = 0.2;
 double maxPositionDorsi = 10;
 double dorsiZeroingIncrement = 0.1;
-double dorsiPreTension = 0.09;
+double dorsiPreTension = 0.1;
+double plantarPreTension = 0.1;
 // Dorsiflexion
 double uptimeDF = 0.1;
 double downtimeDF = 0.1;

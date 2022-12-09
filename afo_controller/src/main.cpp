@@ -183,20 +183,19 @@ void worker()
                     else if (slave->getName() == "Dorsi"){
                         auto reading = maxon_slave_ptr->getReading();
                         if (reading.getActualTorque() > dorsiPreTension * dirDorsi){
-				if (tmptmp++ < 50){continue;}
+				            if (tmptmp++ < 15){
+                                continue;
+                            }
                             isDorsiZeroing = true;
                             dorsiNeutralPosition = reading.getActualPosition();
-			    outFileController << "dorsiNeutralPosition=" << dorsiNeutralPosition << endl;
-		            cout << "Dorsi Zeroing Done: " << reading.getActualTorque() << endl;
+			                outFileController << "dorsiNeutralPosition=" << dorsiNeutralPosition << endl;
+		                    cout << "Dorsi Zeroing Done: " << reading.getActualTorque() << endl;
                             break;
-
                         }
                         command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
                         command.setTargetPosition(reading.getActualPosition() + dorsiZeroingIncrement * dirDorsi);
                         command.setTargetTorque(0);
                         maxon_slave_ptr->stageCommand(command);
-
-
                     }
                 }
                 else
@@ -243,7 +242,7 @@ void worker()
 		            }
 		            command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
 		            command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
-		            command.setTargetTorque(dirPlantar * maxTorquePlantar * plantarTorque);
+		            command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
 		            maxon_slave_ptr->stageCommand(command);
 		            outFileController << ros::Time::now() << ", 0, " << plantarMode << ", " << plantarTorque << ", " << plantarPosition << ", " 
 		                << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
