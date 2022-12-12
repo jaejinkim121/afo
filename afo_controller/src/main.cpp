@@ -244,7 +244,7 @@ void worker()
 		            command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
 		            command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
 		            maxon_slave_ptr->stageCommand(command);
-		            outFileController << ros::Time::now() << ", 0, " << plantarMode << ", " << plantarTorque << ", " << plantarPosition << ", " 
+		            outFileController << ros::Time::now() << ", plantar, " << plantarMode << ", " << plantarTorque << ", " << plantarPosition << ", " 
 		                << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
 		                << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
 		                << reading.getBusVoltage() << endl;
@@ -258,7 +258,7 @@ void worker()
 		                command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
 		                command.setTargetTorque(maxTorqueDorsi);
 		                command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
-		                outFileController << ros::Time::now() << ", 1, " 
+		                outFileController << ros::Time::now() << ", dorsi, " 
 		                << maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode << ", " 
 		                << maxTorqueDorsi << ", " << dorsiPosition << ", " 
 		                << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
@@ -269,7 +269,7 @@ void worker()
 		                command.setModeOfOperation(dorsiMode);
 		                command.setTargetPosition(dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi);
 		                command.setTargetTorque(dirDorsi * maxTorqueDorsi * dorsiTorque);
-		                outFileController << ros::Time::now() << ", 1, " << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
+		                outFileController << ros::Time::now() << ", dorsi, " << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
 		                << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
 		                << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
 		                << reading.getBusVoltage() << endl;
