@@ -148,6 +148,7 @@ void worker()
      */
     while(!abrt)
     {
+        // ------------------------------- Dorsiflexion zeroing process start -------------------------------------------- //
         if (!isDorsiZeroing){
             for(const auto & master: configurator->getMasters() ){
                 master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
@@ -206,6 +207,7 @@ void worker()
             }
             maxonEnabledAfterStartup = true;
         }
+        /* -----------------------------    Dorsiflexion Zeroing Process Done     ---------------------------------*/
         /*
         ** Update each master.
         ** This sends tha last staged commands and reads the latest readings over EtherCAT.
