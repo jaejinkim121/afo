@@ -40,21 +40,23 @@ int dorsiBufferFlushingIndex = 0;
 // Configuration
 //
 
-// Plantarflexion
+// Time Parameter
 double startTime = 0.25;
 double endTime = 0.65;
 double onTime = endTime - startTime;
 double upTimeRatio = 0.75;
 double acc = 4 / pow(upTimeRatio * onTime, 2);
+double uptimeDF = 0.1;
+double downtimeDF = 0.1;
+duration<double, micro> eventTimeGap;
+
+// Force Parameter
 double maxTorquePlantar = 1.0; // Nm at lowest level of motor.
 double maxTorqueDorsi = 0.2;
 double maxPositionDorsi = 10;
 double dorsiZeroingIncrement = 0.1;
 double dorsiPreTension = 0.1;
 double plantarPreTension = 0.1;
-// Dorsiflexion
-double uptimeDF = 0.1;
-double downtimeDF = 0.1;
 
 // To switch target direction easily. CW = 1, CCW = -1
 double dirPlantar = -1;
