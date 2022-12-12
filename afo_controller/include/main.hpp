@@ -1,7 +1,3 @@
-
-#include "EthercatDeviceConfigurator.hpp"
-
-#include <maxon_epos_ethercat_sdk/Maxon.hpp>
 #include <thread>
 #include <chrono>
 #include <csignal>
@@ -9,10 +5,14 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
 #include "std_msgs/Int16.h"
 #include "spdlog/spdlog.h"
+
+#include "EthercatDeviceConfigurator.hpp"
+#include <maxon_epos_ethercat_sdk/Maxon.hpp>
 
 using namespace std;
 using namespace std::chrono;
@@ -34,7 +34,9 @@ maxon::ModeOfOperationEnum plantarMode, dorsiMode;
 
 bool isPlantar, isDorsi;
 system_clock::time_point timeIC, timeOFO, timeFO;
-int tmptmp = 0;
+
+int dorsiBufferFlushingIndex = 0;
+
 // Configuration
 //
 
