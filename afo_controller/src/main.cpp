@@ -141,7 +141,8 @@ void worker()
         rtSuccess &= master->setRealtimePriority(99);
     }
     bool maxonEnabledAfterStartup = false;
-    
+    maxon::ModeOfOperationEnum dorsiInputMode;
+    double dorsiPositionInput, dorsiTorqueInput;
     /*
     ** The communication update loop.
     ** This loop is supposed to be executed at a constant rate.
@@ -261,38 +262,34 @@ void worker()
                             currentTimePercentage = pathPlannerDorsiflexion();
                         }
                         if (reading.getActualTorque() * dirDorsi > maxTorqueDorsi){
-                            command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                            command.setTargetTorque(maxTorqueDorsi * dirDorsi);
-                            command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
-                            outFileController << "dorsi, " 
-                            << ros::Time::now() << ", " 
-                            << currentTimePercentage << ", " 
-                            << maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode << ", " 
-                            << maxTorqueDorsi * dirDorsi << ", " 
-                            << dorsiNeutralPosition + dorsiPosition * dirDorsi << ", " 
-                            << reading.getActualCurrent() << ", " 
-                            << reading.getActualTorque() << ", " 
-                            << reading.getActualPosition() << ", " 
-                            << reading.getActualVelocity() << ", " 
-                            << reading.getBusVoltage() << endl;
+                            dorsiInputMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
+                            dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
+                            dorsiTorqueInput = maxTorqueDorsi * dirDorsi;
                         }
                         else{
-                            command.setModeOfOperation(dorsiMode);
-                            command.setTargetPosition(dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi);
-                            command.setTargetTorque(dirDorsi * maxTorqueDorsi * dorsiTorque);
-                            outFileController << "dorsi, " 
+                            dorsiInputMode = dorsiMode;
+                            dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
+                            dorsiTorqueInput = dirDorsi * maxTorqueDorsi * dorsiTorque;
+                            
+                        }
+                        
+                        command.setModeOfOperation(dorsiInputMode);
+                        command.setTargetTorque(dorsiTorqueInput);
+                        command.setTargetPosition(dorsiPositionInput);
+                        maxon_slave_ptr->stageCommand(command);
+                        
+                        outFileController << "dorsi, " 
                             << ros::Time::now() << ", " 
                             << currentTimePercentage << ", "
-                            << dorsiMode << ", " 
-                            << dirDorsi * maxTorqueDorsi * dorsiTorque << ", " 
-                            << dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi << ", " 
+                            << dorsiInputMode << ", " 
+                            << dorsiTorqueInput << ", " 
+                            << dorsiPositionInput << ", " 
                             << reading.getActualCurrent() << ", " 
                             << reading.getActualTorque() << ", " 
                             << reading.getActualPosition() << ", " 
                             << reading.getActualVelocity() << ", " 
                             << reading.getBusVoltage() << endl;
-                        }
-                        maxon_slave_ptr->stageCommand(command);
+
                         
                     }
                     else {
