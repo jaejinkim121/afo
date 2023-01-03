@@ -246,9 +246,13 @@ void worker()
                         maxon_slave_ptr->stageCommand(command);
                         
                         outFileController << "plantar, " << ros::Time::now() << ", " << currentTimePercentage << ", "
-                            << plantarMode << ", " << plantarTorque << ", " << plantarPosition << ", " 
-                            << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
-                            << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
+                            << plantarMode << ", " 
+                            << dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque) << ", " 
+                            << plantarNeutralPosition + plantarPosition * dirPlantar << ", " 
+                            << reading.getActualCurrent() << ", " 
+                            << reading.getActualTorque() << ", " 
+                            << reading.getActualPosition() << ", " 
+                            << reading.getActualVelocity() << ", " 
                             << reading.getBusVoltage() << endl;
 
                     }
@@ -256,25 +260,36 @@ void worker()
                         if (setGaitEventNonAffected && setGaitEventAffected){
                             currentTimePercentage = pathPlannerDorsiflexion();
                         }
-                        if (reading.getActualTorque() > maxTorqueDorsi){
+                        if (reading.getActualTorque() * dirDorsi > maxTorqueDorsi){
                             command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                            command.setTargetTorque(maxTorqueDorsi);
+                            command.setTargetTorque(maxTorqueDorsi * dirDorsi);
                             command.setTargetPosition(dorsiNeutralPosition + dorsiPosition * dirDorsi);
-                            outFileController << "dorsi, " << ros::Time::now() << ", " << currentTimePercentage << ", " 
+                            outFileController << "dorsi, " 
+                            << ros::Time::now() << ", " 
+                            << currentTimePercentage << ", " 
                             << maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode << ", " 
-                            << maxTorqueDorsi << ", " << dorsiPosition << ", " 
-                            << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
-                            << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
+                            << maxTorqueDorsi * dirDorsi << ", " 
+                            << dorsiNeutralPosition + dorsiPosition * dirDorsi << ", " 
+                            << reading.getActualCurrent() << ", " 
+                            << reading.getActualTorque() << ", " 
+                            << reading.getActualPosition() << ", " 
+                            << reading.getActualVelocity() << ", " 
                             << reading.getBusVoltage() << endl;
                         }
                         else{
                             command.setModeOfOperation(dorsiMode);
                             command.setTargetPosition(dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi);
                             command.setTargetTorque(dirDorsi * maxTorqueDorsi * dorsiTorque);
-                            outFileController << "dorsi, " << ros::Time::now() << ", " << currentTimePercentage << ", "
-                            << dorsiMode << ", " << dorsiTorque << ", " << dorsiPosition << ", " 
-                            << reading.getActualCurrent() << ", " << reading.getActualTorque() << ", " 
-                            << reading.getActualPosition() << ", " << reading.getActualVelocity() << ", " 
+                            outFileController << "dorsi, " 
+                            << ros::Time::now() << ", " 
+                            << currentTimePercentage << ", "
+                            << dorsiMode << ", " 
+                            << dirDorsi * maxTorqueDorsi * dorsiTorque << ", " 
+                            << dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi << ", " 
+                            << reading.getActualCurrent() << ", " 
+                            << reading.getActualTorque() << ", " 
+                            << reading.getActualPosition() << ", " 
+                            << reading.getActualVelocity() << ", " 
                             << reading.getBusVoltage() << endl;
                         }
                         maxon_slave_ptr->stageCommand(command);
