@@ -173,12 +173,12 @@ void worker()
                     if (slave->getName() == "Plantar"){
                         command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                         command.setTargetPosition(0);
-                        command.setTargetTorque(0);
+                        command.setTargetTorque(-0.02);
                         maxon_slave_ptr->stageCommand(command);
                     }
                     else if (slave->getName() == "Dorsi"){
                         auto reading = maxon_slave_ptr->getReading();
-                        if (reading.getActualTorque() > dorsiPreTension * dirDorsi){
+                        if (reading.getActualTorque() * dirDorsi > dorsiPreTension){
 				            if (dorsiBufferFlushingIndex++ < 15){
                                 continue;
                             }
@@ -209,6 +209,7 @@ void worker()
         ** The StandaloneEnforceRate update mode is used.
         ** This means that average update rate will be close to the target rate (if possible).
          */
+        // CONTROL MAIN LOOP
         else{
             for(const auto & master: configurator->getMasters() )
             {
@@ -344,6 +345,7 @@ void signal_handler(int sig)
  */
 int main(int argc, char**argv)
 {    
+    // Define ROS
     ros::init(argc, argv, "afo_controller");
     ros::NodeHandle n;
     int rr;
@@ -354,10 +356,12 @@ int main(int argc, char**argv)
     ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
     ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
 
+    // 
     std::signal(SIGINT, signal_handler);
 
     configurator = std::make_shared<EthercatDeviceConfigurator>(configPath); 
 
+    // Command Initialize
     dorsiNeutralPosition = 0;
     plantarNeutralPosition = 0;
     dorsiPosition = 0;
