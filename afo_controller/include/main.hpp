@@ -55,8 +55,8 @@ double maxTorquePlantar = 1.0; // Nm at lowest level of motor.
 double maxTorqueDorsi = 0.2;
 double maxPositionDorsi = 10;
 double dorsiZeroingIncrement = 0.1;
-double dorsiPreTension = 0.1;
-double plantarPreTension = 0.1;
+double dorsiPreTension = 0.1;   // It's not normalized value.
+double plantarPreTension = 0.1; // It's not normalized value.
 
 // To switch target direction easily. CW = 1, CCW = -1
 double dirPlantar = -1;

@@ -173,7 +173,7 @@ void worker()
                     if (slave->getName() == "Plantar"){
                         command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                         command.setTargetPosition(0);
-                        command.setTargetTorque(-0.02);
+                        command.setTargetTorque(plantarPreTension * dirPlantar);
                         maxon_slave_ptr->stageCommand(command);
                     }
                     else if (slave->getName() == "Dorsi"){
