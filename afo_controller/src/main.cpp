@@ -289,8 +289,6 @@ void worker()
                             << reading.getActualPosition() << ", " 
                             << reading.getActualVelocity() << ", " 
                             << reading.getBusVoltage() << endl;
-
-                        
                     }
                     else {
                         std::cout << slave->getName() << " is not our target device" << std::endl;
