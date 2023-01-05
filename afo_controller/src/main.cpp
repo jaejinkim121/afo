@@ -56,7 +56,7 @@ double pathPlannerPlantarflexion(){
     return currentCyclePercentage;
 }
 
-double pathPlannerDorsiflexion(){
+double pathPlannerDorsiflexion(Reading reading){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> footOffTimeGap = timeFO - timeIC;
@@ -65,29 +65,48 @@ double pathPlannerDorsiflexion(){
     double footOffPercentage = footOffTimeGap.count() / eventTimeGap.count() * 0.12;
 
     // After Initial Contact, deactivate dorsiflexion.
+    // stage 1
     if (currentCyclePercentage < downtimeDF){
+        dorsiStage = 1;
         dorsiPosition = 1 - currentCyclePercentage / downtimeDF;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
     // Pretension torque control mode until foot off
+    // stage 2
     else if (footOffPercentage < 0) {
+        dorsiStage = 2;
         dorsiPosition = 0;
         dorsiTorque = dorsiPreTension;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
-    // Activate dorsiflexion
-    else if (currentCyclePercentage < footOffPercentage + uptimeDF){
-        dorsiPosition = (currentCyclePercentage - footOffPercentage) / uptimeDF;
-        dorsiTorque = 0;
-        dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
-    }
-    // Hold dorsiflexion
-    else {
+    // Sustain target position
+    // stage 3
+    else if (
+        dorsiStage == 3 || 
+        abs(reading.getActualPosition() - dorsiNeutralPosition - maxPositionDorsi) < positionDiffLimit)
+        {
+        dorsiStage = 3;
         dorsiPosition = 1;
-        dorsiTorque = 0;
+        dorsiTorque = dorsiPreTension;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
+
     }
+    // make increment to achieve target position
+    // stage 4
+    else if (currentCyclePercentage < footOffPercentage + uptimeDF){
+        if (dorsiStage !=4){
+            dorsiStage = 4;
+            dorsiTorqueDir = reading.getActualPosition() - dorsiNeutralPosition > maxPositionDorsi;
+        }
+
+        if (dorsiTorqueDir) dorsiTorque = (reading.getActualTorque() - dorsiTorqueSlope) / maxTorqueDorsi;
+        else dorsiTorque = (reading.getActualTorque() + dorsiTorqueSlope) / maxTorqueDorsi;
+
+        dorsiPosition = 0;
+        dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
+    }
+
     dorsiTorque = min(max(dorsiTorque, dorsiPreTension), 1.0);
     return currentCyclePercentage;
 }
@@ -259,7 +278,7 @@ void worker()
                     }
                     else if (slave->getName() == "Dorsi"){
                         if (setGaitEventNonAffected && setGaitEventAffected){
-                            currentTimePercentage = pathPlannerDorsiflexion();
+                            currentTimePercentage = pathPlannerDorsiflexion(reading);
                         }
                         if (reading.getActualTorque() * dirDorsi > maxTorqueDorsi){
                             dorsiInputMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
@@ -277,7 +296,7 @@ void worker()
                         command.setTargetTorque(dorsiTorqueInput);
                         command.setTargetPosition(dorsiPositionInput);
                         maxon_slave_ptr->stageCommand(command);
-                        
+                         
                         outFileController << "dorsi, " 
                             << ros::Time::now() << ", " 
                             << currentTimePercentage << ", "

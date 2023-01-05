@@ -32,6 +32,9 @@ bool setGaitEventNonAffected = false;
 bool isDorsiZeroing = false;
 maxon::ModeOfOperationEnum plantarMode, dorsiMode;
 
+int dorsiStage = 0;
+int dorsiTorqueDir = 1;
+
 bool isPlantar, isDorsi;
 system_clock::time_point timeIC, timeOFO, timeFO;
 
@@ -52,9 +55,11 @@ duration<double, micro> eventTimeGap;
 
 // Force Parameter
 double maxTorquePlantar = 1.0; // Nm at lowest level of motor.
-double maxTorqueDorsi = 0.2;
+double maxTorqueDorsi = 1.0;
 double maxPositionDorsi = 10;
+double positionDiffLimit = 1;
 double dorsiZeroingIncrement = 0.1;
+double dorsiTorqueSlope = 0.05;
 double dorsiPreTension = 0.1;   // It's not normalized value.
 double plantarPreTension = 0.1; // It's not normalized value.
 
