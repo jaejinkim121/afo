@@ -56,7 +56,7 @@ double pathPlannerPlantarflexion(){
     return currentCyclePercentage;
 }
 
-double pathPlannerDorsiflexion(Reading reading){
+double pathPlannerDorsiflexion(maxon::Reading reading){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> footOffTimeGap = timeFO - timeIC;
@@ -125,9 +125,10 @@ void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
 }
 
 void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
-    if (msg->data == 1)
+    if (msg->data == 1){
         timeOFO = high_resolution_clock::now();
         eventTimeGap = timeOFO - timeIC;
+}
     else
         std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;
 
@@ -394,9 +395,9 @@ int main(int argc, char**argv)
     dorsiNeutralPosition = 0;
     plantarNeutralPosition = 0;
     dorsiPosition = 0;
-    dorsiTorque = 0.05;
+    dorsiTorque = dorsiPreTension;
     plantarPosition = 0;
-    plantarTorque = 0.0;
+    plantarTorque = plantarPreTension;
     plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
 
