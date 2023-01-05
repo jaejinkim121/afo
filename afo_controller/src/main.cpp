@@ -396,7 +396,7 @@ int main(int argc, char**argv)
     dorsiPosition = 0;
     dorsiTorque = 0.05;
     plantarPosition = 0;
-    plantarTorque = 0.05;
+    plantarTorque = 0.0;
     plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
 
