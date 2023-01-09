@@ -77,7 +77,7 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
     else if (footOffPercentage < 0) {
         dorsiStage = 2;
         dorsiPosition = 0;
-        dorsiTorque = dorsiPreTension;
+        dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // Sustain target position
@@ -88,7 +88,7 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
         {
         dorsiStage = 3;
         dorsiPosition = 1;
-        dorsiTorque = dorsiPreTension;
+        dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
 
     }
@@ -107,7 +107,7 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
 
-    dorsiTorque = min(max(dorsiTorque, dorsiPreTension), 1.0);
+    dorsiTorque = min(max(dorsiTorque, 0.0), 1.0);
     return currentCyclePercentage;
 }
 
@@ -281,18 +281,11 @@ void worker()
                         if (setGaitEventNonAffected && setGaitEventAffected){
                             currentTimePercentage = pathPlannerDorsiflexion(reading);
                         }
-                        if (reading.getActualTorque() * dirDorsi > maxTorqueDorsi){
-                            dorsiInputMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
-                            dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
-                            dorsiTorqueInput = maxTorqueDorsi * dirDorsi;
-                        }
-                        else{
-                            dorsiInputMode = dorsiMode;
-                            dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
-                            dorsiTorqueInput = dirDorsi * maxTorqueDorsi * dorsiTorque;
                             
-                        }
-                        
+                        dorsiInputMode = dorsiMode;
+                        dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
+                        dorsiTorqueInput = dirDorsi * (maxTorqueDorsi * dorsiTorque + dorsiPreTension);
+                            
                         command.setModeOfOperation(dorsiInputMode);
                         command.setTargetTorque(dorsiTorqueInput);
                         command.setTargetPosition(dorsiPositionInput);
@@ -395,9 +388,9 @@ int main(int argc, char**argv)
     dorsiNeutralPosition = 0;
     plantarNeutralPosition = 0;
     dorsiPosition = 0;
-    dorsiTorque = dorsiPreTension;
+    dorsiTorque = 0;
     plantarPosition = 0;
-    plantarTorque = plantarPreTension;
+    plantarTorque = 0;
     plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
 
