@@ -54,14 +54,14 @@ double downtimeDF = 0.1;
 duration<double, micro> eventTimeGap;
 
 // Force Parameter
-double maxTorquePlantar = 1.0; // Nm at lowest level of motor.
-double maxTorqueDorsi = 1.0;
+double maxTorquePlantar = 0.3; // Nm at lowest level of motor.
+double maxTorqueDorsi = 0.3;
 double maxPositionDorsi = 10;
 double positionDiffLimit = 1;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
-double dorsiPreTension = 0.1;   // It's not normalized value.
-double plantarPreTension = 0.1; // It's not normalized value.
+double dorsiPreTension = 0.05;   // It's not normalized value.
+double plantarPreTension = 0.05; // It's not normalized value.
 
 // To switch target direction easily. CW = 1, CCW = -1
 double dirPlantar = -1;
