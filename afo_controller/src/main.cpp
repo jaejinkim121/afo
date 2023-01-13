@@ -111,6 +111,35 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
     return currentCyclePercentage;
 }
 
+void dummyCallbackGaitPhaseAffected(){
+    if (!ic){
+        if (remainder(high_resolution_clock::now(), 2) < 0.01){
+            timeIC = high_resolution_clock::now();
+            ic = true;
+            fo = false;
+            ofo = false;
+            setGaitEventAffected = true;
+        }
+    }
+    if (!fo){
+        if (remainder(high_resolution_clock::now(), 2) > 0.62 * 2){
+            timeFO = high_resolution_clock::now();
+            fo = true;
+            ic = false;
+        }
+    }
+}
+
+void dummyCallbackGaitPhaseNonAffected(){
+    if (!ofo){
+        if (remainder(high_resolution_clock::now(), 2) > 0.12 * 2){
+            timeOFO = high_resolution_clock::now();
+            ofo = true;
+            setGaitEventNonAffected = true;
+        }
+    }
+}
+
 void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
     if (msg->data == 0) 
         timeIC = high_resolution_clock::now();
@@ -420,8 +449,9 @@ int main(int argc, char**argv)
 
     std::cout << "Startup finished" << std::endl;
     while(ros::ok()){
-	ros::spinOnce();
-}
+        dummyCallbackGaitPhaseAffected();
+        dummyCallbackGaitPhaseNonAffected();
+    }
     // nothing further to do in this thread.
     pause();
 }
