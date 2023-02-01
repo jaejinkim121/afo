@@ -169,6 +169,7 @@ void worker()
     ** The EthercatMaster::update function incorporates a mechanism
     ** to create a constant rate.
      */
+    auto next = steady_clock::now();
     while(!abrt)
     {
         // ------------------------------- Dorsiflexion zeroing process start -------------------------------------------- //
@@ -318,6 +319,8 @@ void worker()
             }
             maxonEnabledAfterStartup = true;
         }
+        next += milliseconds(etherCatCommunicationRate);
+        std::this_thread::sleep_until(next);
     }							
 }
 
