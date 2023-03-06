@@ -96,7 +96,8 @@ class DataPredictor:
             file_handler_imu.setFormatter(formatter)
             self.logger_imu.addHandler(file_handler_imu)
         
-        self.device = torch.device('cpu')
+        self.device = torch.device('cuda')\
+            if torch.cuda.is_available() else torch.device('cpu')
         self.model_load()
         self.set_ros_node()
 
@@ -112,8 +113,8 @@ class DataPredictor:
             model.load_state_dict(torch.load(
                 self.model_path + self.model_name + "/" +
                 self.sensor_size + self.sensor_dir + "_" +
-                str(num + 1) + ".pt",
-                map_location=self.device))
+                str(num + 1) + ".pt"))
+            model.to(self.device)
             self.model = np.append(self.model, model)
 
     def set_ros_node(self):
@@ -211,7 +212,8 @@ class DataPredictor:
                     x = self.LSTMtransform(int(name[-4]))
                 else:
                     pass
-                output = np.append(output, model(x))
+                x = x.to(torch.device(self.device))
+                output = np.append(output, model(x).cpu().detach().numpy())
 
         output = np.expand_dims(output, axis=0)
         #############################################################
