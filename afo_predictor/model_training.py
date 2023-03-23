@@ -184,9 +184,13 @@ print("Using PyTorch version: {}, Device: {}".format(
     torch.__version__, DEVICE))
 
 # define calib data path and model path
-calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+# calib_data_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+#     + "calibration/CHAR_1121_260/Calibration/"
+# model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+#     + "model/CHAR_1121_260/LSTM_optim/"
+calib_data_path = "D:/OneDrive - SNU/Projects/afo/afo/afo_predictor/bin/"\
     + "calibration/CHAR_1121_260/Calibration/"
-model_path = "C:/Projects/DL/pytorch112/afo/afo_predictor/bin/"\
+model_path = "D:/OneDrive - SNU/Projects/afo/afo/afo_predictor/bin/"\
     + "model/CHAR_1121_260/LSTM_optim/"
 
 try:

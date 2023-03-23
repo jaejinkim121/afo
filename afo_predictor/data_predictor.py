@@ -42,7 +42,8 @@ class DataPredictor:
                  sensor_dir="Left", input_length=15, sensor_num=6,
                  sensor_size="260",
                  thres_heel_strike=1.0, thres_toe_off=1.0,
-                 logging_prefix="", is_calibration=False, right_object=None):
+                 logging_prefix="", is_calibration=False, right_object=None,
+                 is_GPU=False):
         self.data = np.array(data_buffer)
         self.data_imu = np.zeros((7, 9))
         self.sensor_num = sensor_num
@@ -52,6 +53,7 @@ class DataPredictor:
         self.model_path = model_dir
         self.input_length = input_length
         self.is_calibration = is_calibration
+        self.is_GPU = is_GPU
         self._threshold_heel_strike = thres_heel_strike
         self._threshold_toe_off = thres_toe_off
         self._right_one = right_object
@@ -97,7 +99,9 @@ class DataPredictor:
             file_handler_imu.setFormatter(formatter)
             self.logger_imu.addHandler(file_handler_imu)
         
-        self.device = torch.device('cpu')
+        self.device = torch.device('cuda')\
+            if torch.cuda.is_available() and self.is_GPU\
+            else torch.device('cpu')
         self.model_load()
         self.set_ros_node()
 
@@ -110,11 +114,18 @@ class DataPredictor:
                 model = LSTM()
             else:
                 pass
-            model.load_state_dict(torch.load(
-                self.model_path + self.model_name + "/" +
-                self.sensor_size + self.sensor_dir + "_" +
-                str(num + 1) + ".pt",
-                map_location=self.device))
+            if self.is_GPU:
+                model.load_state_dict(torch.load(
+                    self.model_path + self.model_name + "/" +
+                    self.sensor_size + self.sensor_dir + "_" +
+                    str(num + 1) + ".pt"))
+                model.to(self.device)
+            else:
+                model.load_state_dict(torch.load(
+                    self.model_path + self.model_name + "/" +
+                    self.sensor_size + self.sensor_dir + "_" +
+                    str(num + 1) + ".pt",
+                    map_location=self.device))
             self.model = np.append(self.model, model)
 
     def set_ros_node(self):
@@ -221,7 +232,11 @@ class DataPredictor:
                     x = self.LSTMtransform(int(name[-4]))
                 else:
                     pass
-                output = np.append(output, model(x))
+                if self.is_GPU:
+                    x = x.to(torch.device(self.device))
+                    output = np.append(output, model(x).cpu().detach().numpy())
+                else:
+                    output = np.append(output, model(x))
 
         output = np.expand_dims(output, axis=0)
         #############################################################
@@ -319,18 +334,19 @@ if __name__ == "__main__":
     
     start_time = rospy.Time.now()
     is_calibration = (is_calibration == 1)
+    is_GPU = 1
 
     right_predictor = DataPredictor(
         start_time, data_buffer, is_affected=(affected_side == 1),
         sensor_dir="Right",
         thres_heel_strike=threshold_right_hs, thres_toe_off=threshold_right_to,
-        logging_prefix=test_label, is_calibration=is_calibration)
+        logging_prefix=test_label, is_calibration=is_calibration, is_GPU=is_GPU)
 
     left_predictor = DataPredictor(
         start_time, data_buffer, is_affected=(affected_side == 0),
         thres_heel_strike=threshold_left_hs, thres_toe_off=threshold_left_to,
         logging_prefix=test_label, is_calibration=is_calibration,
-        right_object=right_predictor)
+        right_object=right_predictor, is_GPU=is_GPU)
     
     while not rospy.is_shutdown():
         rospy.spin()
