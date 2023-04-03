@@ -37,7 +37,7 @@ class GaitPhase(Enum):
 
 class DataPredictor:
     def __init__(self, start_time, data_buffer, is_affected, model_name="LSTM",
-                 model_dir="/home/srbl/catkin_ws/src/afo/afo_predictor/"\
+                 model_dir="/home/dl/catkin_ws/src/afo/afo_predictor/"\
                      + "bin/model/CHAR_1121_260/",
                  sensor_dir="Left", input_length=15, sensor_num=6,
                  sensor_size="260",
@@ -84,7 +84,7 @@ class DataPredictor:
 
         formatter = logging.Formatter('%(message)s')
         tm = time.localtime()
-        logging_path = '/home/srbl/catkin_ws/src/afo/log/' + logging_prefix + '_' + time.strftime('%m%d%H%M', tm)
+        logging_path = '/home/dl/catkin_ws/src/afo/log/' + logging_prefix + '_' + time.strftime('%m%d%H%M', tm)
         file_handler = logging.FileHandler(logging_path + '_{}sole.log'.format(sensor_dir))
         file_handler.setFormatter(formatter)
 

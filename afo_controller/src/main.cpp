@@ -144,7 +144,7 @@ void worker()
 	std::tm* now = std::localtime(&t);
 	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
     ofstream outFileController;
-    outFileController.open("/home/srbl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
+    outFileController.open("/home/dl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
     outFileController << 
         "Max Plantar Torque=" << maxTorquePlantar << 
         ", Max Dorsi Torque=" << maxTorqueDorsi << 
@@ -319,7 +319,7 @@ void worker()
             }
             maxonEnabledAfterStartup = true;
         }
-        next += milliseconds(etherCatCommunicationRate);
+        next += microseconds(etherCatCommunicationRate);
         std::this_thread::sleep_until(next);
     }							
 }

@@ -44,7 +44,7 @@ int dorsiBufferFlushingIndex = 0;
 //
 
 // Communication param.
-double etherCatCommunicationRate = 2.5; // ms
+int etherCatCommunicationRate = 2500; // us
 
 // Time Parameter
 double startTime = 0.25;
