@@ -32,9 +32,9 @@ int main(int argc, char** argv){
     // GUI 노드로 넘어가야할 가능성이 있음.
     ofstream outFileSoleRight, outFileSoleLeft, outIMU;
 
-	outFileSoleRight.open("/home/dl/catkin_ws/src/afo/log/raw_data/soleSensor_right_" + now_str + test_suffix + ".csv");
-	outFileSoleLeft.open("../log/data/soleSensor_left_" + now_str + test_suffix + ".csv");
-	outIMU.open("../log/data/IMU_" + now_str + test_suffix + ".csv");
+	outFileSoleRight.open("/home/srbl/catkin_ws/src/afo/afo_sensor/log/raw_data/soleSensor_right_" + now_str + test_suffix + ".csv");
+	outFileSoleLeft.open("/home/srbl/catkin_ws/src/afo/afo_sensor/log/raw_data/soleSensor_left_" + now_str + test_suffix + ".csv");
+	outIMU.open("/home/srbl/catkin_ws/src/afo/afo_sensor/log/raw_data/IMU_" + now_str + test_suffix + ".csv");
 
 	outFileSoleLeft.precision(6);
 	outFileSoleRight.precision(6);
@@ -80,7 +80,6 @@ int main(int argc, char** argv){
         afo_imu_pub.publish(msg_imu);
         afo_soleSensor_left_pub.publish(msg_sole_left);
         afo_soleSensor_right_pub.publish(msg_sole_right);
-
 		ros::spinOnce();
         loop_rate.sleep();
 	}

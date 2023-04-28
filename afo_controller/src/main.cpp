@@ -305,15 +305,32 @@ void worker()
                         command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
                         maxon_slave_ptr->stageCommand(command);
                         
-                        outFileController << "plantar, " << ros::Time::now() << ", " << currentTimePercentage << ", "
-                            << plantarMode << ", " 
-                            << dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque) << ", " 
-                            << plantarNeutralPosition + plantarPosition * dirPlantar << ", " 
-                            << reading.getActualCurrent() << ", " 
-                            << reading.getActualTorque() << ", " 
-                            << reading.getActualPosition() << ", " 
-                            << reading.getActualVelocity() << ", " 
-                            << reading.getBusVoltage() << endl;
+                        float plantarModeInt;
+                        if (plantarMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
+                            plantarModeInt = 1.0;
+                        else
+                            plantarModeInt = 2.0;
+
+                        msg_motor_plantar.data.clear();
+                        msg_motor_plantar.data.push_back(currentTimePercentage);
+                        msg_motor_plantar.data.push_back(plantarModeInt);
+                        msg_motor_plantar.data.push_back(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
+                        msg_motor_plantar.data.push_back(reading.getActualCurrent());
+                        msg_motor_plantar.data.push_back(reading.getActualTorque());
+                        msg_motor_plantar.data.push_back(reading.getActualPosition());
+                        msg_motor_plantar.data.push_back(reading.getActualVelocity());
+                        msg_motor_plantar.data.push_back(reading.getBusVoltage());
+                        
+                        afo_motor_data_plantar.publish(msg_motor_plantar);
+                        // outFileController << "plantar, " << ros::Time::now() << ", " << currentTimePercentage << ", "
+                        //     << plantarMode << ", " 
+                        //     << dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque) << ", " 
+                        //     << plantarNeutralPosition + plantarPosition * dirPlantar << ", " 
+                        //     << reading.getActualCurrent() << ", " 
+                        //     << reading.getActualTorque() << ", " 
+                        //     << reading.getActualPosition() << ", " 
+                        //     << reading.getActualVelocity() << ", " 
+                        //     << reading.getBusVoltage() << endl;
 
                     }
                     else if (slave->getName() == "Dorsi"){
@@ -330,17 +347,36 @@ void worker()
                         command.setTargetPosition(dorsiPositionInput);
                         maxon_slave_ptr->stageCommand(command);
                          
-                        outFileController << "dorsi, " 
-                            << ros::Time::now() << ", " 
-                            << currentTimePercentage << ", "
-                            << dorsiInputMode << ", " 
-                            << dorsiTorqueInput << ", " 
-                            << dorsiPositionInput << ", " 
-                            << reading.getActualCurrent() << ", " 
-                            << reading.getActualTorque() << ", " 
-                            << reading.getActualPosition() << ", " 
-                            << reading.getActualVelocity() << ", " 
-                            << reading.getBusVoltage() << endl;
+                        float dorsiModeInt;
+                        if (dorsiMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
+                            dorsiModeInt = 1.0;
+                        else
+                            dorsiModeInt = 2.0;
+
+                        msg_motor_data_dorsi.data.clear();
+                        msg_motor_data_dorsi.data.push_back(currentTimePercentage);
+                        msg_motor_data_dorsi.data.push_back(dorsiModeInt);
+                        msg_motor_data_dorsi.data.push_back(dorsiTorqueInput);
+                        msg_motor_data_dorsi.data.push_back(dorsiPositionInput);
+                        msg_motor_data_dorsi.data.push_back(reading.getActualCurrent());
+                        msg_motor_data_dorsi.data.push_back(reading.getActualTorque());
+                        msg_motor_data_dorsi.data.push_back(reading.getActualPosition());
+                        msg_motor_data_dorsi.data.push_back(reading.getActualVelocity());
+                        msg_motor_data_dorsi.data.push_back(reading.getBusVoltage());
+                        
+                        afo_motor_data_dorsi.publish(msg_motor_data_dorsi);
+                            
+                        // outFileController << "dorsi, " 
+                        //     << ros::Time::now() << ", " 
+                        //     << currentTimePercentage << ", "
+                        //     << dorsiInputMode << ", " 
+                        //     << dorsiTorqueInput << ", " 
+                        //     << dorsiPositionInput << ", " 
+                        //     << reading.getActualCurrent() << ", " 
+                        //     << reading.getActualTorque() << ", " 
+                        //     << reading.getActualPosition() << ", " 
+                        //     << reading.getActualVelocity() << ", " 
+                        //     << reading.getBusVoltage() << endl;
                     }
                     else {
                         std::cout << slave->getName() << " is not our target device" << std::endl;
@@ -419,7 +455,16 @@ int main(int argc, char**argv)
     ros::Rate loop_rate(rr);
     // ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
     // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
-    ros::Subscriber afo_gaitPhase = n.subscribe("/afo_detector/gaitPhase", 1, callbackGaitPhase);
+    afo_gaitPhase = n.subscribe("/afo_detector/gaitPhase", 1, callbackGaitPhase);
+    afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
+    afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
+    afo_configuration_maxTorquePlantar = n.advertise<std_msgs::Float32>("/afo_controller/maxTorquePlantar", 10);
+    afo_configuration_maxTorqueDorsi = n.advertise<std_msgs:Float32>("/afo_controller/maxTorqueDorsi", 10);
+    afo_configuration_startTime = n.advertise<std_msgs:Float32>("/afo_controller/startTime", 10);
+    afo_configuration_endTime = n.advertise<std_msgs:Float32>("/afo_controller/endTime", 10);
+    afo_configuration_upTimeRatio = n.advertise<std_msgs:Float32>("/afo_controller/upTimeRatio", 10);
+    afo_configuration_dirPlantar = n.advertise<std_msgs:Float32>("/afo_controller/dirPlantar", 10);
+    afo_configuration_dorsiNeutralPosition = n.advertise<std_msgs:Float32>("/afo_controller/dorsiNeutralPosition", 10);
 
     // 
     std::signal(SIGINT, terminateMotor);

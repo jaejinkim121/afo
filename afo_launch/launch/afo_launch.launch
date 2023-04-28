@@ -8,6 +8,7 @@
 	<arg name="ic" default="0" />
 	<arg name="rr" default="100" />
 	<param name="rr" value="$(arg rr)" />
+
 	<node name="afo_sensor" pkg="afo_sensor" type="afo_sensor" output="screen">
 	</node>
 	<node name="afo_predictor" pkg="afo_predictor" type="data_predictor.py" output="screen" clear_params="true">

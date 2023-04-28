@@ -7,8 +7,10 @@
 #include <algorithm>
 
 #include "ros/ros.h"
+#include "rosbag/bag.h"
 #include "std_msgs/Bool.h"
 #include "std_msgs/Int16.h"
+#include "std_msgs/Float32.h"
 #include "spdlog/spdlog.h"
 
 #include "EthercatDeviceConfigurator.hpp"
@@ -76,3 +78,18 @@ double plantarPreTension = 0.05; // It's not normalized value.
 // To switch target direction easily. CW = 1, CCW = -1
 double dirPlantar = -1;
 double dirDorsi = 1;
+
+// Define ros publisher and subscriber
+ros::Subscriber afo_gaitPhase;
+ros::Publisher afo_motor_data_plantar;
+ros::Publisher afo_motor_data_dorsi;
+ros::Publisher afo_configuration_maxTorquePlantar;
+ros::Publisher afo_configuration_maxTorqueDorsi;
+ros::Publisher afo_configuration_startTime;
+ros::Publisher afo_configuration_endTime;
+ros::Publisher afo_configuration_upTimeRatio;
+ros::Publisher afo_configuration_dirPlantar;
+ros::Publisher afo_configuration_dorsiNeutralPosition;
+
+std_msgs::Float32MultiArray msg_motor_plantar;
+std_msgs::Float32MultiArray msg_motor_dorsi;

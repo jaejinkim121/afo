@@ -12,6 +12,7 @@
 #include "std_msgs/Int16MultiArray.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
+#include "rosbag/bag.h"
 
 
 using namespace std;
