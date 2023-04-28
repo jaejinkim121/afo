@@ -459,12 +459,12 @@ int main(int argc, char**argv)
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
     afo_configuration_maxTorquePlantar = n.advertise<std_msgs::Float32>("/afo_controller/maxTorquePlantar", 10);
-    afo_configuration_maxTorqueDorsi = n.advertise<std_msgs:Float32>("/afo_controller/maxTorqueDorsi", 10);
-    afo_configuration_startTime = n.advertise<std_msgs:Float32>("/afo_controller/startTime", 10);
-    afo_configuration_endTime = n.advertise<std_msgs:Float32>("/afo_controller/endTime", 10);
-    afo_configuration_upTimeRatio = n.advertise<std_msgs:Float32>("/afo_controller/upTimeRatio", 10);
-    afo_configuration_dirPlantar = n.advertise<std_msgs:Float32>("/afo_controller/dirPlantar", 10);
-    afo_configuration_dorsiNeutralPosition = n.advertise<std_msgs:Float32>("/afo_controller/dorsiNeutralPosition", 10);
+    afo_configuration_maxTorqueDorsi = n.advertise<std_msgs::Float32>("/afo_controller/maxTorqueDorsi", 10);
+    afo_configuration_startTime = n.advertise<std_msgs::Float32>("/afo_controller/startTime", 10);
+    afo_configuration_endTime = n.advertise<std_msgs::Float32>("/afo_controller/endTime", 10);
+    afo_configuration_upTimeRatio = n.advertise<std_msgs::Float32>("/afo_controller/upTimeRatio", 10);
+    afo_configuration_dirPlantar = n.advertise<std_msgs::Float32>("/afo_controller/dirPlantar", 10);
+    afo_configuration_dorsiNeutralPosition = n.advertise<std_msgs::Float32>("/afo_controller/dorsiNeutralPosition", 10);
 
     // 
     std::signal(SIGINT, terminateMotor);
