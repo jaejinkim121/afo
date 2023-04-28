@@ -61,7 +61,7 @@ int main(int argc, char** argv){
 					cout << "afo_sync Node - msg 'sync' published, value = " << *current_sync << endl;
 					break;
 				case 't':
-					msg_command_threshold = true;
+					msg_command_threshold = True;
 					afo_command_threshold.publish(msg_command_threshold);
 					cout << "afo_sync Node - msg 'threshold' published" << endl;
 					break;

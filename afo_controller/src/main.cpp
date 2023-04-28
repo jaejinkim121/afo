@@ -3,16 +3,17 @@
 double cubic(double init_time, double final_time, double current_time){
     double duration = final_time - init_time;
     double t = (current_time - init_time) / duration;
-    return 2 * t^3 - 3 & t^2;
+    return 2 * pow(t,3) - 3 * pow(t,2);
 }
 
 double pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeIC;
+    double currentCyclePercentage;
     if (controlMode == EST)
-        double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
+        currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
     else
-        double currentCyclePercentage = currentTimeGap.count() / periodPreset;
+        currentCyclePercentage = currentTimeGap.count() / periodPreset;
 
     // Dummy variable to simplify formulation.
     double t;   
@@ -68,14 +69,14 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> footOffTimeGap = timeFO - timeIC;
-
+    double currentCyclePercentage, footOffPercentage;
     if (controlMode == EST){
-        double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
-        double footOffPercentage = footOffTimeGap.count() / eventTimeGap.count() * 0.12;
+        currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
+        footOffPercentage = footOffTimeGap.count() / eventTimeGap.count() * 0.12;
     }
     else{
-        double currentCyclePercentage = currentTimeGap.count() / periodPreset;
-        double footOffPercentage = footOffTimeGap.count() / periodPreset;
+        currentCyclePercentage = currentTimeGap.count() / periodPreset;
+        footOffPercentage = footOffTimeGap.count() / periodPreset;
     }
 
     // After Initial Contact, deactivate dorsiflexion.
@@ -353,18 +354,18 @@ void worker()
                         else
                             dorsiModeInt = 2.0;
 
-                        msg_motor_data_dorsi.data.clear();
-                        msg_motor_data_dorsi.data.push_back(currentTimePercentage);
-                        msg_motor_data_dorsi.data.push_back(dorsiModeInt);
-                        msg_motor_data_dorsi.data.push_back(dorsiTorqueInput);
-                        msg_motor_data_dorsi.data.push_back(dorsiPositionInput);
-                        msg_motor_data_dorsi.data.push_back(reading.getActualCurrent());
-                        msg_motor_data_dorsi.data.push_back(reading.getActualTorque());
-                        msg_motor_data_dorsi.data.push_back(reading.getActualPosition());
-                        msg_motor_data_dorsi.data.push_back(reading.getActualVelocity());
-                        msg_motor_data_dorsi.data.push_back(reading.getBusVoltage());
+                        msg_motor_dorsi.data.clear();
+                        msg_motor_dorsi.data.push_back(currentTimePercentage);
+                        msg_motor_dorsi.data.push_back(dorsiModeInt);
+                        msg_motor_dorsi.data.push_back(dorsiTorqueInput);
+                        msg_motor_dorsi.data.push_back(dorsiPositionInput);
+                        msg_motor_dorsi.data.push_back(reading.getActualCurrent());
+                        msg_motor_dorsi.data.push_back(reading.getActualTorque());
+                        msg_motor_dorsi.data.push_back(reading.getActualPosition());
+                        msg_motor_dorsi.data.push_back(reading.getActualVelocity());
+                        msg_motor_dorsi.data.push_back(reading.getBusVoltage());
                         
-                        afo_motor_data_dorsi.publish(msg_motor_data_dorsi);
+                        afo_motor_data_dorsi.publish(msg_motor_dorsi);
                             
                         // outFileController << "dorsi, " 
                         //     << ros::Time::now() << ", " 
