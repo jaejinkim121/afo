@@ -14,6 +14,11 @@
 #include "EthercatDeviceConfigurator.hpp"
 #include <maxon_epos_ethercat_sdk/Maxon.hpp>
 
+#define IC 1
+#define FO 2
+#define EST 3
+#define PRE 4
+
 using namespace std;
 using namespace std::chrono;
 
@@ -41,12 +46,14 @@ system_clock::time_point timeIC, timeOFO, timeFO;
 int dorsiBufferFlushingIndex = 0;
 
 // Configuration
+int controlMode = EST;
 //
 
 // Communication param.
 int etherCatCommunicationRate = 2500; // us
 
 // Time Parameter
+double periodPreset = 2.0;
 double startTime = 0.25;
 double endTime = 0.65;
 double onTime = endTime - startTime;

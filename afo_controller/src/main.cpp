@@ -1,10 +1,18 @@
 #include "../include/main.hpp"
 
+double cubic(double init_time, double final_time, double current_time){
+    double duration = final_time - init_time;
+    double t = (current_time - init_time) / duration;
+    return 2 * t^3 - 3 & t^2;
+}
+
 double pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeIC;
-    double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
-
+    if (controlMode == EST)
+        double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
+    else
+        double currentCyclePercentage = currentTimeGap.count() / periodPreset;
 
     // Dummy variable to simplify formulation.
     double t;   
@@ -61,8 +69,14 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> footOffTimeGap = timeFO - timeIC;
 
-    double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
-    double footOffPercentage = footOffTimeGap.count() / eventTimeGap.count() * 0.12;
+    if (controlMode == EST){
+        double currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
+        double footOffPercentage = footOffTimeGap.count() / eventTimeGap.count() * 0.12;
+    }
+    else{
+        double currentCyclePercentage = currentTimeGap.count() / periodPreset;
+        double footOffPercentage = footOffTimeGap.count() / periodPreset;
+    }
 
     // After Initial Contact, deactivate dorsiflexion.
     // stage 1
@@ -90,7 +104,6 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
         dorsiPosition = 1;
         dorsiTorque = 0;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
-
     }
     // make increment to achieve target position
     // stage 4
@@ -109,6 +122,31 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
 
     dorsiTorque = min(max(dorsiTorque, 0.0), 1.0);
     return currentCyclePercentage;
+}
+
+void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg){
+    int nonAffected, affected;
+    nonAffected = msg->data[0];   // non-affected side
+    affected = msg->data[1];   // affected side
+
+    if (nonAffected == IC){
+        //
+    }
+    else if (nonAffected == FO){
+        timeOFO = high_resolution_clock::now();
+        eventTimeGap = timeOFO - timeIC;
+        setGaitEventNonAffected = true;
+    }
+
+    if (affected == IC){
+        timeIC = high_resolution_clock::now();
+        setGaitEventAffected = true;
+    }
+    else if (affected == FO){
+        timeFO = high_resolution_clock::now();
+        setGaitEventAffected = true;
+    }
+    
 }
 
 void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
@@ -329,7 +367,7 @@ void worker()
 ** This is the shutdown routine.
 ** Note: This logic is executed in a thread separated from the communication update!
  */
-void signal_handler(int sig)
+void terminateMotor(int sig)
 {
     /*
     ** Pre shutdown procedure.
@@ -379,11 +417,12 @@ int main(int argc, char**argv)
     n.getParam("/rr", rr);
     n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
-    ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
-    ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
+    // ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
+    // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
+    ros::Subscriber afo_gaitPhase = n.subscribe("/afo_detector/gaitPhase", 1, callbackGaitPhase);
 
     // 
-    std::signal(SIGINT, signal_handler);
+    std::signal(SIGINT, terminateMotor);
 
     configurator = std::make_shared<EthercatDeviceConfigurator>(configPath); 
 
@@ -422,9 +461,10 @@ int main(int argc, char**argv)
      */
 
     std::cout << "Startup finished" << std::endl;
+    
     while(ros::ok()){
-	ros::spinOnce();
-}
-    // nothing further to do in this thread.
-    pause();
+	    ros::spinOnce();
+    }
+    terminateMotor(1);
+    cout << "afo_controller Node - Terminate properly" << endl;    
 }

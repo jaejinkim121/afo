@@ -19,6 +19,8 @@ using namespace std::chrono;
 
 #define FO 0
 #define IC 1
+#define LEFT true
+#define RIGHT false
 
 float d_soleLeft[7];
 float d_soleRight[7];
@@ -26,6 +28,7 @@ float d_imu[64];
 
 bool is_soleLeft, is_soleRight, is_imu; // ???
 bool leftSwing, rightSwing;
+bool affectedSide;
 
 float thLeft[2][6];
 float thRight[2][6];

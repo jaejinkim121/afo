@@ -120,11 +120,11 @@ int[] gaitDetector(){
    
     if (leftSwing != prevLeft){
         result[0] = 1;
-        result[1] = (int)leftSwing;  // true when foot-off, false when initial contact
+        result[1+(affectedSide==LEFT)] = (int)leftSwing + 1;  // 2 when foot-off, 1 when initial contact
     }
     if (rightSwing != prevRight){
         result[0] = 1;
-        result[2] = (int)rightSwing;  // true when foot-off, false when initial contact
+        result[1+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
     }
 
     return result;
@@ -196,6 +196,7 @@ int main(int argc, char**argv)
     is_imu = false;
     leftSwing = false;
     rightSwing = false;
+    affectedSide = LEFT;
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");
@@ -207,7 +208,7 @@ int main(int argc, char**argv)
     ros::Subscriber afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
     ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     ros::Subscriber afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
-    ros::Subscriber afo_thresholding_sub = n.subscribe("/afo_sensor/thresholding", 1, callbackThresholding);
+    ros::Subscriber afo_thresholding_sub = n.subscribe("/afo_sync/command_threshold", 1, callbackThresholding);
     ros::Publisher afo_gaitPhase_pub = n.advertise<std_msgs::Int16MultiArray>("/afo_detector/gaitPhase", 100);
     std_msgs::Int16MultiArray msg_gaitPhase;
 

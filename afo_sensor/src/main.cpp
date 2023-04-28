@@ -66,7 +66,6 @@ int main(int argc, char** argv){
     std_msgs::Float32MultiArray msg_sole_right;
     std_msgs::Bool msg_sync;
 
-
     while(ros::ok()){
         msg_imu.data.clear();
         msg_sole_left.data.clear();
@@ -85,11 +84,13 @@ int main(int argc, char** argv){
 		ros::spinOnce();
         loop_rate.sleep();
 	}
-	cout << "afo_sensor Node - ros end - main end" << endl;
+    serialSoleLeft->get_endsign();
+    serialSoleRight->get_endsign();
+    serialIMU->get_endsign();
     serialSoleLeft->serialWrite("[s]");
 	serialSoleRight->serialWrite("[s]");
+	cout << "afo_sensor Node - ros end - main end" << endl;
     cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
-
     usleep(500000);
     return 1;
 }
