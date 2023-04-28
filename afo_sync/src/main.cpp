@@ -3,8 +3,7 @@
 #include "std_msgs/Bool.h"
 #include <thread>
 #include <limits>
-#include <conio.h>
-
+#include "../include/linux_kbhit.h"
 
 using namespace std;
 
@@ -46,8 +45,9 @@ int main(int argc, char** argv){
 
 	int _tmp;
     while(ros::ok()){
-		if(_kbhit){
-			switch((char)_getch()){
+		int kh = linux_kbhit();
+		if(kh != -1){
+			switch((char)kh){
 				case '1':
 					*current_zero = !(*current_zero);
 					msg_zero.data = *current_zero;
@@ -61,8 +61,8 @@ int main(int argc, char** argv){
 					cout << "afo_sync Node - msg 'sync' published, value = " << *current_sync << endl;
 					break;
 				case 't':
-					msg_command_threshold = True;
-					afo_command_threshold.publish(msg_command_threshold);
+					msg_command_threshold.data = true;
+					afo_command_threshold_pub.publish(msg_command_threshold);
 					cout << "afo_sync Node - msg 'threshold' published" << endl;
 					break;
 				case 'e':
