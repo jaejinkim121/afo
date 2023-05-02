@@ -521,6 +521,5 @@ int main(int argc, char**argv)
     while(ros::ok()){
 	    ros::spinOnce();
     }
-    terminateMotor(1);
     cout << "afo_controller Node - Terminate properly" << endl;    
 }
