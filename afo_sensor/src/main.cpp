@@ -7,7 +7,21 @@ void experimentMarkingCallback(const std_msgs::String::ConstPtr& msg){
     experiment_marking = msg->data.c_str();
 }
 
+void terminateSensorNode(int sig){
+    serialSoleLeft->get_endsign();
+    serialSoleRight->get_endsign();
+    serialIMU->get_endsign();
+    serialSoleLeft->serialWrite("[s]");
+    serialSoleRight->serialWrite("[s]");
+    cout << "afo_sensor Node - ros end - main end" << endl;
+    cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
+
+    ros::shutdown();
+}
+
 int main(int argc, char** argv){
+    signal(SIGINT, terminateSensorNode);
+
     ros::init(argc, argv, "afo_sensor");
 	ros::NodeHandle n;
 	int rr;
@@ -44,9 +58,9 @@ int main(int argc, char** argv){
 	outFileSoleRight.setf(ios_base::fixed, ios_base::floatfield);
 	outIMU.setf(ios_base::fixed, ios_base::floatfield);
     // Open Serial Port and attach to correct sensors.
-	serial* serialSoleLeft = new serial(ID_leftSole, baudrate_sole);
-	serial* serialSoleRight = new serial(ID_rightSole, baudrate_sole);
-    serial* serialIMU = new serial(ID_IMU, baudrate);
+	serialSoleLeft = new serial(ID_leftSole, baudrate_sole);
+	serialSoleRight = new serial(ID_rightSole, baudrate_sole);
+    serialIMU = new serial(ID_IMU, baudrate);
 
     // 지금은 sensor node에서 Streaming 신호를 주지만, 나중에는 GUI에서 신호를 줄 수 있도록 해보자.
 
@@ -80,16 +94,8 @@ int main(int argc, char** argv){
         afo_imu_pub.publish(msg_imu);
         afo_soleSensor_left_pub.publish(msg_sole_left);
         afo_soleSensor_right_pub.publish(msg_sole_right);
+
 		ros::spinOnce();
         loop_rate.sleep();
 	}
-    serialSoleLeft->get_endsign();
-    serialSoleRight->get_endsign();
-    serialIMU->get_endsign();
-    serialSoleLeft->serialWrite("[s]");
-	serialSoleRight->serialWrite("[s]");
-	cout << "afo_sensor Node - ros end - main end" << endl;
-    cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
-    usleep(500000);
-    return 1;
 }

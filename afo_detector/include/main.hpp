@@ -5,8 +5,8 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
+#include <cmath>
 
-#include "serial.h"
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/Int16MultiArray.h"
@@ -40,4 +40,4 @@ int dataNum;
 float recordTimeThreshold = 3.0;
 bool runThreshold = false;
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
-duration<double, micro> currentTimeGap;
+duration<double> currentTimeGap;

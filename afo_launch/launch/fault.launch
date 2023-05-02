@@ -1,0 +1,14 @@
+<launch>
+	<arg name="as" default="0" />
+	<arg name="lhs" default="1" />
+	<arg name="lto" default="1" />
+	<arg name="rhs" default="1" />
+	<arg name="rto" default="1" />
+	<arg name="tl" default="NULL" />
+	<arg name="ic" default="0" />
+	<arg name="rr" default="100" />
+	<param name="rr" value="$(arg rr)" />
+	<node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
+	<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
+	</node>
+</launch>

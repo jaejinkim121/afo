@@ -176,6 +176,13 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
     return;
 }
 
+void callbackShutdown(const std_msgs::BoolConstPtr& msg){
+    if(ros::isStarted()){
+        ros::shutdown();
+        ros::waitForShutdown();
+    }
+}
+
 void worker()
 {
     // Define Output file stream for controller logging.
@@ -456,7 +463,10 @@ int main(int argc, char**argv)
     ros::Rate loop_rate(rr);
     // ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
     // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
+    ros::Subscriber afo_shutdown_sub = n.subscribe("/afo_sync/shutdown", 1, callbackShutdown);
+    
     afo_gaitPhase = n.subscribe("/afo_detector/gaitPhase", 1, callbackGaitPhase);
+
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
     afo_configuration_maxTorquePlantar = n.advertise<std_msgs::Float32>("/afo_controller/maxTorquePlantar", 10);

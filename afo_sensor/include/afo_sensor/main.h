@@ -5,6 +5,7 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
+#include <csignal>
 
 #include "serial.h"
 #include "ros/ros.h"
@@ -26,3 +27,7 @@ const char* ID_rightSole = "/dev/ttyACM2";
 const char* ID_IMU = "/dev/ttyUSB0";
 const int baudrate = 921600;
 const int baudrate_sole = 115200;
+
+serial* serialSoleLeft;
+serial* serialSoleRight;
+serial* serialIMU;

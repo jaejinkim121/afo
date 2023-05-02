@@ -17,6 +17,7 @@ vector<string> split_comma(uint8_t *incomingData, char delimiter) {
 			temp = "";
 		}
 		else if (incomingData[i] == 0){
+			answer.push_back(temp);
 			break;
 		}
 		else{

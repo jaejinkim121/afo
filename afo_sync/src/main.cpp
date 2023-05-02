@@ -26,14 +26,21 @@ using namespace std;
 // }
 
 int main(int argc, char** argv){
+
     ros::init(argc, argv, "afo_sync");
 	ros::NodeHandle n;
 	int rr;
+	
+	n.getParam("/rr", rr);
+    ros::Rate loop_rate(rr);
 
+	ros::Publisher afo_shutdown_pub = n.advertise<std_msgs::Bool>("/afo_sync/shutdown", 100);
 	ros::Publisher afo_sync_pub = n.advertise<std_msgs::Bool>("/afo_sync/sync", 100);
 	ros::Publisher afo_zero_pub = n.advertise<std_msgs::Bool>("/afo_sync/zero", 100);
 	ros::Publisher afo_command_threshold_pub = n.advertise<std_msgs::Bool>("/afo_sync/command_threshold", 100);
 
+	std_msgs::Bool msg_shutdown;
+	
 	std_msgs::Bool msg_sync;
     std_msgs::Bool msg_zero;
 	std_msgs::Bool msg_command_threshold;
@@ -42,6 +49,8 @@ int main(int argc, char** argv){
 	bool* current_zero = new bool;
 	*current_sync = false;
 	*current_zero = false;
+
+	msg_shutdown.data = true;
 
 	int _tmp;
     while(ros::ok()){
@@ -66,13 +75,11 @@ int main(int argc, char** argv){
 					cout << "afo_sync Node - msg 'threshold' published" << endl;
 					break;
 				case 'e':
-					ros::shutdown();
 					cout << "ROS system terminated by user key INPUT" << endl;
 					break;
 
 			}
 		}
 	}
-	cout << "afo_sync Node - ros end - main end" << endl;
     return 1;
 }

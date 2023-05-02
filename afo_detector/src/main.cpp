@@ -52,7 +52,7 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     return;
 }
 
-void callbackThresholding(const std_msgs::Boolean::ConstPtr& msg){
+void callbackThresholding(const std_msgs::Bool::ConstPtr& msg){
     #ifdef DEBUG
     cout << "Debug - thresholding - Initiate Recording";
     #endif
@@ -70,9 +70,10 @@ void callbackThresholding(const std_msgs::Boolean::ConstPtr& msg){
 
 // paretic side is left = 0
 // paretic side is right = 1
-int[] gaitDetector(){
+void gaitDetector(int* result){
     string print_arr[2] = {"------------", "------------"};
-    bool result[3] = {0, 0, 0};
+    result[0] = 0;
+
     bool leftTmp, rightTmp;
     bool prevLeft, prevRight;
     
@@ -127,7 +128,6 @@ int[] gaitDetector(){
         result[1+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
     }
 
-    return result;
 
 }
 
@@ -181,7 +181,7 @@ void saveThreshold(){
 void updateThreshold(){
     for (int i = 0; i < 6; i++){
         meanLeft[i] += (d_soleLeft[i] - meanLeft[i])/ (dataNum + 1);
-        meanRight[i] += (d_soleRight[i] - maenRight[i]) / (dataNum + 1);
+        meanRight[i] += (d_soleRight[i] - meanRight[i]) / (dataNum + 1);
     }
     dataNum++;
 
@@ -206,6 +206,7 @@ int main(int argc, char**argv)
     string configPath;
     n.getParam("/rr", rr);
     n.getParam("/test", test);
+    cout << test << endl;
     ros::Rate loop_rate(rr);
     ros::Subscriber afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
     ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
@@ -217,22 +218,22 @@ int main(int argc, char**argv)
     loadThreshold();    
 
     std::cout << "Startup finished" << std::endl;
-    bool r[3];
+    int r[3];
 
 
     while(ros::ok()){
         msg_gaitPhase.data.clear();
-        r = gaitDetector();
+        gaitDetector(r);
 
-        if (r[0] == true){
+        if (r[0] == 1){
             msg_gaitPhase.data.push_back(r[1]);
             msg_gaitPhase.data.push_back(r[2]);
             afo_gaitPhase_pub.publish(msg_gaitPhase);
         }
         
         if (runThreshold){
-            currentTimeGap = (high_resolution_clock::now() - initialTimeThreshold).count();
-            if (currentTImeGap > 3*10^6){
+            currentTimeGap = high_resolution_clock::now() - initialTimeThreshold;
+            if (currentTimeGap.count() > 3.0){
                 runThreshold = false;
                 saveThreshold();
                 loadThreshold();
