@@ -2,7 +2,8 @@
 	<arg name="rr" default="100" />
 	<param name="start_time" command="data +'%m%d%Ih%Mm%S'">
 	<param name="rr" value="$(arg rr)" />
-
+	<param name="test" value="-a $(env ROS_WORKSPACE)/src/afo/log/$(param start_time).bag" />
+	
 	<node name="afo_sensor" pkg="afo_sensor" type="afo_sensor" output="screen">
 	</node>
 	

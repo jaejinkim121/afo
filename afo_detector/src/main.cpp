@@ -202,8 +202,10 @@ int main(int argc, char**argv)
     ros::init(argc, argv, "afo_detector");
     ros::NodeHandle n;
     int rr;
+    string test;
     string configPath;
     n.getParam("/rr", rr);
+    n.getParam("/test", test);
     ros::Rate loop_rate(rr);
     ros::Subscriber afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
     ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
