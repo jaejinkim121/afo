@@ -13,7 +13,6 @@
 #include "std_msgs/Int16MultiArray.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Float32MultiArray.h"
-#include "spdlog/spdlog.h"
 
 #include "EthercatDeviceConfigurator.hpp"
 #include <maxon_epos_ethercat_sdk/Maxon.hpp>
