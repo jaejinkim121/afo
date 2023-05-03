@@ -1,8 +1,6 @@
 <launch>
 	<arg name="rr" default="100" />
-	<arg name="time_now" default="$(eval eval ('_' + '_import_' + '_(\'datetime\')').datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))"/>
 	<param name="rr" value="$(arg rr)" />
-	<param name="log_path" value="-a /home/srbl/catkin_ws/src/afo/log/$(arg time_now).bag" />
 	
 	<node name="afo_sensor" pkg="afo_sensor" type="afo_sensor" output="screen">
 	</node>
@@ -16,9 +14,9 @@
 	<node name="afo_sync" pkg="afo_sync" type="afo_sync" output="screen">
 	</node>
 	
-	<!-- node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
-	<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
-	</node -->
+	<node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
+		<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
+	</node >
 
 	<node name="afo_rosbag_record" pkg="rosbag" type="record" args="-a -o /home/srbl/catkin_ws/src/afo/log/log">
 	</node>
