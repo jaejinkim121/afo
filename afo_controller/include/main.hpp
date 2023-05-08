@@ -53,7 +53,7 @@ int controlMode = EST;
 //
 
 // Communication param.
-int etherCatCommunicationRate = 2500; // us
+int etherCatCommunicationRate = 5000; // us
 
 // Time Parameter
 double periodPreset = 2.0;
