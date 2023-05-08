@@ -3,7 +3,7 @@
 #include "ui_mainwindow.h"
 
 
-MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
+MainWindow::MainWindow(QWidget *parent, int argc, char** argv)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -113,7 +113,7 @@ void MainWindow::callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& m
     appendCropQVector(&t_v_l, t, voltPlotMaxNum);
 
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_l[i], msg.data[i], voltPlotMaxNum);
+        appendCropQVector(&v_l[i], msg->data[i], voltPlotMaxNum);
     }
     this->updatePlot(SOLE_LEFT);
 }
@@ -126,7 +126,7 @@ void MainWindow::callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& 
     appendCropQVector(&t_v_r, t, voltPlotMaxNum);
 
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_r[i], msg.data[i], voltPlotMaxNum);
+        appendCropQVector(&v_r[i], msg->data[i], voltPlotMaxNum);
     }
 
     this->updatePlot(SOLE_RIGHT);
@@ -136,8 +136,8 @@ void MainWindow::callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& ms
     double t = ros::Time::now().toSec() - t_begin;
 
     appendCropQVector(&t_m_p, t, motorPlotMaxNum);
-    appendCropQVector(&m_p[0], msg.data[2], motorPlotMaxNum);
-    appendCropQVector(&m_p[1], msg.data[5], motorPlotMaxNum);
+    appendCropQVector(&m_p[0], msg->data[2], motorPlotMaxNum);
+    appendCropQVector(&m_p[1], msg->data[5], motorPlotMaxNum);
 
     this->updatePlot(MOTOR_PLANTAR);
 }
@@ -146,10 +146,10 @@ void MainWindow::callbackDorsi(const std_msgs::Float32MultiArray::ConstPtr& msg)
     double t = ros::Time::now().toSec() - t_begin;
 
     appendCropQVector(&t_m_d, t, motorPlotMaxNum);
-    appendCropQVector(&m_d[0], msg.data[2], motorPlotMaxNum);
-    appendCropQVector(&m_d[1], msg.data[5], motorPlotMaxNum);
-    appendCropQVector(&m_d[2], msg.data[3], motorPlotMaxNum);
-    appendCropQVector(&m_d[3], msg.data[6], motorPlotMaxNum);
+    appendCropQVector(&m_d[0], msg->data[2], motorPlotMaxNum);
+    appendCropQVector(&m_d[1], msg->data[5], motorPlotMaxNum);
+    appendCropQVector(&m_d[2], msg->data[3], motorPlotMaxNum);
+    appendCropQVector(&m_d[3], msg->data[6], motorPlotMaxNum);
 
     this->updatePlot(MOTOR_DORSI);
 }
