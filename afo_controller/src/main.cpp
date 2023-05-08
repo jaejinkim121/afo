@@ -323,6 +323,7 @@ void worker()
                         msg_motor_plantar.data.push_back(currentTimePercentage);
                         msg_motor_plantar.data.push_back(plantarModeInt);
                         msg_motor_plantar.data.push_back(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
+                        msg_motor_plantar.data.push_back(plantarPosition);
                         msg_motor_plantar.data.push_back(reading.getActualCurrent());
                         msg_motor_plantar.data.push_back(reading.getActualTorque());
                         msg_motor_plantar.data.push_back(reading.getActualPosition());
