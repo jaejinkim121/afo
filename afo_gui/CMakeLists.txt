@@ -10,14 +10,15 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
 )
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt5Widgets REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+rosbuild_prepare_qt4(Qt5Core Qt5Gui) # Add the appropriate components to the component list here
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
