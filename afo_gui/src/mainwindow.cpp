@@ -5,30 +5,19 @@
 
 MainWindow::MainWindow(QWidget *parent, int argc, char** argv)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , qnode(argc, argv)
 {
+    qnode.init();
     ui->setupUi(this);
 
     // Connect QObject to ui objects.
     QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_plot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
-    is = true;
-    ros::init(argc, argv, "afo_gui");
-    int rr;
-
-    // Set parameters related to ros
-    nh.getParam("/rr", rr);
-    ros::Rate loop_rate(rr);
-    t_begin = ros::Time::now().toSec();
-
-    // Declare publisher and subscriber
-    afo_gui_sole_calibration_pub = nh.advertise<std_msgs::Bool>("/afo_gui/soleCalibration", 100);
-    afo_gui_max_torque_pub = nh.advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
-    afo_soleSensor_left_sub = nh.subscribe("/afo_sensor/soleSensor_left", 1, this->callbackSoleLeft);
-    afo_soleSensor_right_sub = nh.subscribe("/afo_sensor/soleSensor_right", 1, this->callbackSoleRight);
-    afo_plantar_command_sub = nh.subscribe("/afo_controller/motor_data_plantar", 1, this->callbackPlantar);
-    afo_dorsi_command_sub = nh.subscribe("/afo_controller/motor_data_dorsi", 1, this->callbackDorsi);
+    QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
+    QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
+    QObject::connect(&qnode, SIGNAL(updatePlantar()), this, SLOT(plotPlantar()));
+    QObject::connect(&qnode, SIGNAL(updateDorsi()), this, SLOT(plotDorsi()));
 
 }
 
@@ -42,7 +31,7 @@ void MainWindow::buttonClicked(){
     std::string state;
     state = button->objectName().toStdString();
     if (state == "button_toggle_plot"){
-        this->toggleVoltPlot();
+        this->togglePlot();
         this->updateLog("toggle plot pressed");
     }
 
@@ -64,18 +53,25 @@ void MainWindow::buttonClicked(){
 //    offset++;
 }
 
-void MainWindow::toggleVoltPlot(){
+void MainWindow::togglePlot(){
     is_plot = !is_plot;
     if (!is_plot){
         t_v_l.clear();
         t_v_r.clear();
+        t_m_p.clear();
+        t_m_d.clear();
         for (int i = 0; i < 6; i++){
             v_l[i].clear();
             v_r[i].clear();
         }
+        for (int i =0; i< 2; i++){
+            m_p[i].clear();
+        }
+        for (int i = 0; i< 4; i++){
+            m_d[i].clear();
+        }
     }
 }
-
 
 void MainWindow::updateLog(QString s){
     if (logNum > max_log){
@@ -105,51 +101,48 @@ void MainWindow::set_emergency(bool on){
     }
 }
 
-void MainWindow::callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+void MainWindow::plotSoleLeft(){
     if (!is_plot) return;
-
-    double t = ros::Time::now().toSec() - t_begin;
-
-    appendCropQVector(&t_v_l, t, voltPlotMaxNum);
-
+    double data[7] = qnode.getSoleLeftData();
+    appendCropQVector(&t_v_l, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_l[i], msg->data[i], voltPlotMaxNum);
+        appendCropQVector(&v_l[i], data[i], voltPlotMaxNum);
     }
+
     this->updatePlot(SOLE_LEFT);
 }
 
-void MainWindow::callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+void MainWindow::plotSoleRight(){
     if (!is_plot) return;
-
-    double t = ros::Time::now().toSec() - t_begin;
-
-    appendCropQVector(&t_v_r, t, voltPlotMaxNum);
-
+    double data[7] = qnode.getSoleRightData();
+    appendCropQVector(&t_v_r, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_r[i], msg->data[i], voltPlotMaxNum);
+        appendCropQVector(&v_r[i], data[i], voltPlotMaxNum);
     }
-
+    
     this->updatePlot(SOLE_RIGHT);
 }
 
-void MainWindow::callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg){
-    double t = ros::Time::now().toSec() - t_begin;
+void MainWindow::plotPlantar(){
+    if(!is_plot) return;
+    double data[3] = qnode.getPlantarData();
 
-    appendCropQVector(&t_m_p, t, motorPlotMaxNum);
-    appendCropQVector(&m_p[0], msg->data[2], motorPlotMaxNum);
-    appendCropQVector(&m_p[1], msg->data[5], motorPlotMaxNum);
-
+    appendCropQVector(&t_m_p, data[0], motorPlotMaxNum);
+    appendCropQVector(&m_p[0], data[1], motorPlotMaxNum);
+    appendCropQVector(&m_p[1], data[2], motorPlotMaxNum);
+    
     this->updatePlot(MOTOR_PLANTAR);
 }
 
-void MainWindow::callbackDorsi(const std_msgs::Float32MultiArray::ConstPtr& msg){
-    double t = ros::Time::now().toSec() - t_begin;
+void MainWindow::plotDorsi(){
+    if (!is_plot) return;
+    double data[5] = qnode.getDorsiData();
 
-    appendCropQVector(&t_m_d, t, motorPlotMaxNum);
-    appendCropQVector(&m_d[0], msg->data[2], motorPlotMaxNum);
-    appendCropQVector(&m_d[1], msg->data[5], motorPlotMaxNum);
-    appendCropQVector(&m_d[2], msg->data[3], motorPlotMaxNum);
-    appendCropQVector(&m_d[3], msg->data[6], motorPlotMaxNum);
+    appendCropQVector(&t_m_d, data[0], motorPlotMaxNum);
+    appendCropQVector(&m_d[0], data[1], motorPlotMaxNum);
+    appendCropQVector(&m_d[1], data[2], motorPlotMaxNum);
+    appendCropQVector(&m_d[2], data[3], motorPlotMaxNum);
+    appendCropQVector(&m_d[3], data[4], motorPlotMaxNum);
 
     this->updatePlot(MOTOR_DORSI);
 }
