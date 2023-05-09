@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Config">
      <attribute name="title">
@@ -192,6 +192,24 @@
        <string>Sole plot on/off</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="button_dorsi_zeroing_done">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>370</y>
+        <width>150</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Dorsi zeroing</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="Data">
      <attribute name="title">
@@ -271,7 +289,7 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>500</y>
+      <y>490</y>
       <width>701</width>
       <height>71</height>
      </rect>
@@ -283,7 +301,7 @@
       <x>850</x>
       <y>0</y>
       <width>171</width>
-      <height>491</height>
+      <height>481</height>
      </rect>
     </property>
     <property name="font">
@@ -307,7 +325,7 @@ STOP</string>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>500</y>
+      <y>490</y>
       <width>141</width>
       <height>61</height>
      </rect>
@@ -320,7 +338,7 @@ STOP</string>
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>500</y>
+      <y>490</y>
       <width>141</width>
       <height>61</height>
      </rect>
