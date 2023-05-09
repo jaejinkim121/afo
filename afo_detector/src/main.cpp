@@ -99,7 +99,6 @@ void gaitDetector(int* result){
         leftSwing = leftTmp;        
     }
 
-
     // Right Detection
     if(rightSwing){
         for (int i= 0; i<6; i++){
@@ -118,14 +117,15 @@ void gaitDetector(int* result){
         }
         rightSwing = rightTmp;        
     }
-   
     if (leftSwing != prevLeft){
         result[0] = 1;
         result[1+(affectedSide==LEFT)] = (int)leftSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "LEFT SWing : " << leftSwing +1 << std::endl;
     }
     if (rightSwing != prevRight){
         result[0] = 1;
         result[1+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "Right SWing : " << rightSwing +1 << std::endl;
     }
 
 
@@ -154,6 +154,7 @@ void loadThreshold(){
         else if (i<18) thRight[IC][i%6] = stof(str);
         else thRight[FO][i%6] = stof(str);
     }
+
     thFile.close();
 }
 
@@ -163,16 +164,16 @@ void saveThreshold(){
         cout << "ERROR - afo_detector - Cannot open file /home/srbl/catkin_ws/src/afo/threshold.csv" << endl;
     }
     for (int i = 0; i < 6; i++){
-        thFile << meanLeft[i] + 0.05 << endl;
+        thFile << meanLeft[i] + 0.07 << endl;
     }
     for (int i = 0; i < 6; i++){
-        thFile << meanLeft[i] + 0.1 << endl;
+        thFile << meanLeft[i] + 0.04 << endl;
     }
     for (int i = 0; i < 6; i++){
-        thFile << meanRight[i] + 0.05 << endl;
+        thFile << meanRight[i] + 0.10 << endl;
     }
     for (int i = 0; i < 6 ; i++){
-        thFile << meanRight[i] + 0.1 << endl;
+        thFile << meanRight[i] + 0.08 << endl;
     }
 
     thFile.close();
@@ -202,11 +203,8 @@ int main(int argc, char**argv)
     ros::init(argc, argv, "afo_detector");
     ros::NodeHandle n;
     int rr;
-    string test;
     string configPath;
     n.getParam("/rr", rr);
-    n.getParam("/test", test);
-    cout << test << endl;
     ros::Rate loop_rate(rr);
     ros::Subscriber afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
     ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);

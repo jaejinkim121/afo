@@ -55,7 +55,7 @@ namespace afo_gui {
         afo_plantar_command_sub = nh->subscribe("/afo_controller/motor_data_plantar", 1, &QNode::callbackPlantar, this);
         afo_dorsi_command_sub = nh->subscribe("/afo_controller/motor_data_dorsi", 1, &QNode::callbackDorsi, this);
         afo_dorsi_zeroing_done_sub = nh->subscribe("/afo_controller/dorsi_zeroing_done", 1, &QNode::callbackDorsiZeroingDone, this);
-
+        afo_gait_phase_sub = nh->subscribe("/afo_detector/gaitPhase", 1, &QNode::callbackGaitPhase, this);
     }
 
     void QNode::run() {

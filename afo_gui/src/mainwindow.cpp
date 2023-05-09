@@ -23,7 +23,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_clear_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_stop_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_toggle_streaming, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_toggle_streaminig, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -56,8 +56,8 @@ void MainWindow::buttonClicked(){
     }
 
     else if (state == "button_sole_calibration_run"){
-        this->soleCalibration();
         this->updateLog("Sole Calibration Start");
+        this->soleCalibration();
     }
 
     else if (state == "button_sole_calibration_proceed"){
@@ -88,7 +88,7 @@ void MainWindow::buttonClicked(){
         this->stopMotor();
     }
 
-    else if (state == "button_toggle_streaming"){
+    else if (state == "button_toggle_streaminig"){
         this->toggleStreaming();
     }
 
@@ -258,8 +258,8 @@ void MainWindow::plotGaitPhase(){
     float* data = qnode.getGaitPhase();
 
     appendCropQVector(&t_gp, data[0], gaitPhasePlotMaxNum);
-    appendCropQVector(&gp[0], data[1], gaitPhasePlotMaxNum);
-    appendCropQVector(&gp[1], data[2], gaitPhasePlotMaxNum);
+    appendCropQVector(&gp[0], data[1]-1, gaitPhasePlotMaxNum);
+    appendCropQVector(&gp[1], data[2]-1, gaitPhasePlotMaxNum);
     ui->plot_gaitPhase->xAxis->setRange(t_gp[t_gp.size() - 1] - 20.0, t_gp[t_gp.size() - 1]);
     this->updatePlot(GAIT_PHASE);
 }
