@@ -12,8 +12,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     ui->setupUi(this);
     
     // Connect QObject to ui objects.
-    QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_toggle_plot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    //QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_toggle_plot_data, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
     QObject::connect(&qnode, SIGNAL(updatePlantar()), this, SLOT(plotPlantar()));
@@ -31,7 +31,7 @@ void MainWindow::buttonClicked(){
     QPushButton* button = (QPushButton*)sender();
     std::string state;
     state = button->objectName().toStdString();
-    if (state == "button_toggle_plot"){
+    if (state == "button_toggle_plot_data"){
         this->togglePlot();
         this->updateLog("toggle plot pressed");
     }
