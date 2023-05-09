@@ -211,7 +211,7 @@ int main(int argc, char**argv)
     ros::Subscriber afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
     ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     ros::Subscriber afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
-    ros::Subscriber afo_thresholding_sub = n.subscribe("/afo_sync/command_threshold", 1, callbackThresholding);
+    ros::Subscriber afo_thresholding_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThresholding);
     ros::Publisher afo_gaitPhase_pub = n.advertise<std_msgs::Int16MultiArray>("/afo_detector/gaitPhase", 100);
     std_msgs::Int16MultiArray msg_gaitPhase;
 
@@ -233,7 +233,7 @@ int main(int argc, char**argv)
         
         if (runThreshold){
             currentTimeGap = high_resolution_clock::now() - initialTimeThreshold;
-            if (currentTimeGap.count() > 3.0){
+            if (currentTimeGap.count() > 2.0){
                 runThreshold = false;
                 saveThreshold();
                 loadThreshold();

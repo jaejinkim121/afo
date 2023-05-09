@@ -19,6 +19,7 @@
 #define SOLE_RIGHT 2
 #define MOTOR_PLANTAR 3
 #define MOTOR_DORSI 4
+#define GAIT_PHASE 5
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -30,12 +31,21 @@ Q_OBJECT
 public:
     MainWindow(int argc, char** argv, QWidget *parent = 0);
     ~MainWindow();
-    void togglePlot();
+    void togglePlotData();
+    void togglePlotSole();
+    void soleCalibration();
+    void proceedCalibration();
+    void setMaxTorque();
+    void setCycleTime();
+    void runMotor();
+    void stopMotor();
+    
     void updateLog(QString s);
     void set_emergency(bool on);
     
     void updatePlot(int dataType);
     void initPlot();
+
 
 public Q_SLOTS:
     void buttonClicked();
@@ -43,6 +53,8 @@ public Q_SLOTS:
     void plotSoleRight();
     void plotPlantar();
     void plotDorsi();
+    void plotGaitPhase();
+    void dorsiZeroingDone();
 
 
 private:
@@ -52,13 +64,17 @@ private:
     int max_log = 20;
     int voltPlotMaxNum = 400;
     int motorPlotMaxNum = 400;
-    bool is_plot = false;
+    int gaitPhasePlotMaxNum = 20;
+    bool is_plot_data = false;
+    bool is_plot_sole = false;
 
-    QVector<double> t_v_l, t_v_r, t_m_p, t_m_d;
-    QVector<double> v_l[6];
-    QVector<double> v_r[6];
-    QVector<double> m_p[2];
-    QVector<double> m_d[4];
+    QVector<float> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
+    QVector<float> v_l[6];
+    QVector<float> v_r[6];
+    QVector<float> m_p[2];
+    QVector<float> m_d[4];
+    QVector<float> gp[2];
+
 
 };
 

@@ -30,11 +30,20 @@ public:
     void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackDorsi(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg);
+    void callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg);
+
+    void pubThreshold();
+    void pubMaxTorque(float t);
+    void pubCycleTime(float t);
+    void pubMotorRun();
+    void pubMotorStop();
 
     float* getSoleLeftData();
     float* getSoleRightData();
     float* getPlantarData();
     float* getDorsiData();
+    int* getGaitPhase();
 
 
 Q_SIGNALS:
@@ -43,11 +52,14 @@ Q_SIGNALS:
     void updateSoleRight();
     void updatePlantar();
     void updateDorsi();
+    void updateGaitPhase();
+    void doneDorsiZeroing();
 
 private:
     int init_argc;
     char** init_argv;
 
+    float* gaitPhase;
     float* soleLeftData;
     float* soleRightData; 
     float* plantarData;
@@ -57,13 +69,20 @@ private:
 
     ros::NodeHandle* nh;
 
-    ros::Publisher afo_gui_sole_calibration_pub;
+    ros::Publisher afo_gui_thresholding_pub;
     ros::Publisher afo_gui_max_torque_pub;
     ros::Publisher afo_gui_cycle_time_pub;
+    ros::Publisher afo_gui_max_torque_pub;
+    ros::Publisher afo_gui_cycle_time_pub;
+    ros::Publisher afo_gui_motor_run_pub;
+    ros::Publisher afo_gui_motor_stop_pub;
+
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
     ros::Subscriber afo_plantar_command_sub;
     ros::Subscriber afo_dorsi_command_sub;
+    ros::Subscriber afo_gait_phase_sub;
+    ros::Subscriber afo_dorsi_zeroing_done_sub;
 };
 
 

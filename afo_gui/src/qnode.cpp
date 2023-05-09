@@ -23,6 +23,7 @@ namespace afo_gui {
         soleRightData = new float[7];
         plantarData = new float[3];
         dorsiData = new float[5];
+        gaitPhase = new float[3];
 
         ros::init(init_argc, init_argv, "afo_gui");
         if ( ! ros::master::check() ) {
@@ -40,13 +41,19 @@ namespace afo_gui {
     void QNode::init_nh(){
         nh = new ros::NodeHandle("afo_gui");
 
-        afo_gui_sole_calibration_pub = nh->advertise<std_msgs::Bool>("/afo_gui/soleCalibration", 100);
+        afo_gui_thresholding_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_threshold", 100);
         afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
+        afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
+        afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
+        afo_gui_motor_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/motor_run", 100);
+        afo_gui_motor_stop_pub = nh->advertise<std_msgs::Bool>("/afo_gui/motor_stop", 100);
+
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
         afo_plantar_command_sub = nh->subscribe("/afo_controller/motor_data_plantar", 1, &QNode::callbackPlantar, this);
         afo_dorsi_command_sub = nh->subscribe("/afo_controller/motor_data_dorsi", 1, &QNode::callbackDorsi, this);
+        afo_dorsi_zeroing_done_sub = nh->subscribe("/afo_controller/dorsi_zeroing_done", 1, &QNode::callbackDorsiZeroingDone, this);
 
     }
 
@@ -77,6 +84,10 @@ namespace afo_gui {
 
     float* QNode::getDorsiData(){
         return this->dorsiData;
+    }
+
+    int* QNode::getGaitPhase(){
+        return this->gaitPhase;
     }
 
     void QNode::callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
@@ -120,6 +131,50 @@ namespace afo_gui {
         dorsiData[4] = msg->data[6];
 
         updateDorsi();
+    }
+
+    void QNode::callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg){
+        float t = ros::Time::now().toSec() - this->t_begin;
+        
+        gaitPhase[0] = t;
+        gaitPhase[1] = msg->data[0];
+        gaitPhase[2] = msg->data[1];
+        updateGaitPhase();
+    }
+
+    void QNode::callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg){
+        doneDorsiZeroing();
+    }
+    
+
+    void QNode::pubThreshold(bool s){
+        std_msgs::Bool m;
+        m.data = s;
+        this->afo_gui_thresholding_pub.publish(m);
+    }
+
+    void QNode::pubMaxTorque(float t){
+        std_msgs::Float32 m;
+        m.data = t;
+        afo_gui_max_torque_pub.publish(m);
+    }
+    
+    void QNode::pubCycleTime(float t){
+        std_msgs::Float32 m;
+        m.data = t;
+        afo_gui_cycle_time_pub.publish(m);
+    }
+
+    void QNode::pubMotorRun(){
+        std_msgs::Bool m;
+        m.data = true;
+        afo_gui_motor_run_pub.publish(m);
+    }
+
+    void QNode::pubMotorStop(){
+        std_msgs::Bool m;
+        m.data = true;
+        afo_gui_motor_stop_pub.publish(m);
     }
 
 }

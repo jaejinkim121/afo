@@ -1,5 +1,260 @@
 #include "../include/main.hpp"
 
+void worker()
+{
+    // Define Output file stream for controller logging.
+    std::time_t t = std::time(0);
+	std::tm* now = std::localtime(&t);
+	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
+    ofstream outFileController;
+    outFileController.open("/home/dl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
+    outFileController << 
+        "Max Plantar Torque=" << maxTorquePlantar << 
+        ", Max Dorsi Torque=" << maxTorqueDorsi << 
+        ", start time=" << startTime << 
+        ", endTime=" << endTime <<
+        ", upTimeRatio=" << upTimeRatio <<
+        ", dirPlantar=" << dirPlantar <<
+        ", ";
+
+    // Initialize master
+    bool rtSuccess = true;
+    for(const auto & master: configurator->getMasters())
+    {
+        rtSuccess &= master->setRealtimePriority(99);
+    }
+    bool maxonEnabledAfterStartup = false;
+    maxon::ModeOfOperationEnum dorsiInputMode;
+    double dorsiPositionInput, dorsiTorqueInput;
+    /*
+    ** The communication update loop.
+    ** This loop is supposed to be executed at a constant rate.
+    ** The EthercatMaster::update function incorporates a mechanism
+    ** to create a constant rate.
+     */
+    auto next = steady_clock::now();
+    while(!abrt)
+    {
+        if(!motorInit){
+            continue;
+        }
+        // ------------------------------- Dorsiflexion zeroing process start -------------------------------------------- //
+        if (!isDorsiZeroing){
+            for(const auto & master: configurator->getMasters() ){
+                master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
+            }               
+            for(const auto & slave:configurator->getSlaves())
+            {  
+                std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
+
+                if (!maxonEnabledAfterStartup)
+                {
+                    // Set maxons to operation enabled state, do not block the call!
+                    maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
+                }
+                // set commands if we can
+                if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
+                        maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
+                {
+                    maxon::Command command;
+
+                    if (slave->getName() == "Plantar"){
+                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                        command.setTargetPosition(0);
+                        command.setTargetTorque(plantarPreTension * dirPlantar);
+                        maxon_slave_ptr->stageCommand(command);
+                    }
+                    else if (slave->getName() == "Dorsi"){
+                        auto reading = maxon_slave_ptr->getReading();
+                        if (reading.getActualTorque() * dirDorsi > dorsiPreTension){
+				            if (dorsiBufferFlushingIndex++ < 15){
+                                continue;
+                            }
+                            isDorsiZeroing = true;
+                            dorsiNeutralPosition = reading.getActualPosition();
+			                outFileController << "dorsiNeutralPosition=" << dorsiNeutralPosition << endl;
+		                    cout << "Dorsi Zeroing Done: " << reading.getActualTorque() << endl;
+                            std_msgs::Bool m;
+                            m.data = true;
+                            afo_dorsi_zeroing_done.publish(m);
+                            break;
+                        }
+                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
+                        command.setTargetPosition(reading.getActualPosition() + dorsiZeroingIncrement * dirDorsi);
+                        command.setTargetTorque(0);
+                        maxon_slave_ptr->stageCommand(command);
+                    }
+                }
+                else
+                {
+                    MELO_WARN_STREAM("Maxon '" << maxon_slave_ptr->getName()
+                                                                            << "': " << maxon_slave_ptr->getReading().getDriveState());
+                }
+            }
+            maxonEnabledAfterStartup = true;
+        }
+        /* -----------------------------    Dorsiflexion Zeroing Process Done     ---------------------------------*/
+        /*
+        ** Update each master.
+        ** This sends tha last staged commands and reads the latest readings over EtherCAT.
+        ** The StandaloneEnforceRate update mode is used.
+        ** This means that average update rate will be close to the target rate (if possible).
+         */
+        // CONTROL MAIN LOOP
+        else if (!motorRun){
+            for(const auto & slave:configurator->getSlaves()){
+                std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
+
+                maxon::Command command;
+                if (slave->getName() == "Plantar"){
+                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                    command.setTargetPosition(plantarNeutralPosition + 0 * dirPlantar);
+                    command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * 0));
+                    maxon_slave_ptr->stageCommand(command);
+                }
+                else{
+                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                    command.setTargetTorque(dirDorsi * (maxTorqueDorsi * 0 + dorsiPreTension));
+                    command.setTargetPosition(dorsiNeutralPosition);
+                    maxon_slave_ptr->stageCommand(command);
+                }
+            }
+        }
+        
+        else{
+
+            if (!motorRun){
+                
+            }
+
+            for(const auto & master: configurator->getMasters() )
+            {
+                master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
+            }
+            for(const auto & slave:configurator->getSlaves())
+            {  
+                // Keep constant update rate
+                // auto start_time = std::chrono::steady_clock::now();
+
+                std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
+
+                if (!maxonEnabledAfterStartup)
+                {
+                    // Set maxons to operation enabled state, do not block the call!
+                    maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
+                }
+
+                // set commands if we can
+                if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
+                        maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
+                {
+                    maxon::Command command;
+                    auto reading = maxon_slave_ptr->getReading();
+                    double currentTimePercentage;
+                    // CONTROL LOOP MAIN BODY
+                    if (slave->getName() == "Plantar"){
+                        if (setGaitEventNonAffected && setGaitEventAffected){
+                            currentTimePercentage = pathPlannerPlantarflexion();
+                        }
+                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
+                        command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
+                        command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
+                        maxon_slave_ptr->stageCommand(command);
+                        
+                        float plantarModeInt;
+                        if (plantarMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
+                            plantarModeInt = 1.0;
+                        else
+                            plantarModeInt = 2.0;
+
+                        msg_motor_plantar.data.clear();
+                        msg_motor_plantar.data.push_back(currentTimePercentage);
+                        msg_motor_plantar.data.push_back(plantarModeInt);
+                        msg_motor_plantar.data.push_back(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
+                        msg_motor_plantar.data.push_back(plantarPosition);
+                        msg_motor_plantar.data.push_back(reading.getActualCurrent());
+                        msg_motor_plantar.data.push_back(reading.getActualTorque());
+                        msg_motor_plantar.data.push_back(reading.getActualPosition());
+                        msg_motor_plantar.data.push_back(reading.getActualVelocity());
+                        msg_motor_plantar.data.push_back(reading.getBusVoltage());
+                        
+                        afo_motor_data_plantar.publish(msg_motor_plantar);
+                        // outFileController << "plantar, " << ros::Time::now() << ", " << currentTimePercentage << ", "
+                        //     << plantarMode << ", " 
+                        //     << dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque) << ", " 
+                        //     << plantarNeutralPosition + plantarPosition * dirPlantar << ", " 
+                        //     << reading.getActualCurrent() << ", " 
+                        //     << reading.getActualTorque() << ", " 
+                        //     << reading.getActualPosition() << ", " 
+                        //     << reading.getActualVelocity() << ", " 
+                        //     << reading.getBusVoltage() << endl;
+
+                    }
+                    else if (slave->getName() == "Dorsi"){
+                        if (setGaitEventNonAffected && setGaitEventAffected){
+                            currentTimePercentage = pathPlannerDorsiflexion(reading);
+                        }
+                            
+                        dorsiInputMode = dorsiMode;
+                        dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
+                        dorsiTorqueInput = dirDorsi * (maxTorqueDorsi * dorsiTorque + dorsiPreTension);
+                            
+                        command.setModeOfOperation(dorsiInputMode);
+                        command.setTargetTorque(dorsiTorqueInput);
+                        command.setTargetPosition(dorsiPositionInput);
+                        maxon_slave_ptr->stageCommand(command);
+                         
+                        float dorsiModeInt;
+                        if (dorsiMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
+                            dorsiModeInt = 1.0;
+                        else
+                            dorsiModeInt = 2.0;
+
+                        msg_motor_dorsi.data.clear();
+                        msg_motor_dorsi.data.push_back(currentTimePercentage);
+                        msg_motor_dorsi.data.push_back(dorsiModeInt);
+                        msg_motor_dorsi.data.push_back(dorsiTorqueInput);
+                        msg_motor_dorsi.data.push_back(dorsiPositionInput);
+                        msg_motor_dorsi.data.push_back(reading.getActualCurrent());
+                        msg_motor_dorsi.data.push_back(reading.getActualTorque());
+                        msg_motor_dorsi.data.push_back(reading.getActualPosition());
+                        msg_motor_dorsi.data.push_back(reading.getActualVelocity());
+                        msg_motor_dorsi.data.push_back(reading.getBusVoltage());
+                        
+                        afo_motor_data_dorsi.publish(msg_motor_dorsi);
+                            
+                        // outFileController << "dorsi, " 
+                        //     << ros::Time::now() << ", " 
+                        //     << currentTimePercentage << ", "
+                        //     << dorsiInputMode << ", " 
+                        //     << dorsiTorqueInput << ", " 
+                        //     << dorsiPositionInput << ", " 
+                        //     << reading.getActualCurrent() << ", " 
+                        //     << reading.getActualTorque() << ", " 
+                        //     << reading.getActualPosition() << ", " 
+                        //     << reading.getActualVelocity() << ", " 
+                        //     << reading.getBusVoltage() << endl;
+                    }
+                    else {
+                        std::cout << slave->getName() << " is not our target device" << std::endl;
+                    }
+                }
+                else
+                {
+                    MELO_WARN_STREAM("Maxon '" << maxon_slave_ptr->getName()
+                                                                            << "': " << maxon_slave_ptr->getReading().getDriveState());
+                }
+
+                // Constant update rate
+                // std::this_thread::sleep_until(start_time + std::chrono::milliseconds(1));
+            }
+            maxonEnabledAfterStartup = true;
+        }
+        next += microseconds(etherCatCommunicationRate);
+        std::this_thread::sleep_until(next);
+    }							
+}
+
 double cubic(double init_time, double final_time, double current_time){
     double duration = final_time - init_time;
     double t = (current_time - init_time) / duration;
@@ -183,230 +438,27 @@ void callbackShutdown(const std_msgs::BoolConstPtr& msg){
     }
 }
 
-void worker()
-{
-    // Define Output file stream for controller logging.
-    std::time_t t = std::time(0);
-	std::tm* now = std::localtime(&t);
-	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
-    ofstream outFileController;
-    outFileController.open("/home/dl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
-    outFileController << 
-        "Max Plantar Torque=" << maxTorquePlantar << 
-        ", Max Dorsi Torque=" << maxTorqueDorsi << 
-        ", start time=" << startTime << 
-        ", endTime=" << endTime <<
-        ", upTimeRatio=" << upTimeRatio <<
-        ", dirPlantar=" << dirPlantar <<
-        ", ";
-
-    // Initialize master
-    bool rtSuccess = true;
-    for(const auto & master: configurator->getMasters())
-    {
-        rtSuccess &= master->setRealtimePriority(99);
-    }
-    bool maxonEnabledAfterStartup = false;
-    maxon::ModeOfOperationEnum dorsiInputMode;
-    double dorsiPositionInput, dorsiTorqueInput;
-    /*
-    ** The communication update loop.
-    ** This loop is supposed to be executed at a constant rate.
-    ** The EthercatMaster::update function incorporates a mechanism
-    ** to create a constant rate.
-     */
-    auto next = steady_clock::now();
-    while(!abrt)
-    {
-        // ------------------------------- Dorsiflexion zeroing process start -------------------------------------------- //
-        if (!isDorsiZeroing){
-            for(const auto & master: configurator->getMasters() ){
-                master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
-            }               
-            for(const auto & slave:configurator->getSlaves())
-            {  
-                std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
-
-                if (!maxonEnabledAfterStartup)
-                {
-                    // Set maxons to operation enabled state, do not block the call!
-                    maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
-                }
-                // set commands if we can
-                if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
-                        maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
-                {
-                    maxon::Command command;
-
-                    if (slave->getName() == "Plantar"){
-                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                        command.setTargetPosition(0);
-                        command.setTargetTorque(plantarPreTension * dirPlantar);
-                        maxon_slave_ptr->stageCommand(command);
-                    }
-                    else if (slave->getName() == "Dorsi"){
-                        auto reading = maxon_slave_ptr->getReading();
-                        if (reading.getActualTorque() * dirDorsi > dorsiPreTension){
-				            if (dorsiBufferFlushingIndex++ < 15){
-                                continue;
-                            }
-                            isDorsiZeroing = true;
-                            dorsiNeutralPosition = reading.getActualPosition();
-			                outFileController << "dorsiNeutralPosition=" << dorsiNeutralPosition << endl;
-		                    cout << "Dorsi Zeroing Done: " << reading.getActualTorque() << endl;
-                            break;
-                        }
-                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
-                        command.setTargetPosition(reading.getActualPosition() + dorsiZeroingIncrement * dirDorsi);
-                        command.setTargetTorque(0);
-                        maxon_slave_ptr->stageCommand(command);
-                    }
-                }
-                else
-                {
-                    MELO_WARN_STREAM("Maxon '" << maxon_slave_ptr->getName()
-                                                                            << "': " << maxon_slave_ptr->getReading().getDriveState());
-                }
-            }
-            maxonEnabledAfterStartup = true;
-        }
-        /* -----------------------------    Dorsiflexion Zeroing Process Done     ---------------------------------*/
-        /*
-        ** Update each master.
-        ** This sends tha last staged commands and reads the latest readings over EtherCAT.
-        ** The StandaloneEnforceRate update mode is used.
-        ** This means that average update rate will be close to the target rate (if possible).
-         */
-        // CONTROL MAIN LOOP
-        else{
-            for(const auto & master: configurator->getMasters() )
-            {
-                master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
-            }
-            for(const auto & slave:configurator->getSlaves())
-            {  
-                // Keep constant update rate
-                // auto start_time = std::chrono::steady_clock::now();
-
-                std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
-
-                if (!maxonEnabledAfterStartup)
-                {
-                    // Set maxons to operation enabled state, do not block the call!
-                    maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
-                }
-
-                // set commands if we can
-                if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
-                        maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
-                {
-                    maxon::Command command;
-                    auto reading = maxon_slave_ptr->getReading();
-                    double currentTimePercentage;
-                    // CONTROL LOOP MAIN BODY
-                    if (slave->getName() == "Plantar"){
-                        if (setGaitEventNonAffected && setGaitEventAffected){
-                            currentTimePercentage = pathPlannerPlantarflexion();
-                        }
-                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                        command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
-                        command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
-                        maxon_slave_ptr->stageCommand(command);
-                        
-                        float plantarModeInt;
-                        if (plantarMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
-                            plantarModeInt = 1.0;
-                        else
-                            plantarModeInt = 2.0;
-
-                        msg_motor_plantar.data.clear();
-                        msg_motor_plantar.data.push_back(currentTimePercentage);
-                        msg_motor_plantar.data.push_back(plantarModeInt);
-                        msg_motor_plantar.data.push_back(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
-                        msg_motor_plantar.data.push_back(plantarPosition);
-                        msg_motor_plantar.data.push_back(reading.getActualCurrent());
-                        msg_motor_plantar.data.push_back(reading.getActualTorque());
-                        msg_motor_plantar.data.push_back(reading.getActualPosition());
-                        msg_motor_plantar.data.push_back(reading.getActualVelocity());
-                        msg_motor_plantar.data.push_back(reading.getBusVoltage());
-                        
-                        afo_motor_data_plantar.publish(msg_motor_plantar);
-                        // outFileController << "plantar, " << ros::Time::now() << ", " << currentTimePercentage << ", "
-                        //     << plantarMode << ", " 
-                        //     << dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque) << ", " 
-                        //     << plantarNeutralPosition + plantarPosition * dirPlantar << ", " 
-                        //     << reading.getActualCurrent() << ", " 
-                        //     << reading.getActualTorque() << ", " 
-                        //     << reading.getActualPosition() << ", " 
-                        //     << reading.getActualVelocity() << ", " 
-                        //     << reading.getBusVoltage() << endl;
-
-                    }
-                    else if (slave->getName() == "Dorsi"){
-                        if (setGaitEventNonAffected && setGaitEventAffected){
-                            currentTimePercentage = pathPlannerDorsiflexion(reading);
-                        }
-                            
-                        dorsiInputMode = dorsiMode;
-                        dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
-                        dorsiTorqueInput = dirDorsi * (maxTorqueDorsi * dorsiTorque + dorsiPreTension);
-                            
-                        command.setModeOfOperation(dorsiInputMode);
-                        command.setTargetTorque(dorsiTorqueInput);
-                        command.setTargetPosition(dorsiPositionInput);
-                        maxon_slave_ptr->stageCommand(command);
-                         
-                        float dorsiModeInt;
-                        if (dorsiMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
-                            dorsiModeInt = 1.0;
-                        else
-                            dorsiModeInt = 2.0;
-
-                        msg_motor_dorsi.data.clear();
-                        msg_motor_dorsi.data.push_back(currentTimePercentage);
-                        msg_motor_dorsi.data.push_back(dorsiModeInt);
-                        msg_motor_dorsi.data.push_back(dorsiTorqueInput);
-                        msg_motor_dorsi.data.push_back(dorsiPositionInput);
-                        msg_motor_dorsi.data.push_back(reading.getActualCurrent());
-                        msg_motor_dorsi.data.push_back(reading.getActualTorque());
-                        msg_motor_dorsi.data.push_back(reading.getActualPosition());
-                        msg_motor_dorsi.data.push_back(reading.getActualVelocity());
-                        msg_motor_dorsi.data.push_back(reading.getBusVoltage());
-                        
-                        afo_motor_data_dorsi.publish(msg_motor_dorsi);
-                            
-                        // outFileController << "dorsi, " 
-                        //     << ros::Time::now() << ", " 
-                        //     << currentTimePercentage << ", "
-                        //     << dorsiInputMode << ", " 
-                        //     << dorsiTorqueInput << ", " 
-                        //     << dorsiPositionInput << ", " 
-                        //     << reading.getActualCurrent() << ", " 
-                        //     << reading.getActualTorque() << ", " 
-                        //     << reading.getActualPosition() << ", " 
-                        //     << reading.getActualVelocity() << ", " 
-                        //     << reading.getBusVoltage() << endl;
-                    }
-                    else {
-                        std::cout << slave->getName() << " is not our target device" << std::endl;
-                    }
-                }
-                else
-                {
-                    MELO_WARN_STREAM("Maxon '" << maxon_slave_ptr->getName()
-                                                                            << "': " << maxon_slave_ptr->getReading().getDriveState());
-                }
-
-                // Constant update rate
-                // std::this_thread::sleep_until(start_time + std::chrono::milliseconds(1));
-            }
-            maxonEnabledAfterStartup = true;
-        }
-        next += microseconds(etherCatCommunicationRate);
-        std::this_thread::sleep_until(next);
-    }							
+void callbackMaxTorque(const std_msgs::Float32ConstPtr& msg){
+    maxTorquePlantar = msg->data;
+    maxTorqueDorsi = msg->data;
+    std::cout << "maximum torque set to " << maxTorquePlantar << std::endl;
 }
 
+void callbackCycleTime(const std_msgs::Float32ConstPtr& msg){
+    cycleTime = msg->data;
+    std::cout << "cycle time set to " << cycleTime << std::endl;
+}
+
+void callbackMotorRun(const std_msgs::BoolConstPtr& msg){
+    motorRun = true;
+    motorInit = true;
+    std::cout << "Motor Start" << std::endl;
+}
+
+void callbackMotorStop(const std_msgs::BoolConstPtr& msg){
+    motorRun = false;
+    std::cout << "Motor Stop" << std::endl;
+}
 /*
 ** Handle the interrupt signal.
 ** This is the shutdown routine.
@@ -462,11 +514,16 @@ int main(int argc, char**argv)
     n.getParam("/rr", rr);
     n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
+
     // ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
     // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
-    ros::Subscriber afo_shutdown_sub = n.subscribe("/afo_sync/shutdown", 1, callbackShutdown);
-    
+
+    afo_shutdown_sub = n.subscribe("/afo_sync/shutdown", 1, callbackShutdown);
     afo_gaitPhase = n.subscribe("/afo_detector/gaitPhase", 1, callbackGaitPhase);
+    afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
+    afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
+    afo_gui_motor_run = n.subscribe("/afo_gui/motor_run", 1, callbackMotorRun);
+    afo_gui_motor_stop = n.subscribe("/afo_gui/motor_stop", 1, callbackMotorStop);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
@@ -477,7 +534,7 @@ int main(int argc, char**argv)
     afo_configuration_upTimeRatio = n.advertise<std_msgs::Float32>("/afo_controller/upTimeRatio", 10);
     afo_configuration_dirPlantar = n.advertise<std_msgs::Float32>("/afo_controller/dirPlantar", 10);
     afo_configuration_dorsiNeutralPosition = n.advertise<std_msgs::Float32>("/afo_controller/dorsiNeutralPosition", 10);
-
+    afo_dorsi_zeroing_done = n.advertise<std_msgs::Bool>("/afo_controller/dorsi_zeroing_done", 10);
     // 
     std::signal(SIGINT, terminateMotor);
 
@@ -493,6 +550,8 @@ int main(int argc, char**argv)
     plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
 
+    motorInit = false;
+    motorRun = false;
     /*
     ** Start all masters.
     ** There is exactly one bus per master which is also started.

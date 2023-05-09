@@ -49,14 +49,16 @@ system_clock::time_point timeIC, timeOFO, timeFO;
 int dorsiBufferFlushingIndex = 0;
 
 // Configuration
-int controlMode = EST;
+int controlMode = PRE;
+bool motorInit, motorRun;
+
 //
 
 // Communication param.
 int etherCatCommunicationRate = 5000; // us
 
 // Time Parameter
-double periodPreset = 2.0;
+double cycleTime = 2.0;
 double startTime = 0.25;
 double endTime = 0.65;
 double onTime = endTime - startTime;
@@ -82,6 +84,12 @@ double dirDorsi = -1;
 
 // Define ros publisher and subscriber
 ros::Subscriber afo_gaitPhase;
+ros::Subscriber afo_gui_cycle_time;
+ros::Subscriber afo_gui_max_torque;
+ros::Subscriber afo_gui_motor_run;
+ros::Subscriber afo_gui_motor_stop;
+ros::Subscriber afo_shutdown_sub;
+
 ros::Publisher afo_motor_data_plantar;
 ros::Publisher afo_motor_data_dorsi;
 ros::Publisher afo_configuration_maxTorquePlantar;
@@ -91,6 +99,7 @@ ros::Publisher afo_configuration_endTime;
 ros::Publisher afo_configuration_upTimeRatio;
 ros::Publisher afo_configuration_dirPlantar;
 ros::Publisher afo_configuration_dorsiNeutralPosition;
+ros::Publisher afo_dorsi_zeroing_done;
 
 std_msgs::Float32MultiArray msg_motor_plantar;
 std_msgs::Float32MultiArray msg_motor_dorsi;
