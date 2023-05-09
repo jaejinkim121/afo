@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>991</width>
-    <height>544</height>
+    <width>1024</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,52 +19,24 @@
      <rect>
       <x>6</x>
       <y>9</y>
-      <width>681</width>
-      <height>411</height>
+      <width>831</width>
+      <height>481</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Config">
      <attribute name="title">
       <string>Config</string>
      </attribute>
-     <widget class="QPushButton" name="button_start_sole_calib">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>10</y>
-        <width>211</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Sole Calibration</string>
-      </property>
-     </widget>
      <widget class="QPlainTextEdit" name="text_target_max_torque">
       <property name="geometry">
        <rect>
-        <x>240</x>
-        <y>130</y>
-        <width>161</width>
-        <height>51</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="set_button_max_torque">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>130</y>
-        <width>211</width>
-        <height>101</height>
+        <x>180</x>
+        <y>190</y>
+        <width>170</width>
+        <height>80</height>
        </rect>
       </property>
       <property name="font">
@@ -72,34 +44,152 @@
         <pointsize>20</pointsize>
        </font>
       </property>
-      <property name="text">
-       <string>Max Torque</string>
+      <property name="plainText">
+       <string/>
       </property>
      </widget>
-     <widget class="QSlider" name="horSlider_target_max_torque">
+     <widget class="QPushButton" name="button_set_max_torque">
       <property name="geometry">
        <rect>
-        <x>240</x>
-        <y>191</y>
-        <width>160</width>
-        <height>41</height>
+        <x>20</x>
+        <y>190</y>
+        <width>150</width>
+        <height>80</height>
        </rect>
       </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Max torque</string>
       </property>
      </widget>
      <widget class="QPushButton" name="button_clear_max_torque">
       <property name="geometry">
        <rect>
-        <x>410</x>
-        <y>130</y>
-        <width>61</width>
-        <height>51</height>
+        <x>360</x>
+        <y>190</y>
+        <width>150</width>
+        <height>80</height>
        </rect>
       </property>
       <property name="text">
        <string>Clear</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_toggle_plot_data">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>150</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Data plot on/off</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_sole_calibration_run">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>100</y>
+        <width>150</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Run sole Calibration</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_sole_calibration_proceed">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>100</y>
+        <width>150</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>proceed</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="text_which_sensor">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>100</y>
+        <width>170</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_set_cycle_time">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>280</y>
+        <width>150</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Preset cycle time</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_clear_cycle_time">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>280</y>
+        <width>150</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Clear</string>
+      </property>
+     </widget>
+     <widget class="QPlainTextEdit" name="text_target_cycle_time">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>280</y>
+        <width>170</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_toggle_plot_sole">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>10</y>
+        <width>150</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Sole plot on/off</string>
       </property>
      </widget>
     </widget>
@@ -111,19 +201,19 @@
       <property name="geometry">
        <rect>
         <x>5</x>
-        <y>5</y>
-        <width>320</width>
-        <height>190</height>
+        <y>0</y>
+        <width>400</width>
+        <height>220</height>
        </rect>
       </property>
      </widget>
      <widget class="QCustomPlot" name="plot_dorsi_command" native="true">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>5</y>
-        <width>320</width>
-        <height>190</height>
+        <x>410</x>
+        <y>0</y>
+        <width>400</width>
+        <height>220</height>
        </rect>
       </property>
      </widget>
@@ -131,22 +221,22 @@
       <property name="geometry">
        <rect>
         <x>5</x>
-        <y>200</y>
-        <width>320</width>
-        <height>175</height>
+        <y>230</y>
+        <width>400</width>
+        <height>220</height>
        </rect>
       </property>
      </widget>
-     <widget class="QWidget" name="widget_2" native="true">
+     <widget class="QWidget" name="plot_kinematics" native="true">
       <property name="enabled">
        <bool>false</bool>
       </property>
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>200</y>
-        <width>320</width>
-        <height>175</height>
+        <x>410</x>
+        <y>230</y>
+        <width>400</width>
+        <height>220</height>
        </rect>
       </property>
      </widget>
@@ -158,46 +248,20 @@
      <widget class="QCustomPlot" name="plot_sole_right_voltage" native="true">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>210</y>
-        <width>320</width>
-        <height>160</height>
+        <x>420</x>
+        <y>230</y>
+        <width>400</width>
+        <height>220</height>
        </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>350</x>
-        <y>200</y>
-        <width>181</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Sole Sensor Voltage - Right</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>340</x>
-        <y>20</y>
-        <width>171</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Sole Sensor Voltage - Left</string>
       </property>
      </widget>
      <widget class="QCustomPlot" name="plot_sole_left_voltage" native="true">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>30</y>
-        <width>320</width>
-        <height>160</height>
+        <x>420</x>
+        <y>0</y>
+        <width>400</width>
+        <height>220</height>
        </rect>
       </property>
      </widget>
@@ -206,8 +270,8 @@
    <widget class="QTextBrowser" name="log">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>430</y>
+      <x>320</x>
+      <y>500</y>
       <width>701</width>
       <height>71</height>
      </rect>
@@ -216,15 +280,15 @@
    <widget class="QPushButton" name="button_emergency_stop">
     <property name="geometry">
      <rect>
-      <x>700</x>
-      <y>30</y>
-      <width>271</width>
-      <height>391</height>
+      <x>850</x>
+      <y>0</y>
+      <width>171</width>
+      <height>491</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>26</pointsize>
+      <pointsize>18</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -239,42 +303,32 @@
 STOP</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="button_toggle_plot">
+   <widget class="QPushButton" name="button_run_motor">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>430</y>
-      <width>75</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>plot on/off</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="test">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>430</y>
-      <width>101</width>
+      <x>20</x>
+      <y>500</y>
+      <width>141</width>
       <height>61</height>
      </rect>
     </property>
     <property name="text">
-     <string>test</string>
+     <string>Run Motor</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>991</width>
-     <height>22</height>
-    </rect>
-   </property>
+   <widget class="QPushButton" name="button_stop_motor">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>500</y>
+      <width>141</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stop Motor</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
