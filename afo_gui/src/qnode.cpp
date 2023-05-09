@@ -86,7 +86,7 @@ namespace afo_gui {
         return this->dorsiData;
     }
 
-    int* QNode::getGaitPhase(){
+    float* QNode::getGaitPhase(){
         return this->gaitPhase;
     }
 
@@ -147,9 +147,9 @@ namespace afo_gui {
     }
     
 
-    void QNode::pubThreshold(bool s){
+    void QNode::pubThreshold(){
         std_msgs::Bool m;
-        m.data = s;
+        m.data = true;
         this->afo_gui_thresholding_pub.publish(m);
     }
 

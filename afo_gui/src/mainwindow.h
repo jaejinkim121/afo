@@ -68,12 +68,12 @@ private:
     bool is_plot_data = false;
     bool is_plot_sole = false;
 
-    QVector<float> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
-    QVector<float> v_l[6];
-    QVector<float> v_r[6];
-    QVector<float> m_p[2];
-    QVector<float> m_d[4];
-    QVector<float> gp[2];
+    QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
+    QVector<double> v_l[6];
+    QVector<double> v_r[6];
+    QVector<double> m_p[2];
+    QVector<double> m_d[4];
+    QVector<double> gp[2];
 
 
 };

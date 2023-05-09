@@ -56,7 +56,7 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_sole_calibration_run"){
         this->soleCalibration();
-        this->updageLog("Sole Calibration Start");
+        this->updateLog("Sole Calibration Start");
     }
 
     else if (state == "button_sole_calibration_proceed"){
@@ -134,7 +134,7 @@ void MainWindow::togglePlotSole(){
 void MainWindow::soleCalibration(){
     double t_sole = ros::Time::now().toSec();
     ui->text_which_sensor->setPlainText("Start Calibration");
-    qnode.pubThresholding();
+    qnode.pubThreshold();
     while(ros::Time::now().toSec() - t_sole < 2.0){
         continue;
     }
