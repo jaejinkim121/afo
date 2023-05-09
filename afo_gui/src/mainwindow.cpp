@@ -3,22 +3,23 @@
 #include "ui_mainwindow.h"
 
 
-MainWindow::MainWindow(QWidget *parent, int argc, char** argv)
+MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     : QMainWindow(parent)
     , qnode(argc, argv)
+    , ui(new Ui::MainWindow)
 {
     qnode.init();
     ui->setupUi(this);
-
+    
     // Connect QObject to ui objects.
     QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_plot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
     QObject::connect(&qnode, SIGNAL(updatePlantar()), this, SLOT(plotPlantar()));
     QObject::connect(&qnode, SIGNAL(updateDorsi()), this, SLOT(plotDorsi()));
 
+    this->initPlot();
 }
 
 MainWindow::~MainWindow()
@@ -103,47 +104,47 @@ void MainWindow::set_emergency(bool on){
 
 void MainWindow::plotSoleLeft(){
     if (!is_plot) return;
-    double data[7] = qnode.getSoleLeftData();
+    float* data = qnode.getSoleLeftData();
     appendCropQVector(&t_v_l, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
         appendCropQVector(&v_l[i], data[i], voltPlotMaxNum);
     }
-
+    ui->plot_sole_left_voltage->xAxis->setRange(t_v_l[0], t_v_l[0]+5.0);
     this->updatePlot(SOLE_LEFT);
 }
 
 void MainWindow::plotSoleRight(){
     if (!is_plot) return;
-    double data[7] = qnode.getSoleRightData();
+    float* data = qnode.getSoleRightData();
     appendCropQVector(&t_v_r, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
         appendCropQVector(&v_r[i], data[i], voltPlotMaxNum);
     }
-    
+    ui->plot_sole_right_voltage->xAxis->setRange(t_v_r[0], t_v_r[0]+5.0);
     this->updatePlot(SOLE_RIGHT);
 }
 
 void MainWindow::plotPlantar(){
     if(!is_plot) return;
-    double data[3] = qnode.getPlantarData();
+    float* data = qnode.getPlantarData();
 
     appendCropQVector(&t_m_p, data[0], motorPlotMaxNum);
     appendCropQVector(&m_p[0], data[1], motorPlotMaxNum);
     appendCropQVector(&m_p[1], data[2], motorPlotMaxNum);
-    
+    ui->plot_plantar_command->xAxis->setRange(t_m_p[0], t_m_p[0]+5.0);
     this->updatePlot(MOTOR_PLANTAR);
 }
 
 void MainWindow::plotDorsi(){
     if (!is_plot) return;
-    double data[5] = qnode.getDorsiData();
+    float* data = qnode.getDorsiData();
 
     appendCropQVector(&t_m_d, data[0], motorPlotMaxNum);
     appendCropQVector(&m_d[0], data[1], motorPlotMaxNum);
     appendCropQVector(&m_d[1], data[2], motorPlotMaxNum);
     appendCropQVector(&m_d[2], data[3], motorPlotMaxNum);
     appendCropQVector(&m_d[3], data[4], motorPlotMaxNum);
-
+    ui->plot_dorsi_command->xAxis->setRange(t_m_d[0], t_m_d[0]+5.0);
     this->updatePlot(MOTOR_DORSI);
 }
 
@@ -160,17 +161,23 @@ void MainWindow::initPlot(){
         ui->plot_sole_left_voltage->addGraph();
         ui->plot_sole_right_voltage->addGraph();
         ui->plot_sole_left_voltage->graph(i)->setPen(pen[i]);
+        ui->plot_sole_right_voltage->graph(i)->setPen(pen[i]);
+        
     }
+    ui->plot_sole_left_voltage->yAxis->setRange(0, 3.3);
+    ui->plot_sole_right_voltage->yAxis->setRange(0, 3.3);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();
-        ui->plot_dorsi_command->graph(i)->setPen(pen[i]);
+        ui->plot_dorsi_command->graph(i)->setPen(pen[i]);   
     }
+    ui->plot_dorsi_command->yAxis->setRange(-1.2, 1.2);
+
     ui->plot_plantar_command->addGraph();
     ui->plot_plantar_command->addGraph();
     ui->plot_plantar_command->graph(0)->setPen(pen[0]);
     ui->plot_plantar_command->graph(1)->setPen(pen[1]);
-
+    ui->plot_plantar_command->yAxis->setRange(-1.2, 1.2);
 }
 
 void MainWindow::updatePlot(int dataType){

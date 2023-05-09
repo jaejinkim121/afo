@@ -6,6 +6,7 @@
 #include <string.h>
 #include <iostream>
 
+#include "qnode.hpp"
 #include "qcustomplot.h"
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
@@ -14,22 +15,20 @@
 #include "std_msgs/Int16.h"
 #include "std_msgs/Bool.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
 #define SOLE_LEFT 1
 #define SOLE_RIGHT 2
 #define MOTOR_PLANTAR 3
 #define MOTOR_DORSI 4
 
-class MainWindow : public QMainWindow
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
 
-{
-    Q_OBJECT
+class MainWindow : public QMainWindow{
+Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(int argc, char** argv, QWidget *parent = 0);
     ~MainWindow();
     void togglePlot();
     void updateLog(QString s);
@@ -47,7 +46,7 @@ public Q_SLOTS:
 
 
 private:
-    QNode qnode;
+    afo_gui::QNode qnode;
     Ui::MainWindow *ui;
     int logNum = 0;
     int max_log = 20;

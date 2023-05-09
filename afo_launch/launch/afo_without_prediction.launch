@@ -2,6 +2,9 @@
 	<arg name="rr" default="100" />
 	<param name="rr" value="$(arg rr)" />
 	
+	<node name="afo_gui" pkg="afo_gui" type="afo_gui" output="screen">
+	</node>
+	
 	<node name="afo_sensor" pkg="afo_sensor" type="afo_sensor" output="screen">
 	</node>
 	
@@ -16,7 +19,7 @@
 	
 	<node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
 		<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
-	</node >
+	</node>
 
 	<node name="afo_rosbag_record" pkg="rosbag" type="record" args="-a -o /home/srbl/catkin_ws/src/afo/log/log">
 	</node>

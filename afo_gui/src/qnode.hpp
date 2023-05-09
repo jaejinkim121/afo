@@ -1,8 +1,6 @@
+#ifndef QNODE_HPP
+#define QNODE_HPP
 
-#ifndef afo_gui_QNODE_HPP_
-#define afo_gui_QNODE_HPP_
-
-#ifndef Q_MOC_RUN
 #include <ros/ros.h>
 #include <ros/network.h>
 #include <string>
@@ -15,14 +13,13 @@
 #include <std_msgs/Int16MultiArray.h>
 #include <std_msgs/Int16.h>
 #include <geometry_msgs/Point.h>
-#endif
 
 namespace afo_gui{
 
 class QNode : public QThread {
     Q_OBJECT
 public:
-    QNode(int argc, char** argv );
+    QNode(int argc, char** argv);
     virtual ~QNode();
     bool init();
     void init_nh();
@@ -41,6 +38,7 @@ public:
 
 
 Q_SIGNALS:
+    void rosShutdown();
     void updateSoleLeft();
     void updateSoleRight();
     void updatePlantar();
@@ -50,7 +48,10 @@ private:
     int init_argc;
     char** init_argv;
 
-    float* soleLeftData, soleRightData, plantarData, dorsiData;
+    float* soleLeftData;
+    float* soleRightData; 
+    float* plantarData;
+    float* dorsiData;
 
     double t_begin;
 
@@ -63,14 +64,10 @@ private:
     ros::Subscriber afo_soleSensor_right_sub;
     ros::Subscriber afo_plantar_command_sub;
     ros::Subscriber afo_dorsi_command_sub;
+};
 
 
 
 }
-
-
-
-}
-
 
 #endif

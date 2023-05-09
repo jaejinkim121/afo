@@ -1,11 +1,6 @@
-
-#ifndef Q_MOC_RUN
 #include <stdlib.h>
-#include <math.h>
-#include <windows.h>
 #include <iostream>
 #include "qnode.hpp"
-#endif
 
 namespace afo_gui {
 
@@ -36,7 +31,7 @@ namespace afo_gui {
         init_nh();
         ros::start(); // explicitly needed since our nodehandle is going out of scope.
         
-        t_begin = ros::Time::now().toSec();
+        this->t_begin = ros::Time::now().toSec();
 
         start();
         return true;
@@ -84,9 +79,8 @@ namespace afo_gui {
         return this->dorsiData;
     }
 
-    void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
-        float t = ros::Time::now().toSec() - t_begin;
-
+    void QNode::callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        float t = ros::Time::now().toSec() - this->t_begin;
         soleLeftData[0] = t;
 
         for (int i = 0; i < 6; i++){
@@ -95,8 +89,8 @@ namespace afo_gui {
         updateSoleLeft();
     }
 
-    void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
-        float t = ros::Time::now().toSec() - t_begin;
+    void QNode::callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        float t = ros::Time::now().toSec() - this->t_begin;
 
         soleRightData[0] = t;
 
@@ -106,8 +100,8 @@ namespace afo_gui {
         updateSoleRight();
     }
 
-    void callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg){
-        float t = ros::Time::now().toSec() - t_begin;
+    void QNode::callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        float t = ros::Time::now().toSec() - this->t_begin;
 
         plantarData[0] = t;
         plantarData[1] = msg->data[2];
@@ -116,8 +110,8 @@ namespace afo_gui {
         updatePlantar();
     }
 
-    void callbackDorsi(const std_msgs::Float32MultiArray::ConstPtr& msg){
-        float t = ros::Time::now().toSec() - t_begin;
+    void QNode::callbackDorsi(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        float t = ros::Time::now().toSec() - this->t_begin;
 
         dorsiData[0] = t;
         dorsiData[1] = msg->data[2];
