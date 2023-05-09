@@ -39,6 +39,7 @@ public:
     void setCycleTime();
     void runMotor();
     void stopMotor();
+    void toggleStreaming();
     
     void updateLog(QString s);
     void set_emergency(bool on);
@@ -62,8 +63,8 @@ private:
     Ui::MainWindow *ui;
     int logNum = 0;
     int max_log = 20;
-    int voltPlotMaxNum = 400;
-    int motorPlotMaxNum = 400;
+    int voltPlotMaxNum = 45;
+    int motorPlotMaxNum = 45;
     int gaitPhasePlotMaxNum = 20;
     bool is_plot_data = false;
     bool is_plot_sole = false;
@@ -74,7 +75,6 @@ private:
     QVector<double> m_p[2];
     QVector<double> m_d[4];
     QVector<double> gp[2];
-
 
 };
 

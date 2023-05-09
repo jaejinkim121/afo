@@ -38,6 +38,7 @@ public:
     void pubCycleTime(float t);
     void pubMotorRun();
     void pubMotorStop();
+    void pubStreaming();
 
     float* getSoleLeftData();
     float* getSoleRightData();
@@ -74,6 +75,7 @@ private:
     ros::Publisher afo_gui_cycle_time_pub;
     ros::Publisher afo_gui_motor_run_pub;
     ros::Publisher afo_gui_motor_stop_pub;
+    ros::Publisher afo_gui_streaming_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
@@ -81,6 +83,12 @@ private:
     ros::Subscriber afo_dorsi_command_sub;
     ros::Subscriber afo_gait_phase_sub;
     ros::Subscriber afo_dorsi_zeroing_done_sub;
+
+    int soleLeftCnt = 0;
+    int soleRightCnt = 0;
+    int motorPlantarCnt = 0;
+    int motorDorsiCnt = 0;
+    
 };
 
 

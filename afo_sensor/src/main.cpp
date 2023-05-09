@@ -19,6 +19,11 @@ void terminateSensorNode(int sig){
     ros::shutdown();
 }
 
+void callbackStreaming(const std_msgs::BoolConstPtr& msg){
+    serialSoleLeft->serialWrite("[s]");
+    serialSoleRight->serialWrite("[s]");
+}
+
 int main(int argc, char** argv){
     signal(SIGINT, terminateSensorNode);
 
@@ -29,6 +34,7 @@ int main(int argc, char** argv){
     ros::Rate loop_rate(rr);
     // ros::Subscriber afo_gui_sync_sub = n.subscribe("/afo_gui/sync", 100, syncCallback);
     // ros::Subscriber afo_gui_experimentMarking_sub = n.subscribe("/afo_gui/experimentMarking", 100, experimentMarkingCallback);
+    ros::Subscriber afo_streaming_sub = n.subscribe("/afo_gui/streaming", 1, callbackStreaming);
     ros::Publisher afo_soleSensor_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_left", 100);
     ros::Publisher afo_soleSensor_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_right", 100);
     ros::Publisher afo_imu_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/imu", 100);

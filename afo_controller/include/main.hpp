@@ -50,7 +50,7 @@ int dorsiBufferFlushingIndex = 0;
 
 // Configuration
 int controlMode = PRE;
-bool motorInit, motorRun;
+bool motorRun;
 
 //
 
@@ -58,7 +58,7 @@ bool motorInit, motorRun;
 int etherCatCommunicationRate = 5000; // us
 
 // Time Parameter
-double cycleTime = 2.0;
+double cycleTime = 1.0;
 double startTime = 0.25;
 double endTime = 0.65;
 double onTime = endTime - startTime;

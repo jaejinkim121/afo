@@ -23,6 +23,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_clear_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_stop_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_toggle_streaming, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -49,7 +50,7 @@ void MainWindow::buttonClicked(){
         this->updateLog("toggle plot data button pressed");
     }
     
-    else if (state == "button_togle_plot_sole"){
+    else if (state == "button_toggle_plot_sole"){
         this->togglePlotSole();
         this->updateLog("toggle plot sole button pressed");
     }
@@ -85,6 +86,10 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_stop_motor"){
         this->stopMotor();
+    }
+
+    else if (state == "button_toggle_streaming"){
+        this->toggleStreaming();
     }
 
 
@@ -169,6 +174,10 @@ void MainWindow::stopMotor(){
     updateLog("Motor Stop");
 }
 
+void MainWindow::toggleStreaming(){
+    qnode.pubStreaming();
+    updateLog("Toggle Sole Sensor Streaming");
+}
 
 void MainWindow::updateLog(QString s){
     if (logNum > max_log){
@@ -276,8 +285,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setPen(pen[i]);
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(0, 3.3);
-    ui->plot_sole_right_voltage->yAxis->setRange(0, 3.3);
+    ui->plot_sole_left_voltage->yAxis->setRange(0.5, 1.2);
+    ui->plot_sole_right_voltage->yAxis->setRange(0.5, 1.2);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();

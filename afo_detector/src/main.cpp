@@ -163,16 +163,16 @@ void saveThreshold(){
         cout << "ERROR - afo_detector - Cannot open file /home/srbl/catkin_ws/src/afo/threshold.csv" << endl;
     }
     for (int i = 0; i < 6; i++){
-        thFile << meanLeft[i] + 0.5 << endl;
+        thFile << meanLeft[i] + 0.05 << endl;
     }
     for (int i = 0; i < 6; i++){
-        thFile << meanLeft[i] + 1.5 << endl;
+        thFile << meanLeft[i] + 0.1 << endl;
     }
     for (int i = 0; i < 6; i++){
-        thFile << meanRight[i] + 0.5 << endl;
+        thFile << meanRight[i] + 0.05 << endl;
     }
     for (int i = 0; i < 6 ; i++){
-        thFile << meanRight[i] + 1.5 << endl;
+        thFile << meanRight[i] + 0.1 << endl;
     }
 
     thFile.close();

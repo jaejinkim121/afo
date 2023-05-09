@@ -48,6 +48,7 @@ namespace afo_gui {
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
         afo_gui_motor_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/motor_run", 100);
         afo_gui_motor_stop_pub = nh->advertise<std_msgs::Bool>("/afo_gui/motor_stop", 100);
+        afo_gui_streaming_pub = nh->advertise<std_msgs::Bool>("/afo_gui/streaming", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
@@ -91,6 +92,11 @@ namespace afo_gui {
     }
 
     void QNode::callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        soleLeftCnt++;
+        if (soleLeftCnt < 9){
+            return;
+        }
+        soleLeftCnt = 0;
         float t = ros::Time::now().toSec() - this->t_begin;
         soleLeftData[0] = t;
 
@@ -101,6 +107,11 @@ namespace afo_gui {
     }
 
     void QNode::callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        soleRightCnt++;
+        if (soleRightCnt < 9){
+            return;
+        }
+        soleRightCnt = 0;
         float t = ros::Time::now().toSec() - this->t_begin;
 
         soleRightData[0] = t;
@@ -112,6 +123,11 @@ namespace afo_gui {
     }
 
     void QNode::callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        motorPlantarCnt++;
+        if (motorPlantarCnt < 9){
+            return;
+        }
+        motorPlantarCnt = 0;
         float t = ros::Time::now().toSec() - this->t_begin;
 
         plantarData[0] = t;
@@ -122,6 +138,11 @@ namespace afo_gui {
     }
 
     void QNode::callbackDorsi(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        motorDorsiCnt++;
+        if (motorDorsiCnt < 9){
+            return;
+        }
+        motorDorsiCnt = 0;
         float t = ros::Time::now().toSec() - this->t_begin;
 
         dorsiData[0] = t;
@@ -175,6 +196,12 @@ namespace afo_gui {
         std_msgs::Bool m;
         m.data = true;
         afo_gui_motor_stop_pub.publish(m);
+    }
+
+    void QNode::pubStreaming(){
+        std_msgs::Bool m;
+        m.data = true;
+        afo_gui_streaming_pub.publish(m);
     }
 
 }
