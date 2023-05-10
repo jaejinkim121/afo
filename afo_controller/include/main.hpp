@@ -58,7 +58,7 @@ bool motorRun;
 int etherCatCommunicationRate = 5000; // us
 
 // Time Parameter
-double cycleTime = 1.0;
+double cycleTime = pow(10,6);
 double startTime = 0.25;
 double endTime = 0.65;
 double onTime = endTime - startTime;
@@ -75,12 +75,12 @@ double maxPositionDorsi = 10;
 double positionDiffLimit = 1;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
-double dorsiPreTension = 0.05;   // It's not normalized value.
-double plantarPreTension = 0.05; // It's not normalized value.
+double dorsiPreTension = 0.03;   // It's not normalized value.
+double plantarPreTension = 0.03; // It's not normalized value.
 
 // To switch target direction easily. CW = 1, CCW = -1
-double dirPlantar = 1;
-double dirDorsi = -1;
+double dirPlantar = -1;
+double dirDorsi = 1;
 
 // Define ros publisher and subscriber
 ros::Subscriber afo_gaitPhase;

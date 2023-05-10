@@ -129,7 +129,6 @@ void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg){
     int nonAffected, affected;
     nonAffected = msg->data[0];   // non-affected side
     affected = msg->data[1];   // affected side
-
     if (nonAffected == IC){
         //
     }
