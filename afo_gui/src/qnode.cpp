@@ -41,7 +41,7 @@ namespace afo_gui {
     void QNode::init_nh(){
         nh = new ros::NodeHandle("afo_gui");
 
-        afo_gui_thresholding_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_threshold", 100);
+        afo_gui_threshold_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_threshold", 100);
         afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
         afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
@@ -168,9 +168,9 @@ namespace afo_gui {
     }
     
 
-    void QNode::pubThreshold(){
+    void QNode::pubThreshold(bool b){
         std_msgs::Bool m;
-        m.data = true;
+        m.data = b;
         this->afo_gui_thresholding_pub.publish(m);
     }
 

@@ -52,7 +52,7 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     return;
 }
 
-void callbackThresholding(const std_msgs::Bool::ConstPtr& msg){
+void callbackThreshold(const std_msgs::Bool::ConstPtr& msg){
     #ifdef DEBUG
     cout << "Debug - thresholding - Initiate Recording";
     #endif
@@ -65,13 +65,13 @@ void callbackThresholding(const std_msgs::Bool::ConstPtr& msg){
         meanLeft[i] = 0;
         meanRight[i] = 0;
     }
+    thresholdSide = msg->data;
 
 }
 
 // paretic side is left = 0
 // paretic side is right = 1
 void gaitDetector(int* result){
-    string print_arr[2] = {"------------", "------------"};
     result[0] = 0;
 
     bool leftTmp, rightTmp;
@@ -132,50 +132,69 @@ void gaitDetector(int* result){
 }
 
 void loadThreshold(){
-    ifstream thFile("/home/srbl/catkin_ws/src/afo/threshold.csv");
+    bool side = thresholdSide;
+    if (side == LEFT){
+        ifstream thFile("/home/srbl/catkin_ws/src/afo/threshold_left.csv");
+    }
+    else{
+        ifstream thFile("/home/srbl/catkin_ws/src/afo/threshold_right.csv");
+    }
 
     if(!thFile){
-        cout << "Afo_detector - Cannot open file /home/srbl/catkin_ws/src/afo/threshold.csv - Use New threshold file" << endl;
         for (int i = 0 ; i < 6; i++){
-            thLeft[IC][i] = 1.0;
-            thLeft[FO][i] = 1.0;
-            thRight[IC][i] = 1.0;
-            thRight[IC][i] = 1.0;
+            if (side == LEFT){
+                thLeft[IC][i] = 1.0;
+                thLeft[FO][i] = 1.0;
+            }
+            else{
+                thRight[IC][i] = 1.0;
+                thRight[IC][i] = 1.0;
+            }
         }
         thFile.close();
         return;
     }
 
-    for (int i = 0; i<24; i++){
+    for (int i = 0; i<12; i++){
         string str;
         getline(thFile, str);
-        if (i<6) thLeft[IC][i%6] = stof(str);
-        else if (i<12) thLeft[FO][i%6] = stof(str);
-        else if (i<18) thRight[IC][i%6] = stof(str);
-        else thRight[FO][i%6] = stof(str);
+        if (side == LEFT){
+            if (i<6) thLeft[IC][i] = stof(str);
+            else thLeft[FO][i-6] = stof(str);
+        }
+        else{
+            if (i<6) thRight[IC][i] = stof(str);
+            else thRight[FO][i-6] = stof(str);
+        }
     }
 
     thFile.close();
 }
 
-void saveThreshold(){
-    ofstream thFile("/home/srbl/catkin_ws/src/afo/threshold.csv", ios::trunc);
-    if(!thFile){
-        cout << "ERROR - afo_detector - Cannot open file /home/srbl/catkin_ws/src/afo/threshold.csv" << endl;
-    }
-    for (int i = 0; i < 6; i++){
-        thFile << meanLeft[i] + 0.07 << endl;
-    }
-    for (int i = 0; i < 6; i++){
-        thFile << meanLeft[i] + 0.04 << endl;
-    }
-    for (int i = 0; i < 6; i++){
-        thFile << meanRight[i] + 0.10 << endl;
-    }
-    for (int i = 0; i < 6 ; i++){
-        thFile << meanRight[i] + 0.08 << endl;
-    }
 
+
+void saveThreshold(){
+    bool side = thresholdSide;
+    if (side == LEFT){
+        ofstream thFile("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
+        
+        for (int i = 0; i < 6; i++){
+            thFile << meanLeft[i] + 0.07 << endl;
+        }
+        for (int i = 0; i < 6; i++){
+            thFile << meanLeft[i] + 0.04 << endl;
+        }
+    }
+    else {
+        ofstream thFile("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
+        for (int i = 0; i < 6; i++){
+            thFile << meanRight[i] + 0.10 << endl;
+        }
+        for (int i = 0; i < 6 ; i++){
+            thFile << meanRight[i] + 0.08 << endl;
+        }
+    }
+    
     thFile.close();
 }
 
@@ -209,10 +228,13 @@ int main(int argc, char**argv)
     ros::Subscriber afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
     ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     ros::Subscriber afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
-    ros::Subscriber afo_thresholding_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThresholding);
+    ros::Subscriber afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
     ros::Publisher afo_gaitPhase_pub = n.advertise<std_msgs::Int16MultiArray>("/afo_detector/gaitPhase", 100);
     std_msgs::Int16MultiArray msg_gaitPhase;
 
+    thresholdSide = LEFT;
+    loadThreshold();    
+    thresholdSide = RIGHT;
     loadThreshold();    
 
     std::cout << "Startup finished" << std::endl;
@@ -231,7 +253,7 @@ int main(int argc, char**argv)
         
         if (runThreshold){
             currentTimeGap = high_resolution_clock::now() - initialTimeThreshold;
-            if (currentTimeGap.count() > 2.0){
+            if (currentTimeGap.count() > recordTimeThreshold){
                 runThreshold = false;
                 saveThreshold();
                 loadThreshold();

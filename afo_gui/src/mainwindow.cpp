@@ -15,21 +15,45 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     //QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_plot_data, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_plot_sole, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_sole_calibration_run, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_sole_calibration_proceed, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_sole_calibration_left, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_sole_calibration_right, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_clear_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_clear_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_stop_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_toggle_streaminig, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_toggle_streaming, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key3, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key4, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key5, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key6, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key7, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key8, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_max_torque_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key3, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key4, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key5, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key6, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key7, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key8, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_cycle_time_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
     QObject::connect(&qnode, SIGNAL(updatePlantar()), this, SLOT(plotPlantar()));
     QObject::connect(&qnode, SIGNAL(updateDorsi()), this, SLOT(plotDorsi()));
-    QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(plotGaitPhase()));
+    QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
 
     this->initPlot();
@@ -55,8 +79,8 @@ void MainWindow::buttonClicked(){
         this->updateLog("toggle plot sole button pressed");
     }
 
-    else if (state == "button_sole_calibration_run"){
-        this->updateLog("Sole Calibration Start");
+    else if (state == "button_sole_calibration_left"){
+        this->updateLog("Left sole calibration start");
         this->soleCalibration();
     }
 
@@ -88,26 +112,106 @@ void MainWindow::buttonClicked(){
         this->stopMotor();
     }
 
-    else if (state == "button_toggle_streaminig"){
+    else if (state == "button_toggle_streaming"){
         this->toggleStreaming();
     }
 
+    else if (state == "button_max_torque_key1"){
+        this->typeMaxTorqueKey('1');
+    }
+    
+    else if (state == "button_max_torque_key2"){
+        this->typeMaxTorqueKey('2');
+    }
 
-//    QVector<double> x(101), y(101); // initialize with entries 0..100
-//    for (int i=0; i<101; ++i)
-//    {
-//        x[i] = i/50.0 - 1; // x goes from -1 to 1
-//        y[i] = x[i]*x[i] + offset; // let's plot a quadratic function
-//    }
-//    ui->plot->addGraph();
-//    ui->plot->graph(0)->setData(x,y);
-//    ui->plot->xAxis->setLabel("x");
-//    ui->plot->yAxis->setLabel("y");
-//    // set axes ranges, so we see all data:
-//    ui->plot->xAxis->setRange(-1, 1);
-//    ui->plot->yAxis->setRange(0, 15);
-//    ui->plot->replot();
-//    offset++;
+    else if (state == "button_max_torque_key3"){
+        this->typeMaxTorqueKey('3');
+    }
+
+    else if (state == "button_max_torque_key4"){
+        this->typeMaxTorqueKey('4');
+    }
+
+    else if (state == "button_max_torque_key5"){
+        this->typeMaxTorqueKey('5');
+    }
+
+    else if (state == "button_max_torque_key6"){
+        this->typeMaxTorqueKey('6');
+    }
+
+    else if (state == "button_max_torque_key7"){
+        this->typeMaxTorqueKey('7');
+    }
+
+    else if (state == "button_max_torque_key8"){
+        this->typeMaxTorqueKey('8');
+    }
+
+    else if (state == "button_max_torque_key9"){
+        this->typeMaxTorqueKey('9');
+    }
+
+    else if (state == "button_max_torque_key0"){
+        this->typeMaxTorqueKey('0');
+    }
+
+    else if (state == "button_max_torque_key_dot"){
+        this->typeMaxTorqueKey('.');
+    }
+
+    else if (state == "button_max_torque_key_delete"){
+        this->deleteMaxTorqueKey();
+    }
+    
+    else if (state == "button_cycle_time_key1"){
+        this->typeCycleTimeKey('1');
+    }
+    
+    else if (state == "button_cycle_time_key2"){
+        this->typeCycleTimeKey('2');
+    }
+    
+    else if (state == "button_cycle_time_key3"){
+        this->typeCycleTimeKey('3');
+    }
+    
+    else if (state == "button_cycle_time_key4"){
+        this->typeCycleTimeKey('4');
+    }
+    
+    else if (state == "button_cycle_time_key5"){
+        this->typeCycleTimeKey('5');
+    }
+    
+    else if (state == "button_cycle_time_key6"){
+        this->typeCycleTimeKey('6');
+    }
+    
+    else if (state == "button_cycle_time_key7"){
+        this->typeCycleTimeKey('7');
+    }
+    
+    else if (state == "button_cycle_time_key8"){
+        this->typeCycleTimeKey('8');
+    }
+    
+    else if (state == "button_cycle_time_key9"){
+        this->typeCycleTimeKey('9');
+    }
+    
+    else if (state == "button_cycle_time_key0"){
+        this->typeCycleTimeKey('0');
+    }
+    
+    else if (state == "button_cycle_time_key_dot"){
+        this->typeCycleTimeKey('.');
+    }
+    
+    else if (state == "button_cycle_time_key_delete"){
+        this->deleteCycleTimeKey();
+    }
+    
 }
 
 void MainWindow::togglePlotData(){
@@ -136,14 +240,20 @@ void MainWindow::togglePlotSole(){
     }
 }
 
-void MainWindow::soleCalibration(){
+void MainWindow::soleCalibrationLeft(){
     double t_sole = ros::Time::now().toSec();
-    ui->text_which_sensor->setPlainText("Start Calibration");
-    qnode.pubThreshold();
+    qnode.pubThreshold(true);
     while(ros::Time::now().toSec() - t_sole < 2.0){
         continue;
     }
-    ui->text_which_sensor->setPlainText("End Calibration");
+}
+
+void MainWindow::soleCalibrationRight(){
+    double t_sole = ros::Time::now().toSec();
+    qnode.pubThreshold(false);
+    while(ros::Time::now().toSec() - t_sole < 2.0){
+        continue;
+    }
 }
 
 void MainWindow::proceedCalibration(){
@@ -152,31 +262,72 @@ void MainWindow::proceedCalibration(){
 
 void MainWindow::setMaxTorque(){
     float t = 1;
-    t = stof(ui->text_target_max_torque->toPlainText().toStdString());
-    qnode.pubMaxTorque(t);
-    updateLog("maximum torque sent");
+    try{
+        t = stof(ui->text_target_max_torque->toPlainText().toStdString());
+        qnode.pubMaxTorque(t);
+        QString s("maximum torque set to ");
+        s.append(QString(std::to_string(t)));
+        ui->text_target_max_torque->clear();
+        updateLog(s);
+        return;
+    }
+    updateLog("Target Max Torque is empty");
 }
 
 void MainWindow::setCycleTime(){
     float t = 1;
-    t = stof(ui->text_target_cycle_time->toPlainText().toStdString());
-    qnode.pubCycleTime(t);
-    updateLog("Cycle Time sent");
+    try{
+        t = stof(ui->text_target_cycle_time->toPlainText().toStdString());
+        qnode.pubCycleTime(t);
+        QString s("Cycle time set to ");
+        s.append(QString(std::to_string(t)));
+        ui->text_target_cycle_time->clear();
+        updateLog(s);
+        return;
+    }
+    updateLog("Target Cycle Time is empty");
 }
 
 void MainWindow::runMotor(){
     qnode.pubMotorRun();
+    ui->button_run_motor->setStyleSheet("background-color: rgb(0, 255, 0)");
+    ui->button_stop_motor->setStyleSheet("background-color: rgb(255, 0, 0)");
     updateLog("Motor Start");
 }
 
 void MainWindow::stopMotor(){
     qnode.pubMotorStop();
+    ui->button_stop_motor->setStyleSheet("background-color: rgb(0, 255, 0)");
+    ui->button_run_motor->setStyleSheet("background-color: rgb(255, 0, 0)");
     updateLog("Motor Stop");
 }
 
 void MainWindow::toggleStreaming(){
     qnode.pubStreaming();
     updateLog("Toggle Sole Sensor Streaming");
+}
+
+void typeMaxTorqueKey(char c){
+    ui->text_target_max_torque->appendPlainText(QString(c));
+}
+
+void typeCycleTimeKey(char c){
+    ui->text_target_cycle_time->appendPlainText(QString(c));
+}
+
+void deleteMaxTorqueKey(){
+    QString q;
+    q = ui->text_target_max_torque->toPlainText();
+    q.removeLast();
+    ui->text_target_max_torque->setPlainText(q);
+}
+
+void deleteCycleTimeKey(){
+    QString q;
+    q = ui->text_target_cycle_time->toPlainText();
+    q.removeLast();
+    ui->text_target_cycle_time->setPlainText(q);
+
 }
 
 void MainWindow::updateLog(QString s){
@@ -208,8 +359,16 @@ void MainWindow::set_emergency(bool on){
 }
 
 void MainWindow::plotSoleLeft(){
-    if (!is_plot_sole) return;
     float* data = qnode.getSoleLeftData();
+    if (is_plot_data){
+        appendCropQVector(&t_gp, data[0], gaitPhasePlotMaxNum);    
+        appendCropQVector(&gp[0], state_gp[0], gaitPhasePlotMaxNum);
+        appendCropQVector(&gp[1], state_gp[1], gaitPhasePlotMaxNum);
+        ui->plot_gaitPhase->xAxis->setRange(t_gp[0], t_gp[0] + 20.0);
+        this->updatePlot(GAIT_PHASE);
+    }
+
+    if (!is_plot_sole) return;
     appendCropQVector(&t_v_l, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
         appendCropQVector(&v_l[i], data[i], voltPlotMaxNum);
@@ -253,15 +412,12 @@ void MainWindow::plotDorsi(){
     this->updatePlot(MOTOR_DORSI);
 }
 
-void MainWindow::plotGaitPhase(){
+void MainWindow::updateGaitPhaseState(){
     if(!is_plot_data) return;
     float* data = qnode.getGaitPhase();
 
-    appendCropQVector(&t_gp, data[0], gaitPhasePlotMaxNum);
-    appendCropQVector(&gp[0], data[1]-1, gaitPhasePlotMaxNum);
-    appendCropQVector(&gp[1], data[2]-1, gaitPhasePlotMaxNum);
-    ui->plot_gaitPhase->xAxis->setRange(t_gp[t_gp.size() - 1] - 20.0, t_gp[t_gp.size() - 1]);
-    this->updatePlot(GAIT_PHASE);
+    state_gp[0] = data[1] - 1;
+    state_gp[1] = data[2] - 1;
 }
 
 void MainWindow::dorsiZeroingDone(){
@@ -270,6 +426,9 @@ void MainWindow::dorsiZeroingDone(){
 }
 
 void MainWindow::initPlot(){
+    state_gp[0] = 0.0;
+    state_gp[1] = 0.0;
+
     QPen pen[6];
     pen[0].setColor(QColor(0,0,0));
     pen[1].setColor(QColor(255, 0, 0));
@@ -283,6 +442,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->addGraph();
         ui->plot_sole_left_voltage->graph(i)->setPen(pen[i]);
         ui->plot_sole_right_voltage->graph(i)->setPen(pen[i]);
+        ui->plot_sole_left_voltage->graph(i)->setName(QString(char(i)+'1'));
+        ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
     ui->plot_sole_left_voltage->yAxis->setRange(0.5, 1.2);
@@ -292,19 +453,48 @@ void MainWindow::initPlot(){
         ui->plot_dorsi_command->addGraph();
         ui->plot_dorsi_command->graph(i)->setPen(pen[i]);   
     }
+    ui->plot_dorsi_command->graph(0)->setName(QString("tor_des"));
+    ui->plot_dorsi_command->graph(1)->setName(QString("tor_act"));
+    ui->plot_dorsi_command->graph(2)->setName(QString("pos_des"));
+    ui->plot_dorsi_command->graph(3)->setName(QString("pos_act"));
     ui->plot_dorsi_command->yAxis->setRange(-1.2, 1.2);
 
     ui->plot_plantar_command->addGraph();
     ui->plot_plantar_command->addGraph();
     ui->plot_plantar_command->graph(0)->setPen(pen[0]);
     ui->plot_plantar_command->graph(1)->setPen(pen[1]);
+    ui->plot_plantar_command->graph(0)->setName(QString("tor_des"));
+    ui->plot_plantar_command->graph(1)->setName(QString("tor_act"));
+
     ui->plot_plantar_command->yAxis->setRange(-1.2, 1.2);
 
     ui->plot_gaitPhase->addGraph();
     ui->plot_gaitPhase->addGraph();
     ui->plot_gaitPhase->graph(0)->setPen(pen[0]);
     ui->plot_gaitPhase->graph(1)->setPen(pen[1]);
+    ui->plot_gaitPhase->graph(0)->setName("P");
+    ui->plot_gaitPhase->graph(1)->setName("NP")
     ui->plot_gaitPhase->yAxis->setRange(0, 1.2);
+
+    // Set plot title
+    ui->plot_sole_left_voltage->plotLayout()->insertRow(0);
+    ui->plot_sole_right_voltage->plotLayout()->insertRow(0);
+    ui->plot_plantar_command->plotLayout()->insertRow(0);
+    ui->plot_dorsi_command->plotLayout()->insertRow(0);
+    ui->plot_gaitPhase->plotLayout()->insertRow(0);
+
+    QCPTextElement *title_sole_left_voltage = new QCPTextElement(ui->plot_sole_left_voltage, "L Sole", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_sole_right_voltage = new QCPTextElement(ui->plot_sole_right_voltage, "R Sole", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_plantar_command = new QCPTextElement(ui->plot_plantar_command, "Plnatar", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_dorsi_command = new QCPTextElement(ui->plot_dorsi_command, "Dorsi", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_gaitPhase = new QCPTextElement(ui->plot_gaitPhase, "Gait Phase", QFont("sans", 16, QFont::Bold));
+    
+    ui->plot_sole_left_voltage->plotLayout()->addElement(0, 0, title_sole_left_voltage);
+    ui->plot_sole_right_voltage->plotLayout()->addElement(0, 0, title_sole_right_voltage);
+    ui->plot_plantar_command->plotLayout()->addElement(0, 0, title_plantar_command);
+    ui->plot_dorsi_command->plotLayout()->addElement(0, 0, title_dorsi_command);
+    ui->plot_gaitPhase->plotLayout()->addElement(0, 0, title_gaitPhase);
+
 }
 
 void MainWindow::updatePlot(int dataType){

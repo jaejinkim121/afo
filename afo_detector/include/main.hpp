@@ -37,7 +37,8 @@ float meanLeft[6];
 float meanRight[6];
 int dataNum;
 
-float recordTimeThreshold = 3.0;
+float recordTimeThreshold = 1.0;
 bool runThreshold = false;
+bool thresholdSide;
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
 duration<double> currentTimeGap;

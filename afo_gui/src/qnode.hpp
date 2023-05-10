@@ -70,7 +70,7 @@ private:
 
     ros::NodeHandle* nh;
 
-    ros::Publisher afo_gui_thresholding_pub;
+    ros::Publisher afo_gui_threshold_pub;
     ros::Publisher afo_gui_max_torque_pub;
     ros::Publisher afo_gui_cycle_time_pub;
     ros::Publisher afo_gui_motor_run_pub;
