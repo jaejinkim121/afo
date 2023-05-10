@@ -33,15 +33,15 @@
      <widget class="QPlainTextEdit" name="text_target_max_torque">
       <property name="geometry">
        <rect>
-        <x>180</x>
-        <y>190</y>
+        <x>179</x>
+        <y>160</y>
         <width>170</width>
-        <height>80</height>
+        <height>40</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="plainText">
@@ -52,28 +52,35 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>190</y>
+        <y>160</y>
         <width>150</width>
         <height>80</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>Max torque</string>
+       <string>Max 
+torque</string>
       </property>
      </widget>
      <widget class="QPushButton" name="button_clear_max_torque">
       <property name="geometry">
        <rect>
-        <x>360</x>
-        <y>190</y>
-        <width>150</width>
-        <height>80</height>
+        <x>180</x>
+        <y>200</y>
+        <width>170</width>
+        <height>40</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>Clear</string>
@@ -84,32 +91,25 @@
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>150</width>
-        <height>80</height>
+        <width>211</width>
+        <height>91</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Data plot on/off</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button_sole_calibration_run">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>100</y>
-        <width>150</width>
-        <height>80</height>
-       </rect>
+      <property name="font">
+       <font>
+        <pointsize>24</pointsize>
+       </font>
       </property>
       <property name="text">
-       <string>Run sole Calibration</string>
+       <string>Data plot 
+on/off</string>
       </property>
      </widget>
      <widget class="QPushButton" name="button_sole_calibration_proceed">
       <property name="geometry">
        <rect>
-        <x>360</x>
-        <y>100</y>
+        <x>670</x>
+        <y>350</y>
         <width>150</width>
         <height>80</height>
        </rect>
@@ -118,47 +118,39 @@
        <string>proceed</string>
       </property>
      </widget>
-     <widget class="QTextEdit" name="text_which_sensor">
-      <property name="geometry">
-       <rect>
-        <x>180</x>
-        <y>100</y>
-        <width>170</width>
-        <height>80</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-     </widget>
      <widget class="QPushButton" name="button_set_cycle_time">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>280</y>
+        <y>250</y>
         <width>150</width>
         <height>80</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>Preset cycle time</string>
+       <string>Cycle 
+Time</string>
       </property>
      </widget>
      <widget class="QPushButton" name="button_clear_cycle_time">
       <property name="geometry">
        <rect>
-        <x>360</x>
-        <y>280</y>
-        <width>150</width>
-        <height>80</height>
+        <x>180</x>
+        <y>290</y>
+        <width>171</width>
+        <height>41</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>Clear</string>
@@ -168,9 +160,24 @@
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>280</y>
+        <y>250</y>
         <width>170</width>
-        <height>80</height>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_dorsi_zeroing_done">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>10</y>
+        <width>211</width>
+        <height>91</height>
        </rect>
       </property>
       <property name="font">
@@ -178,49 +185,338 @@
         <pointsize>20</pointsize>
        </font>
       </property>
-     </widget>
-     <widget class="QPushButton" name="button_toggle_plot_sole">
-      <property name="geometry">
-       <rect>
-        <x>180</x>
-        <y>10</y>
-        <width>150</width>
-        <height>80</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Sole plot on/off</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button_dorsi_zeroing_done">
-      <property name="geometry">
-       <rect>
-        <x>500</x>
-        <y>10</y>
-        <width>150</width>
-        <height>80</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>9</pointsize>
-       </font>
-      </property>
       <property name="text">
        <string>Dorsi zeroing</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="button_toggle_streaminig">
+     <widget class="QPushButton" name="button_max_torque_key1">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>10</y>
-        <width>150</width>
-        <height>80</height>
+        <x>360</x>
+        <y>160</y>
+        <width>41</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
-       <string>toggle sole streaming</string>
+       <string>1</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key6">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>200</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>6</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key2">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>160</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key7">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>200</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>7</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key3">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>160</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>3</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key8">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>200</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>8</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key4">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>160</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key9">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>200</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>9</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key5">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>160</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key0">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>200</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key_dot">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>160</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>.</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_max_torque_key_delete">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>200</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;-</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key_delete">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>290</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;-</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key0">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>290</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key_dot">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>250</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>.</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key1">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>250</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key4">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>250</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key6">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>290</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>6</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key3">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>250</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>3</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key8">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>290</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>8</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key9">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>290</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>9</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key7">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>290</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>7</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key5">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>250</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_cycle_time_key2">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>250</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>261</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Parameter setup</string>
       </property>
      </widget>
     </widget>
@@ -252,7 +548,7 @@
       <property name="geometry">
        <rect>
         <x>5</x>
-        <y>230</y>
+        <y>220</y>
         <width>400</width>
         <height>220</height>
        </rect>
@@ -265,7 +561,7 @@
       <property name="geometry">
        <rect>
         <x>410</x>
-        <y>230</y>
+        <y>220</y>
         <width>400</width>
         <height>220</height>
        </rect>
@@ -274,14 +570,14 @@
     </widget>
     <widget class="QWidget" name="Developer">
      <attribute name="title">
-      <string>Developer</string>
+      <string>Sole</string>
      </attribute>
      <widget class="QCustomPlot" name="plot_sole_right_voltage" native="true">
       <property name="geometry">
        <rect>
-        <x>420</x>
-        <y>230</y>
-        <width>400</width>
+        <x>319</x>
+        <y>220</y>
+        <width>501</width>
         <height>220</height>
        </rect>
       </property>
@@ -289,11 +585,86 @@
      <widget class="QCustomPlot" name="plot_sole_left_voltage" native="true">
       <property name="geometry">
        <rect>
-        <x>420</x>
+        <x>319</x>
         <y>0</y>
-        <width>400</width>
+        <width>501</width>
         <height>220</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_toggle_plot_sole">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>20</y>
+        <width>241</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>22</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Sole plot on/off</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_toggle_streaming">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>120</y>
+        <width>241</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>22</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Toggle 
+sole streaming</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_sole_calibration_left">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>220</y>
+        <width>241</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>22</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Left sole 
+Calibration</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_sole_calibration_right">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>320</y>
+        <width>241</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>22</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Right sole 
+Calibration</string>
       </property>
      </widget>
     </widget>
@@ -337,11 +708,17 @@ STOP</string>
    <widget class="QPushButton" name="button_run_motor">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>490</y>
-      <width>111</width>
-      <height>41</height>
+      <x>10</x>
+      <y>480</y>
+      <width>141</width>
+      <height>51</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Run Motor</string>
@@ -350,11 +727,17 @@ STOP</string>
    <widget class="QPushButton" name="button_stop_motor">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>490</y>
-      <width>121</width>
-      <height>41</height>
+      <x>160</x>
+      <y>480</y>
+      <width>141</width>
+      <height>51</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Stop Motor</string>
