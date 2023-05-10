@@ -92,6 +92,7 @@ ros::Subscriber afo_shutdown_sub;
 
 ros::Publisher afo_motor_data_plantar;
 ros::Publisher afo_motor_data_dorsi;
+ros::Publisher afo_configuration_cycle_time;
 ros::Publisher afo_configuration_maxTorquePlantar;
 ros::Publisher afo_configuration_maxTorqueDorsi;
 ros::Publisher afo_configuration_maxPositionDorsi;
