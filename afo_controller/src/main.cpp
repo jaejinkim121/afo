@@ -260,9 +260,6 @@ void worker()
     m.data = plantarPreTension;
     afo_configuration_plantarPreTension.publish(m);
 
-    m.data = cycleTime;
-    afo_configuration_cycle_time.publish(m);
-
     // Initialize master
     bool rtSuccess = true;
     for(const auto & master: configurator->getMasters())
