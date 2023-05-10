@@ -33,7 +33,7 @@ public:
     void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg);
     void callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg);
 
-    void pubThreshold();
+    void pubThreshold(bool b);
     void pubMaxTorque(float t);
     void pubCycleTime(float t);
     void pubMotorRun();

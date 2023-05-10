@@ -171,7 +171,7 @@ namespace afo_gui {
     void QNode::pubThreshold(bool b){
         std_msgs::Bool m;
         m.data = b;
-        this->afo_gui_thresholding_pub.publish(m);
+        this->afo_gui_threshold_pub.publish(m);
     }
 
     void QNode::pubMaxTorque(float t){

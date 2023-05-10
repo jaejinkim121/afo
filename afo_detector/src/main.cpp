@@ -132,12 +132,13 @@ void gaitDetector(int* result){
 }
 
 void loadThreshold(){
+    ifstream thFile;
     bool side = thresholdSide;
     if (side == LEFT){
-        ifstream thFile("/home/srbl/catkin_ws/src/afo/threshold_left.csv");
+        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv");
     }
     else{
-        ifstream thFile("/home/srbl/catkin_ws/src/afo/threshold_right.csv");
+        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv");
     }
 
     if(!thFile){
@@ -175,18 +176,19 @@ void loadThreshold(){
 
 void saveThreshold(){
     bool side = thresholdSide;
+    ofstream thFile;
     if (side == LEFT){
-        ofstream thFile("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
+        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.07 << endl;
+            thFile << meanLeft[i] + 0.10 << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.04 << endl;
+            thFile << meanLeft[i] + 0.08 << endl;
         }
     }
     else {
-        ofstream thFile("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
+        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
             thFile << meanRight[i] + 0.10 << endl;
         }
