@@ -81,7 +81,12 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_sole_calibration_left"){
         this->updateLog("Left sole calibration start");
-        this->soleCalibration();
+        this->soleCalibrationLeft();
+    }
+
+    else if (state == "button_sole_calibration_right"){
+        this->updateLog("Right sole calibration start");
+        this->soleCalibrationRight();
     }
 
     else if (state == "button_sole_calibration_proceed"){
@@ -266,12 +271,15 @@ void MainWindow::setMaxTorque(){
         t = stof(ui->text_target_max_torque->toPlainText().toStdString());
         qnode.pubMaxTorque(t);
         QString s("maximum torque set to ");
-        s.append(QString(std::to_string(t)));
+        s.append(QString::fromStdString(std::to_string(t)));
         ui->text_target_max_torque->clear();
         updateLog(s);
         return;
     }
-    updateLog("Target Max Torque is empty");
+    catch(...){
+        updateLog("Target Max Torque is empty");
+
+    }
 }
 
 void MainWindow::setCycleTime(){
@@ -280,12 +288,15 @@ void MainWindow::setCycleTime(){
         t = stof(ui->text_target_cycle_time->toPlainText().toStdString());
         qnode.pubCycleTime(t);
         QString s("Cycle time set to ");
-        s.append(QString(std::to_string(t)));
+        s.append(QString::fromStdString(std::to_string(t)));
         ui->text_target_cycle_time->clear();
         updateLog(s);
         return;
     }
-    updateLog("Target Cycle Time is empty");
+    catch(...){
+        updateLog("Target Cycle Time is empty");
+
+    }
 }
 
 void MainWindow::runMotor(){
@@ -307,25 +318,25 @@ void MainWindow::toggleStreaming(){
     updateLog("Toggle Sole Sensor Streaming");
 }
 
-void typeMaxTorqueKey(char c){
+void MainWindow::typeMaxTorqueKey(char c){
     ui->text_target_max_torque->appendPlainText(QString(c));
 }
 
-void typeCycleTimeKey(char c){
+void MainWindow::typeCycleTimeKey(char c){
     ui->text_target_cycle_time->appendPlainText(QString(c));
 }
 
-void deleteMaxTorqueKey(){
+void MainWindow::deleteMaxTorqueKey(){
     QString q;
     q = ui->text_target_max_torque->toPlainText();
-    q.removeLast();
+    q.remove(q.size() - 1);
     ui->text_target_max_torque->setPlainText(q);
 }
 
-void deleteCycleTimeKey(){
+void MainWindow::deleteCycleTimeKey(){
     QString q;
     q = ui->text_target_cycle_time->toPlainText();
-    q.removeLast();
+    q.remove(q.size() - 1);
     ui->text_target_cycle_time->setPlainText(q);
 
 }
@@ -473,7 +484,7 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase->graph(0)->setPen(pen[0]);
     ui->plot_gaitPhase->graph(1)->setPen(pen[1]);
     ui->plot_gaitPhase->graph(0)->setName("P");
-    ui->plot_gaitPhase->graph(1)->setName("NP")
+    ui->plot_gaitPhase->graph(1)->setName("NP");
     ui->plot_gaitPhase->yAxis->setRange(0, 1.2);
 
     // Set plot title
