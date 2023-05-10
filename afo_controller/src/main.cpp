@@ -186,11 +186,19 @@ void callbackShutdown(const std_msgs::BoolConstPtr& msg){
 void callbackMaxTorque(const std_msgs::Float32ConstPtr& msg){
     maxTorquePlantar = msg->data;
     maxTorqueDorsi = msg->data;
+    std_msgs::Float32 m;
+    m.data = maxTorquePlantar;
+    afo_configuration_maxTorquePlantar.publish(m);
+    afo_configuration_maxTorqueDorsi.publish(m);
     std::cout << "maximum torque set to " << maxTorquePlantar << std::endl;
 }
 
 void callbackCycleTime(const std_msgs::Float32ConstPtr& msg){
     cycleTime = msg->data;
+    std_msgs::Float32 m;
+    m.data = cycleTime;
+    afo_configuration_cycle_time.publish(m);
+
     std::cout << "cycle time set to " << cycleTime << std::endl;
 }
 
@@ -220,6 +228,38 @@ void worker()
         ", upTimeRatio=" << upTimeRatio <<
         ", dirPlantar=" << dirPlantar <<
         ", ";
+    
+    std_msgs::Float32 m;
+    
+    m.data = maxTorquePlantar;
+    afo_configuration_maxTorquePlantar.publish(m);
+
+    m.data = maxTorqueDorsi;
+    afo_configuration_maxTorqueDorsi.publish(m);
+
+    m.data = startTime;
+    afo_configuration_startTime.publish(m);
+
+    m.data = endTime;
+    afo_configuration_endTime.publish(m);
+
+    m.data = upTimeRatio;
+    afo_configuration_upTimeRatio.publish(m);
+
+    m.data = dirPlantar;
+    afo_configuration_dirPlantar.publish(m);
+
+    m.data = cycleTime;
+    afo_configuration_cycle_time.publish(m);
+
+    m.data = maxPositionDorsi;
+    afo_configuration_maxPositionDorsi.publish(m);
+
+    m.data = dorsiPreTension;
+    afo_configuration_dorsiPreTension.publish(m);
+
+    m.data = plantarPreTension;
+    afo_configuration_plantarPreTension.publish(m);
 
     // Initialize master
     bool rtSuccess = true;
@@ -275,9 +315,11 @@ void worker()
                             dorsiNeutralPosition = reading.getActualPosition();
 			                outFileController << "dorsiNeutralPosition=" << dorsiNeutralPosition << endl;
 		                    cout << "Dorsi Zeroing Done: " << reading.getActualTorque() << endl;
-                            std_msgs::Bool m;
-                            m.data = true;
-                            afo_dorsi_zeroing_done.publish(m);
+                            std_msgs::Bool m_dz;
+                            m_dz.data = true;
+                            afo_dorsi_zeroing_done.publish(m_dz);
+                            m.data = dorsiNeutralPosition;
+                            afo_configuration_dorsiNeutralPosition.publish(m);
                             break;
                         }
                         command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
@@ -491,8 +533,12 @@ int main(int argc, char**argv)
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
+    afo_configuration_cycle_time = n.advertise<std_msgs::Float32>("/afo_controller/cycle_time", 10);
     afo_configuration_maxTorquePlantar = n.advertise<std_msgs::Float32>("/afo_controller/maxTorquePlantar", 10);
     afo_configuration_maxTorqueDorsi = n.advertise<std_msgs::Float32>("/afo_controller/maxTorqueDorsi", 10);
+    afo_configuration_maxPositionDorsi = n.advertise<std_msgs::Float32>("/afo_controller/maxPositionDorsi", 10);
+    afo_configuration_dorsiPreTension = n.advertise<std_msgs::Float32>("/afo_controller/dorsi_pretension", 10);
+    afo_configuration_plantarPreTension = n.advertise<std_msgs::Float32>("/afo_controller/plantar_pretension", 10);
     afo_configuration_startTime = n.advertise<std_msgs::Float32>("/afo_controller/startTime", 10);
     afo_configuration_endTime = n.advertise<std_msgs::Float32>("/afo_controller/endTime", 10);
     afo_configuration_upTimeRatio = n.advertise<std_msgs::Float32>("/afo_controller/upTimeRatio", 10);
