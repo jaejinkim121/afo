@@ -73,6 +73,9 @@ void callbackThreshold(const std_msgs::Bool::ConstPtr& msg){
 // paretic side is right = 1
 void gaitDetector(int* result){
     result[0] = 0;
+    result[1] = 0;
+    result[2] = 0;
+    result[3] = 0;
 
     bool leftTmp, rightTmp;
     bool prevLeft, prevRight;
@@ -118,14 +121,14 @@ void gaitDetector(int* result){
         rightSwing = rightTmp;        
     }
     if (leftSwing != prevLeft){
-        result[0] = 1;
-        result[1+(affectedSide==LEFT)] = (int)leftSwing + 1;  // 2 when foot-off, 1 when initial contact
-        std::cout << "LEFT SWing : " << leftSwing +1 << std::endl;
+        result[affectedSide == LEFT] = 1;
+        result[2+(affectedSide==LEFT)] = (int)leftSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "LEFT Swing : " << leftSwing +1 << std::endl;
     }
     if (rightSwing != prevRight){
-        result[0] = 1;
-        result[1+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
-        std::cout << "Right SWing : " << rightSwing +1 << std::endl;
+        result[affectedSide == RIGHT] = 1;
+        result[2+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "Right Swing : " << rightSwing +1 << std::endl;
     }
 
 
@@ -231,8 +234,9 @@ int main(int argc, char**argv)
     ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     ros::Subscriber afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
     ros::Subscriber afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
-    ros::Publisher afo_gaitPhase_pub = n.advertise<std_msgs::Int16MultiArray>("/afo_detector/gaitPhase", 100);
-    std_msgs::Int16MultiArray msg_gaitPhase;
+    ros::Publisher afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
+    ros::Publisher afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
+    std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
     thresholdSide = LEFT;
     loadThreshold();    
@@ -240,7 +244,7 @@ int main(int argc, char**argv)
     loadThreshold();    
 
     std::cout << "Startup finished" << std::endl;
-    int r[3];
+    int r[4];
 
 
     while(ros::ok()){
@@ -248,10 +252,13 @@ int main(int argc, char**argv)
         gaitDetector(r);
 
         if (r[0] == 1){
-            msg_gaitPhase.data.push_back(r[1]);
-            msg_gaitPhase.data.push_back(r[2]);
-            afo_gaitPhase_pub.publish(msg_gaitPhase);
+            msg_gait_nonparetic.data = r[2];
+            afo_gait_nonparetic_pub.publish(msg_gait_nonparetic);
         }
+        if (r[1] == 1){
+            msg_gait_paretic.data = r[3];
+            afo_gait_paretic_pub.publish(msg_gait_paretic);
+        } 
         
         if (runThreshold){
             currentTimeGap = high_resolution_clock::now() - initialTimeThreshold;

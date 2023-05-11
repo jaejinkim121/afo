@@ -10,7 +10,6 @@
 #include <std_msgs/Char.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float32MultiArray.h>
-#include <std_msgs/Int16MultiArray.h>
 #include <std_msgs/Int16.h>
 #include <geometry_msgs/Point.h>
 
@@ -30,14 +29,15 @@ public:
     void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackDorsi(const std_msgs::Float32MultiArray::ConstPtr& msg);
-    void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg);
     void callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg);
+    void callbackGaitParetic(const std_msgs::Int16ConstPtr& msg);
+    void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
 
     void pubThreshold(bool b);
     void pubMaxTorque(float t);
     void pubCycleTime(float t);
-    void pubMotorRun();
-    void pubMotorStop();
+    void pubPlantarRun(bool run);
+    void pubDorsiRun(bool run);
     void pubStreaming();
 
     float* getSoleLeftData();
@@ -73,16 +73,17 @@ private:
     ros::Publisher afo_gui_threshold_pub;
     ros::Publisher afo_gui_max_torque_pub;
     ros::Publisher afo_gui_cycle_time_pub;
-    ros::Publisher afo_gui_motor_run_pub;
-    ros::Publisher afo_gui_motor_stop_pub;
+    ros::Publisher afo_gui_plantar_run_pub;
+    ros::Publisher afo_gui_dorsi_run_pub;
     ros::Publisher afo_gui_streaming_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
     ros::Subscriber afo_plantar_command_sub;
     ros::Subscriber afo_dorsi_command_sub;
-    ros::Subscriber afo_gait_phase_sub;
     ros::Subscriber afo_dorsi_zeroing_done_sub;
+    ros::Subscriber afo_gait_paretic_sub;
+    ros::Subscriber afo_gait_nonparetic_sub;
 
     int soleLeftCnt = 0;
     int soleRightCnt = 0;

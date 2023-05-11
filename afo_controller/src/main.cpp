@@ -193,22 +193,20 @@ void callbackMaxTorque(const std_msgs::Float32ConstPtr& msg){
 }
 
 void callbackCycleTime(const std_msgs::Float32ConstPtr& msg){
-    cycleTime = msg->data;
+    cycleTime = msg->data * 1000000.0;
     std_msgs::Float32 m;
-    m.data = cycleTime;
+    m.data = msg->data;
     afo_configuration_cycle_time.publish(m);
 
-    std::cout << "cycle time set to " << cycleTime << std::endl;
+    std::cout << "cycle time set to " << msg->data << std::endl;
 }
 
-void callbackMotorRun(const std_msgs::BoolConstPtr& msg){
-    motorRun = true;
-    std::cout << "Motor Start" << std::endl;
+void callbackPlantarRun(const std_msgs::BoolConstPtr& msg){
+    plantarRun = msg->data;
 }
 
-void callbackMotorStop(const std_msgs::BoolConstPtr& msg){
-    motorRun = false;
-    std::cout << "Motor Stop" << std::endl;
+void callbackDorsiRun(const std_msgs::BoolConstPtr& msg){
+    dorsiRun = msg->data;
 }
 
 void worker()
@@ -373,7 +371,7 @@ void worker()
                         if (setGaitEventNonAffected && setGaitEventAffected){
                             currentTimePercentage = pathPlannerPlantarflexion();
                         }
-                        if(motorRun){
+                        if(plantarRun){
                             command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                             command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
                             command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
@@ -409,7 +407,7 @@ void worker()
                             currentTimePercentage = pathPlannerDorsiflexion(reading);
                         }
                         
-                        if (motorRun){
+                        if (dorsiRun){
                             dorsiInputMode = dorsiMode;
                             dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
                             dorsiTorqueInput = dirDorsi * (maxTorqueDorsi * dorsiTorque + dorsiPreTension);
@@ -527,8 +525,8 @@ int main(int argc, char**argv)
     afo_gaitPhase = n.subscribe("/afo_detector/gaitPhase", 1, callbackGaitPhase);
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
-    afo_gui_motor_run = n.subscribe("/afo_gui/motor_run", 1, callbackMotorRun);
-    afo_gui_motor_stop = n.subscribe("/afo_gui/motor_stop", 1, callbackMotorStop);
+    afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
+    afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);

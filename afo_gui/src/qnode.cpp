@@ -46,8 +46,8 @@ namespace afo_gui {
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
         afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
-        afo_gui_motor_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/motor_run", 100);
-        afo_gui_motor_stop_pub = nh->advertise<std_msgs::Bool>("/afo_gui/motor_stop", 100);
+        afo_gui_plantar_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/plantar_run", 100);
+        afo_gui_dorsi_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/dorsi_run", 100);
         afo_gui_streaming_pub = nh->advertise<std_msgs::Bool>("/afo_gui/streaming", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
@@ -55,7 +55,8 @@ namespace afo_gui {
         afo_plantar_command_sub = nh->subscribe("/afo_controller/motor_data_plantar", 1, &QNode::callbackPlantar, this);
         afo_dorsi_command_sub = nh->subscribe("/afo_controller/motor_data_dorsi", 1, &QNode::callbackDorsi, this);
         afo_dorsi_zeroing_done_sub = nh->subscribe("/afo_controller/dorsi_zeroing_done", 1, &QNode::callbackDorsiZeroingDone, this);
-        afo_gait_phase_sub = nh->subscribe("/afo_detector/gaitPhase", 1, &QNode::callbackGaitPhase, this);
+        afo_gait_paretic_sub = nh->subscribe("/afo_detector/gait_paretic", 1, &QNode::callbackGatiParetic, this);
+        afo_gait_nonparetic_sub = nh->subscribe("/afo_detector/gait_nonparetic", 1, &QNode::callbackGatiNonparetic, this);
     }
 
     void QNode::run() {
@@ -154,12 +155,19 @@ namespace afo_gui {
         updateDorsi();
     }
 
-    void QNode::callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg){
+    void QNode::callbackGaitParetic(const std_msgs::Int16ConstPtr& msg){
         float t = ros::Time::now().toSec() - this->t_begin;
         
         gaitPhase[0] = t;
-        gaitPhase[1] = msg->data[0];
-        gaitPhase[2] = msg->data[1];
+        gaitPhase[2] = msg->data;
+        updateGaitPhase();
+    }
+
+    void QNode::callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg){
+        float t = ros::Time::now().toSec() - this->t_begin;
+        
+        gaitPhase[0] = t;
+        gaitPhase[1] = msg->data;
         updateGaitPhase();
     }
 
@@ -186,16 +194,16 @@ namespace afo_gui {
         afo_gui_cycle_time_pub.publish(m);
     }
 
-    void QNode::pubMotorRun(){
+    void QNode::pubPlantarRun(bool run){
         std_msgs::Bool m;
-        m.data = true;
-        afo_gui_motor_run_pub.publish(m);
+        m.data = r;
+        afo_gui_plantar_run_pub.publish(m);
     }
 
-    void QNode::pubMotorStop(){
+    void QNode::pubDorsiRun(bool run){
         std_msgs::Bool m;
-        m.data = true;
-        afo_gui_motor_stop_pub.publish(m);
+        m.data = run;
+        afo_gui_dorsi_run_pub.publish(m);
     }
 
     void QNode::pubStreaming(){

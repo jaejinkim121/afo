@@ -50,7 +50,7 @@ int dorsiBufferFlushingIndex = 0;
 
 // Configuration
 int controlMode = PRE;
-bool motorRun;
+bool plantarRun, dorsiRun;
 
 //
 
@@ -86,8 +86,8 @@ double dirDorsi = 1;
 ros::Subscriber afo_gaitPhase;
 ros::Subscriber afo_gui_cycle_time;
 ros::Subscriber afo_gui_max_torque;
-ros::Subscriber afo_gui_motor_run;
-ros::Subscriber afo_gui_motor_stop;
+ros::Subscriber afo_gui_plantar_run;
+ros::Subscriber afo_gui_dorsi_run;
 ros::Subscriber afo_shutdown_sub;
 
 ros::Publisher afo_motor_data_plantar;

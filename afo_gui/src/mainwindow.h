@@ -38,8 +38,8 @@ public:
     void proceedCalibration();
     void setMaxTorque();
     void setCycleTime();
-    void runMotor();
-    void stopMotor();
+    void togglePlantarRun();
+    void toggleDorsiRun();
     void toggleStreaming();
     void typeMaxTorqueKey(char c);
     void deleteMaxTorqueKey();
@@ -73,6 +73,8 @@ private:
     int gaitPhasePlotMaxNum = 180;
     bool is_plot_data = false;
     bool is_plot_sole = false;
+    bool is_plantar_run = false;
+    bool is_dorsi_run = false;
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
     QVector<double> v_l[6];

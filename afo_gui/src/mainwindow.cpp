@@ -299,6 +299,33 @@ void MainWindow::setCycleTime(){
     }
 }
 
+void MainWindow::togglePlantarRun(){
+    is_plantar_run = !is_plantar_run;
+    qnode.pubPlantarRun(is_plantar_run);
+    if (is_plantar_run){
+        ui->button_run_plantar->setStyleSheet("background-color: rgb(255, 0, 0");
+        ui->button_run_plantar->setText("Stop \nPlantar");
+    }
+    else{
+        ui->button_run_plantar->setStyleSheet("background-color: rgb(0, 255, 0");
+        ui->button_run_plantar->setText("Run \nPlantar");
+    }
+    
+}
+
+void MainWindow::toggleDorsiRun(){
+    is_dorsi_run = !is_dorsi_run;
+    qnode.pubDorsiRun(is_dorsi_run);
+    if (is_dorsi_run){
+        ui->button_run_dorsi->setStyleSheet("background-color: rgb(255, 0, 0");
+        ui->button_run_dorsi->setText("Stop \nDorsi");
+    }
+    else{
+        ui->button_run_dorsi->setStyleSheet("background-color: rgb(0, 255, 0");
+        ui->button_run_dorsi->setText("Run \ndorsi");
+    }
+    
+}
 void MainWindow::runMotor(){
     qnode.pubMotorRun();
     ui->button_run_motor->setStyleSheet("background-color: rgb(0, 255, 0)");
