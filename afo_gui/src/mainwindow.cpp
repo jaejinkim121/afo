@@ -352,11 +352,17 @@ void MainWindow::toggleStreaming(){
 }
 
 void MainWindow::typeMaxTorqueKey(char c){
-    ui->text_target_max_torque->appendPlainText(QString(c));
+    QString q;
+    q = ui->text_target_max_torque->toPlainText();
+    q.append(QChar(c));
+    ui->text_target_max_torque->setPlainText(q);
 }
 
 void MainWindow::typeCycleTimeKey(char c){
-    ui->text_target_cycle_time->appendPlainText(QString(c));
+    QString q;
+    q = ui->text_target_cycle_time->toPlainText();
+    q.append(QChar(c));
+    ui->text_target_cycle_time->setPlainText(q);
 }
 
 void MainWindow::deleteMaxTorqueKey(){
