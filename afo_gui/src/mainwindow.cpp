@@ -11,6 +11,11 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     qnode.init();
     ui->setupUi(this);
     
+    // Load sole image
+    QPixmap soleImage("/home/srbl/catkin_ws/src/afo/im.png");
+    ui->label_sole_image->setPixmap(soleImage.scaled(300, 400));
+    rgb = new float[3];
+
     // Connect QObject to ui objects.
     //QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_plot_data, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -56,7 +61,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
 
-    this->initPlot();
+    initPlot();
+    initSolePlot();
 }
 
 MainWindow::~MainWindow()
@@ -409,10 +415,11 @@ void MainWindow::plotSoleLeft(){
     if (!is_plot_sole) return;
     appendCropQVector(&t_v_l, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_l[i], data[i], voltPlotMaxNum);
+        appendCropQVector(&v_l[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_left_voltage->xAxis->setRange(t_v_l[0], t_v_l[0]+5.0);
     this->updatePlot(SOLE_LEFT);
+    this->updateSolePlot(SOLE_LEFT, data);
 }
 
 void MainWindow::plotSoleRight(){
@@ -420,10 +427,11 @@ void MainWindow::plotSoleRight(){
     float* data = qnode.getSoleRightData();
     appendCropQVector(&t_v_r, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_r[i], data[i], voltPlotMaxNum);
+        appendCropQVector(&v_r[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_right_voltage->xAxis->setRange(t_v_r[0], t_v_r[0]+5.0);
     this->updatePlot(SOLE_RIGHT);
+    this->updateSolePlot(SOLE_RIGHT, data);
 }
 
 void MainWindow::plotPlantar(){
@@ -569,6 +577,79 @@ void MainWindow::updatePlot(int dataType){
         ui->plot_gaitPhase->replot();
     }
 
+    void MainWindow::initSolePlot(){
+        for (int i = 0 ; i < 6; i++){
+            s_l[i] = new Draw();
+            s_r[i] = new Draw();            
+            s_l[i]->setGeometry(20, 10, 300, 400);
+            s_r[i]->setGeometry(20, 10, 300, 400);
+
+            n_l[i] = new QVBoxLayout();
+            n_l[i]->setSpacing(0);
+            n_l[i]->setContentsMargins(0, 0, 0, 0);
+            n_l[i]->addWidget(s_l[i]);
+            n_r[i] = new QVBoxLayout(); 
+            n_r[i]->setSpacing(0);
+            n_r[i]->setContentsMargins(0, 0, 0, 0);
+            n_r[i]->addWidget(s_r[i]);
+        }
+        
+        ui->label_sole_image_left_1->setLayout(n_l[0]);
+        ui->label_sole_image_left_2->setLayout(n_l[1]);
+        ui->label_sole_image_left_3->setLayout(n_l[2]);
+        ui->label_sole_image_left_4->setLayout(n_l[3]);
+        ui->label_sole_image_left_5->setLayout(n_l[4]);
+        ui->label_sole_image_left_6->setLayout(n_l[5]);
+        ui->label_sole_image_right_1->setLayout(n_r[0]);
+        ui->label_sole_image_right_2->setLayout(n_r[1]);
+        ui->label_sole_image_right_3->setLayout(n_r[2]);
+        ui->label_sole_image_right_4->setLayout(n_r[3]);
+        ui->label_sole_image_right_5->setLayout(n_r[4]);
+        ui->label_sole_image_right_6->setLayout(n_r[5]);
+
+        s_l[0]->setShape(40, 180, 15, 15);
+        s_l[1]->setShape(80, 70, 15, 15);
+        s_l[2]->setShape(75, 145, 15, 15);
+        s_l[3]->setShape(120, 80, 15, 15);
+        s_l[4]->setShape(120, 140, 15, 15);
+        s_l[5]->setShape(70, 350, 15, 15);
+        s_r[0]->setShape(260, 80, 15, 15);
+        s_r[1]->setShape(220, 70, 15, 15);
+        s_r[2]->setShape(225, 145, 15, 15);
+        s_r[3]->setShape(180, 80, 15, 15);
+        s_r[4]->setShape(180, 140, 15, 15);
+        s_r[5]->setShape(230, 350, 15, 15);
+    }
+
+    void MainWindow::updateSolePlot(int side, float* data){
+        if (side == SOLE_LEFT){
+            for (int i = 0; i < 6; i++){
+                updateRGB(data[i+1]);
+                s_l[i]->redraw(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+        else{
+            for (int i = 0; i < 6; i++){
+                updateRGB(data[i+1]);
+                s_r[i]->redraw(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+    }
+
+}
+
+void MainWindow::updateRGB(float f){
+    float a = f/0.25;
+    float x = floor(a);
+    float y = floor(255*(a-x));
+    
+    switch(x){
+        case 0 : rgb[0] = 255; rgb[1] = y; rgb[2] = 0; break;
+        case 1 : rgb[0] = 255-y; rgb[1] = 255; rgb[2] = 0; break;
+        case 2 : rgb[0] = 0; rgb[1] = 255; rgb[2] = y; break;
+        case 3 : rgb[0] = 0; rgb[1] = 255-y; rgb[2] = 255; break;
+        case 4 : rgb[0] = 0; rgb[1] = 0; rgb[2] = 255; break;
+    }
 }
 
 void appendCropQVector(QVector<double> *vector, double data, int maxNum){
@@ -585,5 +666,4 @@ void appendCropQVector(QVector<double> *vector, double data, int maxNum){
     }
     return;
 }
-
 

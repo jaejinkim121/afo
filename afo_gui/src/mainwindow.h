@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <string.h>
 #include <iostream>
+#include <math.h>
 
 #include "qnode.hpp"
 #include "qcustomplot.h"
@@ -14,6 +15,7 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Int16.h"
 #include "std_msgs/Bool.h"
+#include "draw.h"
 
 #define SOLE_LEFT 1
 #define SOLE_RIGHT 2
@@ -51,7 +53,9 @@ public:
     
     void updatePlot(int dataType);
     void initPlot();
-
+    void initSolePlot();
+    void updateSolePlot(int side,  float* data);
+    void updateRGB(float f);
 
 public Q_SLOTS:
     void buttonClicked();
@@ -84,9 +88,13 @@ private:
     QVector<double> gp[2];
 
     double state_gp[2];
+    Draw *s_l[6], *s_r[6];
+    QVBoxLayout *n_l[6], *n_r[6];
+    int *rgb;
 
 };
 
 
 void appendCropQVector(QVector<double> *vector, double data, int maxNum);
+
 #endif // MAINWINDOW_H
