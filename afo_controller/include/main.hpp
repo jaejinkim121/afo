@@ -83,7 +83,8 @@ double dirPlantar = -1;
 double dirDorsi = 1;
 
 // Define ros publisher and subscriber
-ros::Subscriber afo_gaitPhase;
+ros::Subscriber afo_gait_paretic;
+ros::Subscriber afo_gait_nonparetic;
 ros::Subscriber afo_gui_cycle_time;
 ros::Subscriber afo_gui_max_torque;
 ros::Subscriber afo_gui_plantar_run;

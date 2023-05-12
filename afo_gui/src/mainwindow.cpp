@@ -309,11 +309,11 @@ void MainWindow::togglePlantarRun(){
     is_plantar_run = !is_plantar_run;
     qnode.pubPlantarRun(is_plantar_run);
     if (is_plantar_run){
-        ui->button_run_plantar->setStyleSheet("background-color: rgb(255, 0, 0");
+        ui->button_run_plantar->setStyleSheet("background-color: rgb(255, 0, 0)");
         ui->button_run_plantar->setText("Stop \nPlantar");
     }
     else{
-        ui->button_run_plantar->setStyleSheet("background-color: rgb(0, 255, 0");
+        ui->button_run_plantar->setStyleSheet("background-color: rgb(0, 255, 0)");
         ui->button_run_plantar->setText("Run \nPlantar");
     }
     

@@ -149,10 +149,10 @@ void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg){
     
 }
 
-void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
-    if (msg->data == 0) 
+void callbackGaitPhaseAffected(const std_msgs::Int16ConstPtr& msg){
+    if (msg->data == 1) 
         timeIC = high_resolution_clock::now();
-    else if (msg->data == 1) 
+    else if (msg->data == 2) 
         timeFO = high_resolution_clock::now();
     else
         std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
@@ -162,8 +162,8 @@ void callbackGaitPhaseAffected(const std_msgs::Int16::ConstPtr& msg){
     return;
 }
 
-void callbackGaitPhaseNonAffected(const std_msgs::Int16::ConstPtr& msg){
-    if (msg->data == 1){
+void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
+    if (msg->data == 2){
         timeOFO = high_resolution_clock::now();
         eventTimeGap = timeOFO - timeIC;
 }
@@ -370,6 +370,7 @@ void worker()
                     if (slave->getName() == "Plantar"){
                         if (setGaitEventNonAffected && setGaitEventAffected){
                             currentTimePercentage = pathPlannerPlantarflexion();
+                            std::cout << currentTimePercentage << std::endl;
                         }
                         if(plantarRun){
                             command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
@@ -522,7 +523,8 @@ int main(int argc, char**argv)
     // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
 
     afo_shutdown_sub = n.subscribe("/afo_sync/shutdown", 1, callbackShutdown);
-    afo_gaitPhase = n.subscribe("/afo_detector/gaitPhase", 1, callbackGaitPhase);
+    afo_gait_nonparetic = n.subscribe("/afo_detector/gait_nonparetic", 1, callbackGaitPhaseNonAffected);
+    afo_gait_paretic = n.subscribe("/afo_detector/gait_paretic", 1, callbackGaitPhaseAffected);
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
