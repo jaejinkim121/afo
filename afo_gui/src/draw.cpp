@@ -18,8 +18,8 @@ void Draw::paintEvent(QPaintEvent*){
     pen.setWidth(0);
     p.setPen(pen);
     p.setBrush(Qt::SolidPattern);
-    p.setBrush(QColor::fromRgbF(r, g, b));
-    p.drawEllipse(QPoint(150, 200), 50, 50);
+    p.setBrush(QColor::fromRgb(r, g, b));
+    p.drawEllipse(QPoint(x,y), w, h);
 }
 
 void Draw::redraw(float r, float g, float b){

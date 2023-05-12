@@ -10,6 +10,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/Int16MultiArray.h"
+#include "std_msgs/Int16.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
 #include "rosbag/bag.h"

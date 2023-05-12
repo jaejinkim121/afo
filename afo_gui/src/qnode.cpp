@@ -55,8 +55,8 @@ namespace afo_gui {
         afo_plantar_command_sub = nh->subscribe("/afo_controller/motor_data_plantar", 1, &QNode::callbackPlantar, this);
         afo_dorsi_command_sub = nh->subscribe("/afo_controller/motor_data_dorsi", 1, &QNode::callbackDorsi, this);
         afo_dorsi_zeroing_done_sub = nh->subscribe("/afo_controller/dorsi_zeroing_done", 1, &QNode::callbackDorsiZeroingDone, this);
-        afo_gait_paretic_sub = nh->subscribe("/afo_detector/gait_paretic", 1, &QNode::callbackGatiParetic, this);
-        afo_gait_nonparetic_sub = nh->subscribe("/afo_detector/gait_nonparetic", 1, &QNode::callbackGatiNonparetic, this);
+        afo_gait_paretic_sub = nh->subscribe("/afo_detector/gait_paretic", 1, &QNode::callbackGaitParetic, this);
+        afo_gait_nonparetic_sub = nh->subscribe("/afo_detector/gait_nonparetic", 1, &QNode::callbackGaitNonparetic, this);
     }
 
     void QNode::run() {
@@ -196,7 +196,7 @@ namespace afo_gui {
 
     void QNode::pubPlantarRun(bool run){
         std_msgs::Bool m;
-        m.data = r;
+        m.data = run;
         afo_gui_plantar_run_pub.publish(m);
     }
 

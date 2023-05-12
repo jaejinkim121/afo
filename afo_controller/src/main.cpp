@@ -557,7 +557,9 @@ int main(int argc, char**argv)
     plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
 
-    motorRun = false;
+    plantarRun = false;
+    dorsiRun = false;
+    
     /*
     ** Start all masters.
     ** There is exactly one bus per master which is also started.

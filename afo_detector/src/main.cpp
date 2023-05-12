@@ -248,7 +248,6 @@ int main(int argc, char**argv)
 
 
     while(ros::ok()){
-        msg_gaitPhase.data.clear();
         gaitDetector(r);
 
         if (r[0] == 1){

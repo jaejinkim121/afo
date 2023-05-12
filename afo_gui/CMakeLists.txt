@@ -92,8 +92,8 @@ include_directories(
   src
 )
 
-set(SOURCES src/main.cpp src/mainwindow.cpp src/qcustomplot.cpp src/qnode.cpp) 
-set(HEADERS src/mainwindow.h src/qcustomplot.h src/qnode.hpp)
+set(SOURCES src/main.cpp src/mainwindow.cpp src/qcustomplot.cpp src/qnode.cpp src/draw.cpp) 
+set(HEADERS src/mainwindow.h src/qcustomplot.h src/qnode.hpp src/draw.h)
 set(UI src/mainwindow.ui)
 add_executable(afo_gui ${SOURCES} ${HEADERS} ${UI})
 target_link_libraries(afo_gui ${catkin_LIBRARIES} Qt5::Widgets)

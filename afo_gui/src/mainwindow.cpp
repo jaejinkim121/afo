@@ -14,7 +14,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     // Load sole image
     QPixmap soleImage("/home/srbl/catkin_ws/src/afo/im.png");
     ui->label_sole_image->setPixmap(soleImage.scaled(300, 400));
-    rgb = new float[3];
+    rgb = new int[3];
 
     // Connect QObject to ui objects.
     //QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -26,8 +26,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_clear_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_clear_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_run_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_stop_motor, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_run_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_run_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_streaming, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_max_torque_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_max_torque_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -115,12 +115,12 @@ void MainWindow::buttonClicked(){
         ui->text_target_cycle_time->clear();
     }
 
-    else if (state == "button_run_motor"){
-        this->runMotor();
+    else if (state == "button_run_plantar"){
+        this->togglePlantarRun();
     }
 
-    else if (state == "button_stop_motor"){
-        this->stopMotor();
+    else if (state == "button_run_dorsi"){
+        this->toggleDorsiRun();
     }
 
     else if (state == "button_toggle_streaming"){
@@ -323,27 +323,14 @@ void MainWindow::toggleDorsiRun(){
     is_dorsi_run = !is_dorsi_run;
     qnode.pubDorsiRun(is_dorsi_run);
     if (is_dorsi_run){
-        ui->button_run_dorsi->setStyleSheet("background-color: rgb(255, 0, 0");
+        ui->button_run_dorsi->setStyleSheet("background-color: rgb(255, 0, 0)");
         ui->button_run_dorsi->setText("Stop \nDorsi");
     }
     else{
-        ui->button_run_dorsi->setStyleSheet("background-color: rgb(0, 255, 0");
+        ui->button_run_dorsi->setStyleSheet("background-color: rgb(0, 255, 0)");
         ui->button_run_dorsi->setText("Run \ndorsi");
     }
     
-}
-void MainWindow::runMotor(){
-    qnode.pubMotorRun();
-    ui->button_run_motor->setStyleSheet("background-color: rgb(0, 255, 0)");
-    ui->button_stop_motor->setStyleSheet("background-color: rgb(255, 0, 0)");
-    updateLog("Motor Start");
-}
-
-void MainWindow::stopMotor(){
-    qnode.pubMotorStop();
-    ui->button_stop_motor->setStyleSheet("background-color: rgb(0, 255, 0)");
-    ui->button_run_motor->setStyleSheet("background-color: rgb(255, 0, 0)");
-    updateLog("Motor Stop");
 }
 
 void MainWindow::toggleStreaming(){
@@ -582,72 +569,73 @@ void MainWindow::updatePlot(int dataType){
         ui->plot_gaitPhase->graph(1)->setData(t_gp, gp[1]);
         ui->plot_gaitPhase->replot();
     }
-
-    void MainWindow::initSolePlot(){
-        for (int i = 0 ; i < 6; i++){
-            s_l[i] = new Draw();
-            s_r[i] = new Draw();            
-            s_l[i]->setGeometry(20, 10, 300, 400);
-            s_r[i]->setGeometry(20, 10, 300, 400);
-
-            n_l[i] = new QVBoxLayout();
-            n_l[i]->setSpacing(0);
-            n_l[i]->setContentsMargins(0, 0, 0, 0);
-            n_l[i]->addWidget(s_l[i]);
-            n_r[i] = new QVBoxLayout(); 
-            n_r[i]->setSpacing(0);
-            n_r[i]->setContentsMargins(0, 0, 0, 0);
-            n_r[i]->addWidget(s_r[i]);
-        }
-        
-        ui->label_sole_image_left_1->setLayout(n_l[0]);
-        ui->label_sole_image_left_2->setLayout(n_l[1]);
-        ui->label_sole_image_left_3->setLayout(n_l[2]);
-        ui->label_sole_image_left_4->setLayout(n_l[3]);
-        ui->label_sole_image_left_5->setLayout(n_l[4]);
-        ui->label_sole_image_left_6->setLayout(n_l[5]);
-        ui->label_sole_image_right_1->setLayout(n_r[0]);
-        ui->label_sole_image_right_2->setLayout(n_r[1]);
-        ui->label_sole_image_right_3->setLayout(n_r[2]);
-        ui->label_sole_image_right_4->setLayout(n_r[3]);
-        ui->label_sole_image_right_5->setLayout(n_r[4]);
-        ui->label_sole_image_right_6->setLayout(n_r[5]);
-
-        s_l[0]->setShape(40, 180, 15, 15);
-        s_l[1]->setShape(80, 70, 15, 15);
-        s_l[2]->setShape(75, 145, 15, 15);
-        s_l[3]->setShape(120, 80, 15, 15);
-        s_l[4]->setShape(120, 140, 15, 15);
-        s_l[5]->setShape(70, 350, 15, 15);
-        s_r[0]->setShape(260, 80, 15, 15);
-        s_r[1]->setShape(220, 70, 15, 15);
-        s_r[2]->setShape(225, 145, 15, 15);
-        s_r[3]->setShape(180, 80, 15, 15);
-        s_r[4]->setShape(180, 140, 15, 15);
-        s_r[5]->setShape(230, 350, 15, 15);
-    }
-
-    void MainWindow::updateSolePlot(int side, float* data){
-        if (side == SOLE_LEFT){
-            for (int i = 0; i < 6; i++){
-                updateRGB(data[i+1]);
-                s_l[i]->redraw(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-        else{
-            for (int i = 0; i < 6; i++){
-                updateRGB(data[i+1]);
-                s_r[i]->redraw(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-    }
-
 }
+
+void MainWindow::initSolePlot(){
+    for (int i = 0 ; i < 6; i++){
+        s_l[i] = new Draw();
+        s_r[i] = new Draw();            
+        s_l[i]->setGeometry(20, 10, 300, 400);
+        s_r[i]->setGeometry(20, 10, 300, 400);
+
+        n_l[i] = new QVBoxLayout();
+        n_l[i]->setSpacing(0);
+        n_l[i]->setContentsMargins(0, 0, 0, 0);
+        n_l[i]->addWidget(s_l[i]);
+        n_r[i] = new QVBoxLayout(); 
+        n_r[i]->setSpacing(0);
+        n_r[i]->setContentsMargins(0, 0, 0, 0);
+        n_r[i]->addWidget(s_r[i]);
+    }
+    
+    ui->label_sole_image_left_1->setLayout(n_l[0]);
+    ui->label_sole_image_left_2->setLayout(n_l[1]);
+    ui->label_sole_image_left_3->setLayout(n_l[2]);
+    ui->label_sole_image_left_4->setLayout(n_l[3]);
+    ui->label_sole_image_left_5->setLayout(n_l[4]);
+    ui->label_sole_image_left_6->setLayout(n_l[5]);
+    ui->label_sole_image_right_1->setLayout(n_r[0]);
+    ui->label_sole_image_right_2->setLayout(n_r[1]);
+    ui->label_sole_image_right_3->setLayout(n_r[2]);
+    ui->label_sole_image_right_4->setLayout(n_r[3]);
+    ui->label_sole_image_right_5->setLayout(n_r[4]);
+    ui->label_sole_image_right_6->setLayout(n_r[5]);
+
+    s_l[0]->setShape(40, 180, 15, 15);
+    s_l[1]->setShape(80, 70, 15, 15);
+    s_l[2]->setShape(75, 145, 15, 15);
+    s_l[3]->setShape(120, 80, 15, 15);
+    s_l[4]->setShape(120, 140, 15, 15);
+    s_l[5]->setShape(70, 350, 15, 15);
+    s_r[0]->setShape(260, 80, 15, 15);
+    s_r[1]->setShape(220, 70, 15, 15);
+    s_r[2]->setShape(225, 145, 15, 15);
+    s_r[3]->setShape(180, 80, 15, 15);
+    s_r[4]->setShape(180, 140, 15, 15);
+    s_r[5]->setShape(230, 350, 15, 15);
+}
+
+void MainWindow::updateSolePlot(int side, float* data){
+    if (side == SOLE_LEFT){
+        for (int i = 0; i < 6; i++){
+            updateRGB(data[i+1]);
+            s_l[i]->redraw(rgb[0], rgb[1], rgb[2]);
+        }
+    }
+    else{
+        for (int i = 0; i < 6; i++){
+            updateRGB(data[i+1]);
+            s_r[i]->redraw(rgb[0], rgb[1], rgb[2]);
+        }
+    }
+}
+
+
 
 void MainWindow::updateRGB(float f){
     float a = f/0.25;
-    float x = floor(a);
-    float y = floor(255*(a-x));
+    int x = floor(a);
+    float y = floor(255*(a-(float)x));
     
     switch(x){
         case 0 : rgb[0] = 255; rgb[1] = y; rgb[2] = 0; break;
