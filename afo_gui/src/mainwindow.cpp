@@ -12,7 +12,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     ui->setupUi(this);
     
     // Load sole image
-    QPixmap soleImage("/home/srbl/catkin_ws/src/afo/im.png");
+    QPixmap soleImage("/home/srbl/catkin_ws/src/afo/afo_gui/img_sole.png");
     ui->label_sole_image->setPixmap(soleImage.scaled(300, 400));
     rgb = new int[3];
 
