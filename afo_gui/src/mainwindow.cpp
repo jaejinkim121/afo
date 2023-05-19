@@ -534,6 +534,12 @@ void MainWindow::initPlot(){
     ui->plot_dorsi_command->plotLayout()->addElement(0, 0, title_dorsi_command);
     ui->plot_gaitPhase->plotLayout()->addElement(0, 0, title_gaitPhase);
 
+    ui->plot_sole_left_voltage->legend->setVisible(true);
+    ui->plot_sole_right_voltage->legend->setVisible(true);
+    ui->plot_plantar_command->legend->setVisible(true);
+    ui->plot_dorsi_command->legend->setVisible(true);
+    ui->plot_gaitPhase->legend->setVisible(true);
+
 }
 
 void MainWindow::updatePlot(int dataType){
