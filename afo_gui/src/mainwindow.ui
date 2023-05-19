@@ -677,8 +677,8 @@ Calibration</string>
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>315</width>
-        <height>420</height>
+        <width>300</width>
+        <height>400</height>
        </rect>
       </property>
       <property name="text">
