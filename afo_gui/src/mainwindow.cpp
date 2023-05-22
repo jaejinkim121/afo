@@ -260,20 +260,21 @@ void MainWindow::togglePlotSole(){
 }
 
 void MainWindow::soleCalibrationLeft(){
-    double t_sole = ros::Time::now().toSec();
+    is_left_calib_on = true;
+    t_left_calib = ros::Time::now().toSec();
     qnode.pubThreshold(true);
+    ui->button_sole_calibration_left->setText("On...");
+    ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(255, 0, 0)");
 
-    while(ros::Time::now().toSec() - t_sole < 2.0){
-        continue;
-    }
 }
 
 void MainWindow::soleCalibrationRight(){
-    double t_sole = ros::Time::now().toSec();
+    is_right_calib_on = true;
+    t_right_calib = ros::Time::now().toSec();
     qnode.pubThreshold(false);
-    while(ros::Time::now().toSec() - t_sole < 2.0){
-        continue;
-    }
+    ui->button_sole_calibration_right->setText("On...");
+    ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(255, 0, 0)");
+
 }
 
 void MainWindow::setMaxTorque(){
@@ -441,6 +442,14 @@ void MainWindow::plotSoleLeft(){
     ui->plot_sole_left_voltage->xAxis->setRange(t_v_l[0], t_v_l[0]+5.0);
     this->updatePlot(SOLE_LEFT);
     this->updateSolePlot(SOLE_LEFT, data);
+
+    if(is_left_calib_on){
+        double t_now = ros::Time::now().toSec();
+        if (t_now - t_left_calib > 2.0){
+            ui->button_sole_calibration_left->setText("Left Sole Calibration");
+            ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(211, 211, 211)");
+        }
+    }
 }
 
 void MainWindow::plotSoleRight(){
@@ -453,6 +462,14 @@ void MainWindow::plotSoleRight(){
     ui->plot_sole_right_voltage->xAxis->setRange(t_v_r[0], t_v_r[0]+5.0);
     this->updatePlot(SOLE_RIGHT);
     this->updateSolePlot(SOLE_RIGHT, data);
+    
+    if(is_right_calib_on){
+        double t_now = ros::Time::now().toSec();
+        if (t_now - t_right_calib > 2.0){
+            ui->button_sole_calibration_right->setText("Right Sole Calibration");
+            ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(211, 211, 211)");
+        }
+    }
 }
 
 void MainWindow::plotPlantar(){

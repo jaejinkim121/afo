@@ -81,6 +81,11 @@ private:
     bool is_plantar_run = false;
     bool is_dorsi_run = false;
     bool is_trial_on = false;
+    bool is_left_calib_on = false;
+    bool is_right_calib_on = false;
+    double t_left_calib = 0;
+    double t_right_calib = 0;
+
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
     QVector<double> v_l[6];
     QVector<double> v_r[6];
