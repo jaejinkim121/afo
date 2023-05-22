@@ -53,6 +53,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_cycle_time_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_cycle_time_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_cycle_time_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_toggle_trial, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -60,9 +62,11 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(updateDorsi()), this, SLOT(plotDorsi()));
     QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
-
+    
     initPlot();
     initSolePlot();
+    toggleTrial();
+    toggleTrial();
 }
 
 MainWindow::~MainWindow()
@@ -93,10 +97,6 @@ void MainWindow::buttonClicked(){
     else if (state == "button_sole_calibration_right"){
         this->updateLog("Right sole calibration start");
         this->soleCalibrationRight();
-    }
-
-    else if (state == "button_sole_calibration_proceed"){
-        this->proceedCalibration();
     }
 
     else if (state == "button_set_max_torque"){
@@ -222,6 +222,14 @@ void MainWindow::buttonClicked(){
     else if (state == "button_cycle_time_key_delete"){
         this->deleteCycleTimeKey();
     }
+
+    else if (state == "button_toggle_trial"){
+        this->toggleTrial();
+    }
+
+    else if (state == "button_emergency"){
+        this->emergencyStop();
+    }
     
 }
 
@@ -254,6 +262,7 @@ void MainWindow::togglePlotSole(){
 void MainWindow::soleCalibrationLeft(){
     double t_sole = ros::Time::now().toSec();
     qnode.pubThreshold(true);
+
     while(ros::Time::now().toSec() - t_sole < 2.0){
         continue;
     }
@@ -265,10 +274,6 @@ void MainWindow::soleCalibrationRight(){
     while(ros::Time::now().toSec() - t_sole < 2.0){
         continue;
     }
-}
-
-void MainWindow::proceedCalibration(){
-    return;
 }
 
 void MainWindow::setMaxTorque(){
@@ -364,7 +369,30 @@ void MainWindow::deleteCycleTimeKey(){
     q = ui->text_target_cycle_time->toPlainText();
     q.remove(q.size() - 1);
     ui->text_target_cycle_time->setPlainText(q);
+}
 
+void MainWindow::toggleTrial(){
+    if (this->is_trial_on){
+        ui->button_toggle_trial->setStyleSheet("background-color: rgb(211, 211, 211)");
+        ui->button_toggle_trial->setText("Run Trial");
+        ui->button_emergency->stackUnder(RightBox);
+        ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 255");
+    }
+    else{
+        ui->button_toggle_trial->setStyleSheet("background-color: rgb(255, 0, 0)")
+        ui->button_toggle_trial->setText("Stop Trial");
+        ui->RightBox->stackUnder(ui->button_emergency);
+        ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 255");
+    }
+}
+
+void MainWindow::emergencyStop(){
+    if (!is_trial_on) return;
+    
+    if(is_plantar_run) togglePlantarRun();
+    if(is_dorsi_run) toggleDorsiRun();
+    
+    toggleTrial();
 }
 
 void MainWindow::updateLog(QString s){
@@ -388,7 +416,7 @@ void MainWindow::updateLog(QString s){
 
 void MainWindow::set_emergency(bool on){
     if (on){
-        ui->button_emergency_stop->setStyleSheet("background-color: rgb(200, 200, 200)");
+        ui->button_emergency_stop->setStyleSheet("background-color: rgb(211, 211, 211)");
     }
     else{
         ui->button_emergency_stop->setStyleSheet("background-color: rgb(255, 0, 0)");

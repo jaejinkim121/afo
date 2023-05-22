@@ -37,7 +37,6 @@ public:
     void togglePlotSole();
     void soleCalibrationLeft();
     void soleCalibrationRight();
-    void proceedCalibration();
     void setMaxTorque();
     void setCycleTime();
     void togglePlantarRun();
@@ -47,6 +46,8 @@ public:
     void deleteMaxTorqueKey();
     void typeCycleTimeKey(char c);
     void deleteCycleTimeKey();
+    void toggleTrial();
+    void emergencyStop();
     
     void updateLog(QString s);
     void set_emergency(bool on);
@@ -79,7 +80,7 @@ private:
     bool is_plot_sole = false;
     bool is_plantar_run = false;
     bool is_dorsi_run = false;
-
+    bool is_trial_on = false;
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
     QVector<double> v_l[6];
     QVector<double> v_r[6];
