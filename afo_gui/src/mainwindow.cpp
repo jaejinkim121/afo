@@ -67,6 +67,9 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     initSolePlot();
     toggleTrial();
     toggleTrial();
+    updateMaxTorqueValue();
+    updateCycleTimeValue();
+
 }
 
 MainWindow::~MainWindow()
@@ -284,6 +287,7 @@ void MainWindow::setMaxTorque(){
         QString s("maximum torque set to ");
         s.append(QString::fromStdString(std::to_string(t)));
         ui->text_target_max_torque->clear();
+        updateMaxTorqueValue();
         updateLog(s);
         return;
     }
@@ -301,6 +305,7 @@ void MainWindow::setCycleTime(){
         QString s("Cycle time set to ");
         s.append(QString::fromStdString(std::to_string(t)));
         ui->text_target_cycle_time->clear();
+        updateCycleTimeValue();
         updateLog(s);
         return;
     }
@@ -393,6 +398,16 @@ void MainWindow::emergencyStop(){
     if(is_dorsi_run) toggleDorsiRun();
     
     toggleTrial();
+}
+
+void MainWindow::updateMaxTorqueValue(){
+    std::string s = std::to_string(max_torque);
+    ui->text_max_torque_current->setPlainText(QString::fromStdString(s));
+}
+
+void MainWindow::updateCycleTimeValue(){
+    std::string s = std::to_string(cycle_time);
+    ui->text_cycle_time_current->setPlainText(QString::fromStdString(s));
 }
 
 void MainWindow::updateLog(QString s){

@@ -48,6 +48,8 @@ public:
     void deleteCycleTimeKey();
     void toggleTrial();
     void emergencyStop();
+    void updateMaxTorqueValue();
+    void updateCycleTimeValue();
     
     void updateLog(QString s);
     void set_emergency(bool on);
@@ -85,6 +87,8 @@ private:
     bool is_right_calib_on = false;
     double t_left_calib = 0;
     double t_right_calib = 0;
+    double max_torque = 0.3;
+    double cycle_time = 1.0;
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
     QVector<double> v_l[6];
