@@ -274,7 +274,6 @@ void MainWindow::soleCalibrationRight(){
     qnode.pubThreshold(false);
     ui->button_sole_calibration_right->setText("On...");
     ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(255, 0, 0)");
-
 }
 
 void MainWindow::setMaxTorque(){
@@ -448,6 +447,7 @@ void MainWindow::plotSoleLeft(){
         if (t_now - t_left_calib > 2.0){
             ui->button_sole_calibration_left->setText("Left Sole Calibration");
             ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(211, 211, 211)");
+            is_left_calib_on = false;
         }
     }
 }
@@ -468,6 +468,7 @@ void MainWindow::plotSoleRight(){
         if (t_now - t_right_calib > 2.0){
             ui->button_sole_calibration_right->setText("Right Sole Calibration");
             ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(211, 211, 211)");
+            is_right_calib_on = false;
         }
     }
 }
