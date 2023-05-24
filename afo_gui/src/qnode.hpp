@@ -40,6 +40,9 @@ public:
     void pubDorsiRun(bool run);
     void pubStreaming();
     void imuZeroing();
+    void loadLinkLength();
+    void updateLinkLength(int id, double data);
+
 
     float* getSoleLeftData();
     float* getSoleRightData();

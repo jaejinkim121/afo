@@ -56,6 +56,21 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_toggle_trial, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_imu_zero, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_link_length, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_clear_link_length, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_target_link_idx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key3, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key4, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key5, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key6, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key7, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key8, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_link_length_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -239,7 +254,67 @@ void MainWindow::buttonClicked(){
     else if (state == "button_imu_zero"){
         this->imuZero();
     }
+
+    else if (state == "button_set_link_length"){
+        this->setLinkLength();
+    }
+
+    else if (state == "button_clear_link_length"){
+        ui->text_target_link_length->clear();
+    }
+
+    else if (state == "button_link_length_key1"){
+        this->typeLinkLengthKey('1');
+    }
+
+    else if (state == "button_link_length_key2"){
+        this->typeLinkLengthKey('2');
+    }
+
+    else if (state == "button_link_length_key3"){
+        this->typeLinkLengthKey('3');
+    }
+
+    else if (state == "button_link_length_key4"){
+        this->typeLinkLengthKey('4');
+    }
+
+    else if (state == "button_link_length_key5"){
+        this->typeLinkLengthKey('5');
+    }
+
+    else if (state == "button_link_length_key6"){
+        this->typeLinkLengthKey('6');
+    }
+
+    else if (state == "button_link_length_key7"){
+        this->typeLinkLengthKey('7');
+    }
+
+    else if (state == "button_link_length_key8"){
+        this->typeLinkLengthKey('8');
+    }
+
+    else if (state == "button_link_length_key9"){
+        this->typeLinkLengthKey('9');
+    }
+
+    else if (state == "button_link_length_key0"){
+        this->typeLinkLengthKey('0');
+    }
+
+    else if (state == "button_link_length_key_dot"){
+        this->typeLinkLengthKey('.');
+    }
+
+    else if (state == "button_link_length_key_delete"){
+        this->deleteLinkLengthKey();
+    }
     
+    else if (state == "button_target_link_idx"){
+        this->targetLinkIdx();
+    }
+
 }
 
 void MainWindow::togglePlotData(){
@@ -321,6 +396,55 @@ void MainWindow::setCycleTime(){
     }
 }
 
+void MainWindow::setLinkLength(){
+    if (currnetLink == -1){
+        return;
+    }
+    float t = 1;
+    try{
+        t = stof(ui->text_target_link_length->toPlainText().toStdString());
+        qnode.updateLinkLength(this->currentLink, t);
+        ui->text_target_link_length->clear();
+    }
+    catch(...){
+        updateLog("Target link length is wrong");
+    }
+}
+
+void MainWindow::targetLinkIdx(){
+    switch(currentLink){
+        case -1:
+        case 0:
+            currentLink++;
+            ui->text_target_link_idx->setPlainText("left foot");
+            break;
+        case 1:
+            currentLink++;
+            ui->text_target_link_idx->setPlainText("left shank");
+            break;
+        case 2:
+            currentLink++;
+            ui->text_target_link_idx->setPlainText("left thigh");
+            break;
+        case 3:
+            currentLink++;
+            ui->text_target_link_idx->setPlainText("torso");
+            break;
+        case 4:
+            currentLink++;
+            ui->text_target_link_idx->setPlainText("right thigh");
+            break;
+        case 5:
+            currentLink++;
+            ui->text_target_link_idx->setPlainText("right shank");
+            break;
+        case 6:
+            currentLink++;
+            ui->text_target_link_idx->setPlainText("right foot");
+            break;
+    }
+}
+
 void MainWindow::togglePlantarRun(){
     is_plantar_run = !is_plantar_run;
     qnode.pubPlantarRun(is_plantar_run);
@@ -368,6 +492,13 @@ void MainWindow::typeCycleTimeKey(char c){
     ui->text_target_cycle_time->setPlainText(q);
 }
 
+void MainWindow::typeLinkLengthKey(char c){
+    QString q;
+    q = ui->text_target_link_length->toPlainText();
+    q.append(QChar(c));
+    ui->text_target_link_length->setPlainText(q);
+}
+
 void MainWindow::deleteMaxTorqueKey(){
     QString q;
     q = ui->text_target_max_torque->toPlainText();
@@ -380,6 +511,13 @@ void MainWindow::deleteCycleTimeKey(){
     q = ui->text_target_cycle_time->toPlainText();
     q.remove(q.size() - 1);
     ui->text_target_cycle_time->setPlainText(q);
+}
+
+void MainWindow::deleteLinkLengthKey(){
+    QString q;
+    q = ui->text_target_link_length->toPlainText();
+    q.remove(q.size() - 1);
+    ui->text_target_link_length->setPlainText(q);
 }
 
 void MainWindow::toggleTrial(){
@@ -442,43 +580,6 @@ void MainWindow::set_emergency(bool on){
     else{
         ui->button_emergency_stop->setStyleSheet("background-color: rgb(255, 0, 0)");
     }
-}
-
-void MainWindow::updateLinkLength(int id, double data){
-    loadLinkLength();
-    
-    ofstream llfile;
-    llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
-
-    for (int i = 0; i < 7; i++){
-        if (i == id) llfile << data;
-        else llfile << linkLength[i];
-    }
-
-    linkLength[id] = data;
-
-    llfile.close();
-
-}
-void MainWindow::loadLinkLength(){
-    ifstream llfile;
-    llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
-    if (!llfile){
-        for (int i = 0; i < 7; i++){
-            linkLength[i] = 0.5;
-        }
-
-        llfile.close();
-        return;
-    }
-
-    for (int i = 0; i < 7; i++){
-        string str;
-        getline(llfile, str);
-        linkLength[i] = stod(str);
-    }
-    llfile.close();
-    return;
 }
 
 void MainWindow::imuZero(){

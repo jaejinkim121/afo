@@ -39,6 +39,7 @@ public:
     void soleCalibrationRight();
     void setMaxTorque();
     void setCycleTime();
+    void setLinkLength();
     void togglePlantarRun();
     void toggleDorsiRun();
     void toggleStreaming();
@@ -46,12 +47,13 @@ public:
     void deleteMaxTorqueKey();
     void typeCycleTimeKey(char c);
     void deleteCycleTimeKey();
+    void typeLinkLengthKey(char c);
+    void deleteLinkLengthKey();
     void toggleTrial();
     void emergencyStop();
     void updateMaxTorqueValue();
     void updateCycleTimeValue();
-    void updateLinkLength();
-    void loadLinkLength();
+    void targetLinkLength();
     void imuZero();
     
     void updateLog(QString s);
@@ -93,7 +95,7 @@ private:
     double t_right_calib = 0;
     double max_torque = 0.3;
     double *linkX, *linkY, *linkZ;
-
+    int currentLink = -1;
 
     double cycle_time = 1.0;
 

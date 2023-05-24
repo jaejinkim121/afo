@@ -307,8 +307,45 @@ namespace afo_gui {
         afo_gui_streaming_pub.publish(m);
     }
 
-    void imuZeroing(){
+    void QNode::imuZeroing(){
         isIMUZero = !isIMUZero;
+    }
+
+    void QNode::updateLinkLength(int id, double data){
+        loadLinkLength();
+        
+        ofstream llfile;
+        llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
+
+        for (int i = 0; i < 7; i++){
+            if (i == id) llfile << data;
+            else llfile << linkLength[i];
+        }
+
+        linkLength[id] = data;
+
+        llfile.close();
+    }
+    
+    void QNode::loadLinkLength(){
+        ifstream llfile;
+        llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
+        if (!llfile){
+            for (int i = 0; i < 7; i++){
+                linkLength[i] = 0.5;
+            }
+
+            llfile.close();
+            return;
+        }
+
+        for (int i = 0; i < 7; i++){
+            string str;
+            getline(llfile, str);
+            linkLength[i] = stod(str);
+        }
+        llfile.close();
+        return;
     }
 
 }
