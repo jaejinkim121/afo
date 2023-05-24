@@ -50,6 +50,8 @@ public:
     void emergencyStop();
     void updateMaxTorqueValue();
     void updateCycleTimeValue();
+    void updateLinkLength();
+    void imuZero();
     
     void updateLog(QString s);
     void set_emergency(bool on);
@@ -64,6 +66,7 @@ public Q_SLOTS:
     void buttonClicked();
     void plotSoleLeft();
     void plotSoleRight();
+    void plotKinematics();
     void plotPlantar();
     void plotDorsi();
     void updateGaitPhaseState();
@@ -88,6 +91,9 @@ private:
     double t_left_calib = 0;
     double t_right_calib = 0;
     double max_torque = 0.3;
+    double *linkX, *linkY, *linkZ;
+
+
     double cycle_time = 1.0;
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
@@ -100,6 +106,7 @@ private:
     double state_gp[2];
     Draw *s_l[6], *s_r[6];
     QVBoxLayout *n_l[6], *n_r[6];
+    QCPItemLine *link[7];
     int *rgb;
 
 };

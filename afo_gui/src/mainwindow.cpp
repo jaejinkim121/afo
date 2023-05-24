@@ -55,9 +55,11 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_cycle_time_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_trial, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_imu_zero, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
+    QObject::connect(&qnode, SIGNAL(updateKinematics()), this, SLOT(plotKinematics()));
     QObject::connect(&qnode, SIGNAL(updatePlantar()), this, SLOT(plotPlantar()));
     QObject::connect(&qnode, SIGNAL(updateDorsi()), this, SLOT(plotDorsi()));
     QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
@@ -232,6 +234,10 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_emergency"){
         this->emergencyStop();
+    }
+
+    else if (state == "button_imu_zero"){
+        this->imuZero();
     }
     
 }
@@ -438,6 +444,10 @@ void MainWindow::set_emergency(bool on){
     }
 }
 
+void MainWindow::imuZero(){
+    qnode.imuZeroing();
+}
+
 void MainWindow::plotSoleLeft(){
     float* data = qnode.getSoleLeftData();
     if (is_plot_data){
@@ -488,6 +498,14 @@ void MainWindow::plotSoleRight(){
     }
 }
 
+void MainWindow::plotKinematics(){
+    qnode.getLink(linkX, linkY, linkZ);
+    for(int i = 0; i < 7 ; i++){
+        link[i]->start->setCoords(linkX[i], linkZ[i]);
+        link[i]->end->setCoords(linkX[i+1], linkZ[i+1]);
+    }
+}
+
 void MainWindow::plotPlantar(){
     if(!is_plot_data) return;
     float* data = qnode.getPlantarData();
@@ -525,10 +543,7 @@ void MainWindow::dorsiZeroingDone(){
     updateLog("Dorsi Zeroing Done");
 }
 
-void MainWindow::initPlot(){
-    state_gp[0] = 0.0;
-    state_gp[1] = 0.0;
-
+void MainWindow::initPlot(){ 
     QPen pen[6];
     pen[0].setColor(QColor(0,0,0));
     pen[1].setColor(QColor(255, 0, 0));
@@ -536,6 +551,18 @@ void MainWindow::initPlot(){
     pen[3].setColor(QColor(0, 255, 0));
     pen[4].setColor(QColor(255, 165, 0));
     pen[5].setColor(QColor(198, 115, 255));
+
+    for (int i = 0; i < 7; i++){
+        link[i] = new QCPItemLine(ui->plot_kinematics);
+        if (i > 4) link[i]->setPen(pen[1]);
+        else link[i]->setPen(pen[0]);
+    }
+    linkX = new double[8];
+    linkY = new double[8];
+    linkZ = new double[8];
+
+    state_gp[0] = 0.0;
+    state_gp[1] = 0.0;
 
     for(int i = 0; i< 6; i++){
         ui->plot_sole_left_voltage->addGraph();
@@ -696,8 +723,6 @@ void MainWindow::updateSolePlot(int side, float* data){
         }
     }
 }
-
-
 
 void MainWindow::updateRGB(float f){
     float a = f/0.25;

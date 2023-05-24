@@ -24,6 +24,13 @@ namespace afo_gui {
         plantarData = new float[3];
         dorsiData = new float[5];
         gaitPhase = new float[3];
+        linkX = new double[8];
+        linkY = new double[8];
+        linkZ = new double[8];
+        linkLength = new double[7];
+        rz = new double[7];
+        pz = new double[7];
+        yz = new double[7];
 
         ros::init(init_argc, init_argv, "afo_gui");
         if ( ! ros::master::check() ) {
@@ -52,6 +59,7 @@ namespace afo_gui {
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
+        afo_imu_sub = nh->subscribe("/afo_sensor/imu", 1, &QNode::callbackIMU, this);
         afo_plantar_command_sub = nh->subscribe("/afo_controller/motor_data_plantar", 1, &QNode::callbackPlantar, this);
         afo_dorsi_command_sub = nh->subscribe("/afo_controller/motor_data_dorsi", 1, &QNode::callbackDorsi, this);
         afo_dorsi_zeroing_done_sub = nh->subscribe("/afo_controller/dorsi_zeroing_done", 1, &QNode::callbackDorsiZeroingDone, this);
@@ -92,6 +100,16 @@ namespace afo_gui {
         return this->gaitPhase;
     }
 
+    void QNode::getLink(double* linkX, double* linkY, double* linkZ){
+        for (int i = 0; i < 8; i++){
+            linkX[i] = this->linkX[i];
+            linkY[i] = this->linkY[i];
+            linkZ[i] = this->linkZ[i];
+        }
+
+        return;
+    }
+
     void QNode::callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
         soleLeftCnt++;
         if (soleLeftCnt < 9){
@@ -121,6 +139,84 @@ namespace afo_gui {
             soleRightData[i+1] = msg->data[i];
         }
         updateSoleRight();
+    }
+
+    void QNode::callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        double r[7];
+        double p[7];
+        double y[7];
+        for (int i = 0 ; i < 7 ; i++){
+            r[i] = msg->data[9*i];
+            p[i] = msg->data[9*i + 1];
+            y[i] = msg->data[9*i + 2];
+        }
+
+        if (!isIMUZero) {
+            for (int i = 0; i<7; i++){
+                rz[i] = r[i];
+                pz[i] = p[i];
+                yz[i] = y[i];
+            }
+            return;
+        }
+
+        Eigen::Vector3d x, y, z, v;
+        Eigen::Matrix3d R0, R1;
+        x << 1, 0, 0;
+        y << 0, 1, 0;
+        z << 0, 0, 1;
+
+        linkX[0] = 0;
+        linkY[0] = 0;
+        linkZ[0] = 0;
+
+        for (int i = 0; i<7; i++){
+            R0 = euler2Rotation(rz[i], pz[i], yz[i]);
+            R1 = euler2Rotation(r[i], p[i], y[i]);
+
+            switch(i){
+                case 0:
+                    v = R1 * R0.transpose() * (-x);
+                    break;
+                case 1:
+                    v = R1 * R0.transpose() * z;
+                    break;
+                case 2:
+                    v = R1 * R0.transpose() * z;
+                    break;
+                case 3:
+                    v = R1 * R0.transpose() * (-y);
+                    break;
+                case 4:
+                    v = R1 * R0.transpose() * (-z);
+                    break;
+                case 5:
+                    v = R1 * R0.transpose() * (-z);
+                    break;
+                case 6:
+                    v = R1 * R0.transpose() * x;
+            }
+            linkX[i+1] = linkX[i] + v[0] * linkLength[i];
+            linkY[i+1] = linkY[i] + v[1] * linkLength[i];
+            linkZ[i+1] = linkZ[i] + v[2] * linkLength[i];
+        }
+
+        double minZ = linkZ[0];
+
+        for (int i = 0; i < 8 ; i++){
+            if (linkZ[i] < minZ){
+                minZ = linkZ[i];
+            }
+        }
+
+        for (int i = 0; i < 8 ; i++){
+            linkZ[i] = linkZ[i] - minZ;
+        }
+
+        if (imuCnt++ > 9){
+            imuCnt = 0;
+            updateKinematics();
+        }
     }
 
     void QNode::callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg){
@@ -174,7 +270,6 @@ namespace afo_gui {
     void QNode::callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg){
         doneDorsiZeroing();
     }
-    
 
     void QNode::pubThreshold(bool b){
         std_msgs::Bool m;
@@ -212,4 +307,19 @@ namespace afo_gui {
         afo_gui_streaming_pub.publish(m);
     }
 
+    void imuZeroing(){
+        isIMUZero = !isIMUZero;
+    }
+
+}
+
+Eigen::Matrix3d euler2Rotation(const double roll, const double pitch, const double yaw){
+    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
+    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
+    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitX());
+
+    Eigen::Quaternion<double> q = rollAngle * yawAngle * pitchAngle;
+
+    Eigen::Matrix3d rotationMatrix = q.matrix();
+    return rotationMatrix;
 }

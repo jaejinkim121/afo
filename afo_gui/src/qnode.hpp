@@ -39,18 +39,21 @@ public:
     void pubPlantarRun(bool run);
     void pubDorsiRun(bool run);
     void pubStreaming();
+    void imuZeroing();
 
     float* getSoleLeftData();
     float* getSoleRightData();
     float* getPlantarData();
     float* getDorsiData();
     float* getGaitPhase();
+    void getLink(double* linkX, double* linkY, double* linkZ);
 
 
 Q_SIGNALS:
     void rosShutdown();
     void updateSoleLeft();
     void updateSoleRight();
+    void updateKinematics();
     void updatePlantar();
     void updateDorsi();
     void updateGaitPhase();
@@ -65,6 +68,11 @@ private:
     float* soleRightData; 
     float* plantarData;
     float* dorsiData;
+    double* linkX;
+    double* linkY;
+    double* linkZ;
+    double *rz, *pz, *yz;
+    double* linkLength;
 
     double t_begin;
 
@@ -79,6 +87,7 @@ private:
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
+    ros::Subscriber afo_imu_sub;
     ros::Subscriber afo_plantar_command_sub;
     ros::Subscriber afo_dorsi_command_sub;
     ros::Subscriber afo_dorsi_zeroing_done_sub;
@@ -87,8 +96,10 @@ private:
 
     int soleLeftCnt = 0;
     int soleRightCnt = 0;
+    int imuCnt = 0;
     int motorPlantarCnt = 0;
     int motorDorsiCnt = 0;
+    bool isIMUZero = false;
     
 };
 
