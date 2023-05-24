@@ -51,6 +51,7 @@ public:
     void updateMaxTorqueValue();
     void updateCycleTimeValue();
     void updateLinkLength();
+    void loadLinkLength();
     void imuZero();
     
     void updateLog(QString s);
