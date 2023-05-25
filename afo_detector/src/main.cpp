@@ -184,19 +184,21 @@ void saveThreshold(){
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.11 << endl;
+            thFile << meanLeft[i] + 0.15 << endl;
             zeroFile << meanLeft[i] << endl;
+
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.09 << endl;
+            thFile << meanLeft[i] + 0.10 << endl;
         }
     }
     else {
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + 0.11 << endl;
+            thFile << meanRight[i] + 0.12 << endl;
             zeroFile << meanRight[i] << endl;
+
         }
         for (int i = 0; i < 6 ; i++){
             thFile << meanRight[i] + 0.09 << endl;
