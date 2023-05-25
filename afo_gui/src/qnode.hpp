@@ -12,6 +12,13 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Int16.h>
 #include <geometry_msgs/Point.h>
+#include <Eigen>
+
+#define SOLE_LEFT 1
+#define SOLE_RIGHT 2
+#define MOTOR_PLANTAR 3
+#define MOTOR_DORSI 4
+#define GAIT_PHASE 5
 
 namespace afo_gui{
 
@@ -40,9 +47,9 @@ public:
     void pubDorsiRun(bool run);
     void pubStreaming();
     void imuZeroing();
-    void loadLinkLength();
     void updateLinkLength(int id, double data);
-
+    void loadLinkLength();
+    void loadSoleZero(int side);
 
     float* getSoleLeftData();
     float* getSoleRightData();
@@ -69,6 +76,8 @@ private:
     float* gaitPhase;
     float* soleLeftData;
     float* soleRightData; 
+    float* soleLeftZero;
+    float* soleRightZero;
     float* plantarData;
     float* dorsiData;
     double* linkX;

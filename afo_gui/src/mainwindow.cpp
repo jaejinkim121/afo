@@ -611,6 +611,7 @@ void MainWindow::plotSoleLeft(){
             ui->button_sole_calibration_left->setText("Left Sole Calibration");
             ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(211, 211, 211)");
             is_left_calib_on = false;
+            qnode.loadSoleZero(SOLE_LEFT);
         }
     }
 }
@@ -632,6 +633,7 @@ void MainWindow::plotSoleRight(){
             ui->button_sole_calibration_right->setText("Right Sole Calibration");
             ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(211, 211, 211)");
             is_right_calib_on = false;
+            qnode.loadSoleZero(SOLE_RIGHT);
         }
     }
 }
@@ -711,8 +713,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(0.5, 1.2);
-    ui->plot_sole_right_voltage->yAxis->setRange(0.5, 1.2);
+    ui->plot_sole_left_voltage->yAxis->setRange(-0.2, 1.2);
+    ui->plot_sole_right_voltage->yAxis->setRange(-0.2, 1.2);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();

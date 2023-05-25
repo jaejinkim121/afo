@@ -21,6 +21,8 @@ namespace afo_gui {
     bool QNode::init(){
         soleLeftData = new float[7];
         soleRightData = new float[7];
+        soleLeftZero = {0, 0, 0, 0, 0, 0};
+        soleRightZero = {0, 0, 0, 0, 0, 0};
         plantarData = new float[3];
         dorsiData = new float[5];
         gaitPhase = new float[3];
@@ -120,7 +122,7 @@ namespace afo_gui {
         soleLeftData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleLeftData[i+1] = msg->data[i];
+            soleLeftData[i+1] = msg->data[i] - soleLeftZero[i];
         }
         updateSoleLeft();
     }
@@ -136,7 +138,7 @@ namespace afo_gui {
         soleRightData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleRightData[i+1] = msg->data[i];
+            soleRightData[i+1] = msg->data[i] - soleRightZero[i];
         }
         updateSoleRight();
     }
@@ -346,6 +348,27 @@ namespace afo_gui {
         }
         llfile.close();
         return;
+    }
+
+    void QNode::loadSoleZero(int side){
+        ifstream thFile;
+        if (side == SOLE_LEFT){
+            thFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv");
+            for (int i = 0; i < 6; i++){
+                std::string str;
+                getline(thFile, str);
+                soleLeftZero[i] = stof(str);
+            }
+        }
+        else{
+            thFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv");
+            for (int i = 0; i < 6; i++){
+                std::string str;
+                getline(thFile, str);
+                soleRightZero[i] = stof(str);
+            }
+        }
+        thFile.close();
     }
 
 }
