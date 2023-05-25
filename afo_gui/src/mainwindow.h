@@ -53,7 +53,7 @@ public:
     void emergencyStop();
     void updateMaxTorqueValue();
     void updateCycleTimeValue();
-    void targetLinkLength();
+    void targetLinkIdx();
     void imuZero();
     
     void updateLog(QString s);

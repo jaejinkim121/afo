@@ -397,7 +397,7 @@ void MainWindow::setCycleTime(){
 }
 
 void MainWindow::setLinkLength(){
-    if (currnetLink == -1){
+    if (currentLink == -1){
         return;
     }
     float t = 1;
@@ -524,11 +524,11 @@ void MainWindow::toggleTrial(){
     if (this->is_trial_on){
         ui->button_toggle_trial->setStyleSheet("background-color: rgb(211, 211, 211)");
         ui->button_toggle_trial->setText("Run Trial");
-        ui->button_emergency->stackUnder(RightBox);
+        ui->button_emergency->stackUnder(ui->RightBox);
         ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 255");
     }
     else{
-        ui->button_toggle_trial->setStyleSheet("background-color: rgb(255, 0, 0)")
+        ui->button_toggle_trial->setStyleSheet("background-color: rgb(255, 0, 0)");
         ui->button_toggle_trial->setText("Stop Trial");
         ui->RightBox->stackUnder(ui->button_emergency);
         ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 255");
@@ -575,10 +575,10 @@ void MainWindow::updateLog(QString s){
 
 void MainWindow::set_emergency(bool on){
     if (on){
-        ui->button_emergency_stop->setStyleSheet("background-color: rgb(211, 211, 211)");
+        ui->button_emergency->setStyleSheet("background-color: rgb(211, 211, 211)");
     }
     else{
-        ui->button_emergency_stop->setStyleSheet("background-color: rgb(255, 0, 0)");
+        ui->button_emergency->setStyleSheet("background-color: rgb(255, 0, 0)");
     }
 }
 

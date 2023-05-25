@@ -12,7 +12,9 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Int16.h>
 #include <geometry_msgs/Point.h>
-#include <Eigen>
+#include <Eigen/Dense>
+#include <iostream>
+#include <fstream>
 
 #define SOLE_LEFT 1
 #define SOLE_RIGHT 2
@@ -39,6 +41,7 @@ public:
     void callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg);
     void callbackGaitParetic(const std_msgs::Int16ConstPtr& msg);
     void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
+    void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
     void pubThreshold(bool b);
     void pubMaxTorque(float t);
@@ -115,8 +118,6 @@ private:
     
 };
 
-
-
 }
-
+Eigen::Matrix3d euler2Rotation(const double roll, const double pitch, const double yaw);
 #endif

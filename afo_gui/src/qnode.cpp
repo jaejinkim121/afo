@@ -21,8 +21,8 @@ namespace afo_gui {
     bool QNode::init(){
         soleLeftData = new float[7];
         soleRightData = new float[7];
-        soleLeftZero = {0, 0, 0, 0, 0, 0};
-        soleRightZero = {0, 0, 0, 0, 0, 0};
+        soleLeftZero = new float[6];
+        soleRightZero = new float[6];
         plantarData = new float[3];
         dorsiData = new float[5];
         gaitPhase = new float[3];
@@ -33,6 +33,11 @@ namespace afo_gui {
         rz = new double[7];
         pz = new double[7];
         yz = new double[7];
+
+        for (int i = 0; i<6; i++){
+            soleLeftZero[i] = 0;
+            soleRightZero[i] = 0;
+        }
 
         ros::init(init_argc, init_argv, "afo_gui");
         if ( ! ros::master::check() ) {
@@ -162,10 +167,10 @@ namespace afo_gui {
             return;
         }
 
-        Eigen::Vector3d x, y, z, v;
+        Eigen::Vector3d x, y_, z, v;
         Eigen::Matrix3d R0, R1;
         x << 1, 0, 0;
-        y << 0, 1, 0;
+        y_ << 0, 1, 0;
         z << 0, 0, 1;
 
         linkX[0] = 0;
@@ -187,7 +192,7 @@ namespace afo_gui {
                     v = R1 * R0.transpose() * z;
                     break;
                 case 3:
-                    v = R1 * R0.transpose() * (-y);
+                    v = R1 * R0.transpose() * (-y_);
                     break;
                 case 4:
                     v = R1 * R0.transpose() * (-z);
@@ -316,7 +321,7 @@ namespace afo_gui {
     void QNode::updateLinkLength(int id, double data){
         loadLinkLength();
         
-        ofstream llfile;
+        std::ofstream llfile;
         llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
 
         for (int i = 0; i < 7; i++){
@@ -330,7 +335,7 @@ namespace afo_gui {
     }
     
     void QNode::loadLinkLength(){
-        ifstream llfile;
+        std::ifstream llfile;
         llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
         if (!llfile){
             for (int i = 0; i < 7; i++){
@@ -342,7 +347,7 @@ namespace afo_gui {
         }
 
         for (int i = 0; i < 7; i++){
-            string str;
+            std::string str;
             getline(llfile, str);
             linkLength[i] = stod(str);
         }
@@ -351,7 +356,7 @@ namespace afo_gui {
     }
 
     void QNode::loadSoleZero(int side){
-        ifstream thFile;
+        std::ifstream thFile;
         if (side == SOLE_LEFT){
             thFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv");
             for (int i = 0; i < 6; i++){

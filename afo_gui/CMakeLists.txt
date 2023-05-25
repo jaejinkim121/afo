@@ -10,10 +10,17 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
 )
+
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+
+find_package(cmake_modules REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -84,6 +91,9 @@ catkin_package(
 #  LIBRARIES afo_gui
 #  CATKIN_DEPENDS rospy std_msgs
 #  DEPENDS system_lib
+DEPENDS Eigen
+
+​
 )
 
 include_directories(
@@ -96,4 +106,7 @@ set(SOURCES src/main.cpp src/mainwindow.cpp src/qcustomplot.cpp src/qnode.cpp sr
 set(HEADERS src/mainwindow.h src/qcustomplot.h src/qnode.hpp src/draw.h)
 set(UI src/mainwindow.ui)
 add_executable(afo_gui ${SOURCES} ${HEADERS} ${UI})
-target_link_libraries(afo_gui ${catkin_LIBRARIES} Qt5::Widgets)
+target_link_libraries(afo_gui 
+  ${catkin_LIBRARIES}
+  ${Eigen_LIBRARIES} 
+  Qt5::Widgets)
