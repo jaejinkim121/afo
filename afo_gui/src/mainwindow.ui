@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Config">
      <attribute name="title">
@@ -927,7 +927,7 @@ Link</string>
        </rect>
       </property>
      </widget>
-     <widget class="QWidget" name="plot_kinematics" native="true">
+     <widget class="QCustomPlot" name="plot_kinematics" native="true">
       <property name="enabled">
        <bool>false</bool>
       </property>
