@@ -75,7 +75,6 @@ public Q_SLOTS:
     void updateGaitPhaseState();
     void dorsiZeroingDone();
 
-
 private:
     afo_gui::QNode qnode;
     Ui::MainWindow *ui;

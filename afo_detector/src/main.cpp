@@ -175,8 +175,6 @@ void loadThreshold(){
     thFile.close();
 }
 
-
-
 void saveThreshold(){
     bool side = thresholdSide;
     ofstream thFile, zeroFile;
@@ -184,12 +182,11 @@ void saveThreshold(){
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.15 << endl;
+            thFile << meanLeft[i] + 0.14 << endl;
             zeroFile << meanLeft[i] << endl;
-
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.10 << endl;
+            thFile << meanLeft[i] + 0.11 << endl;
         }
     }
     else {

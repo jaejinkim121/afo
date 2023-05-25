@@ -410,7 +410,7 @@ void MainWindow::setLinkLength(){
         updateLog("Target link length is wrong");
     }
 }
-
+ 
 void MainWindow::targetLinkIdx(){
     switch(currentLink){
         case -1:
@@ -439,7 +439,7 @@ void MainWindow::targetLinkIdx(){
             ui->text_target_link_idx->setPlainText("right shank");
             break;
         case 6:
-            currentLink++;
+            currentLink = 0;
             ui->text_target_link_idx->setPlainText("right foot");
             break;
     }
@@ -525,14 +525,15 @@ void MainWindow::toggleTrial(){
         ui->button_toggle_trial->setStyleSheet("background-color: rgb(211, 211, 211)");
         ui->button_toggle_trial->setText("Run Trial");
         ui->button_emergency->stackUnder(ui->RightBox);
-        ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 255");
+        ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 0)");
     }
     else{
         ui->button_toggle_trial->setStyleSheet("background-color: rgb(255, 0, 0)");
         ui->button_toggle_trial->setText("Stop Trial");
         ui->RightBox->stackUnder(ui->button_emergency);
-        ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 255");
+        ui->button_emergency->setStyleSheet("background-color: rgba(255, 0, 0, 0)");
     }
+    this->is_trial_on = !this->is_trial_on;
 }
 
 void MainWindow::emergencyStop(){
@@ -713,25 +714,25 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(-0.2, 1.2);
-    ui->plot_sole_right_voltage->yAxis->setRange(-0.2, 1.2);
+    ui->plot_sole_left_voltage->yAxis->setRange(-0.1, 0.5);
+    ui->plot_sole_right_voltage->yAxis->setRange(-0.1, 0.5);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();
         ui->plot_dorsi_command->graph(i)->setPen(pen[i]);   
     }
-    ui->plot_dorsi_command->graph(0)->setName(QString("tor_des"));
-    ui->plot_dorsi_command->graph(1)->setName(QString("tor_act"));
-    ui->plot_dorsi_command->graph(2)->setName(QString("pos_des"));
-    ui->plot_dorsi_command->graph(3)->setName(QString("pos_act"));
+    ui->plot_dorsi_command->graph(0)->setName(QString("t_d"));
+    ui->plot_dorsi_command->graph(1)->setName(QString("t_a"));
+    ui->plot_dorsi_command->graph(2)->setName(QString("p_d"));
+    ui->plot_dorsi_command->graph(3)->setName(QString("p_a"));
     ui->plot_dorsi_command->yAxis->setRange(-1.2, 1.2);
 
     ui->plot_plantar_command->addGraph();
     ui->plot_plantar_command->addGraph();
     ui->plot_plantar_command->graph(0)->setPen(pen[0]);
     ui->plot_plantar_command->graph(1)->setPen(pen[1]);
-    ui->plot_plantar_command->graph(0)->setName(QString("tor_des"));
-    ui->plot_plantar_command->graph(1)->setName(QString("tor_act"));
+    ui->plot_plantar_command->graph(0)->setName(QString("t_d"));
+    ui->plot_plantar_command->graph(1)->setName(QString("t_a"));
 
     ui->plot_plantar_command->yAxis->setRange(-1.2, 1.2);
 
@@ -852,20 +853,20 @@ void MainWindow::initSolePlot(){
 void MainWindow::updateSolePlot(int side, float* data){
     if (side == SOLE_LEFT){
         for (int i = 0; i < 6; i++){
-            updateRGB(data[i+1]);
+            updateRGB(data[i+1] * 2);
             s_l[i]->redraw(rgb[0], rgb[1], rgb[2]);
         }
     }
     else{
         for (int i = 0; i < 6; i++){
-            updateRGB(data[i+1]);
+            updateRGB(data[i+1] * 2);
             s_r[i]->redraw(rgb[0], rgb[1], rgb[2]);
         }
     }
 }
 
 void MainWindow::updateRGB(float f){
-    float a = f/0.25;
+    float a = (1-f)/0.25;
     int x = floor(a);
     float y = floor(255*(a-(float)x));
     

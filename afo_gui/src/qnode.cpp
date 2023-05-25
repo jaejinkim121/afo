@@ -38,6 +38,8 @@ namespace afo_gui {
             soleLeftZero[i] = 0;
             soleRightZero[i] = 0;
         }
+        loadSoleZero(SOLE_LEFT);
+        loadSoleZero(SOLE_RIGHT);
 
         ros::init(init_argc, init_argv, "afo_gui");
         if ( ! ros::master::check() ) {
