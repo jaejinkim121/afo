@@ -24,53 +24,28 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_sole_calibration_right, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_clear_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_clear_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_clear_parameter, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_streaming, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key3, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key4, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key5, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key6, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key7, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key8, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_max_torque_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key3, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key4, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key5, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key6, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key7, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key8, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_cycle_time_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key3, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key4, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key5, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key6, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key7, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key8, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_trial, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_imu_zero, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_link_length, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_clear_link_length, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_target_link_idx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key1, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key2, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key3, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key4, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key5, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key6, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key7, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key8, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_link_length_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_toggle_page, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -127,12 +102,8 @@ void MainWindow::buttonClicked(){
         this->setCycleTime();
     }
 
-    else if (state == "button_clear_max_torque"){
-        ui->text_target_max_torque->clear();
-    }
-
-    else if (state == "button_clear_cycle_time"){
-        ui->text_target_cycle_time->clear();
+    else if (state == "button_clear_parameter"){
+        ui->text_target_parameter->clear();
     }
 
     else if (state == "button_run_plantar"){
@@ -147,100 +118,52 @@ void MainWindow::buttonClicked(){
         this->toggleStreaming();
     }
 
-    else if (state == "button_max_torque_key1"){
-        this->typeMaxTorqueKey('1');
+    else if (state == "button_key1"){
+        this->typeKey('1');
     }
     
-    else if (state == "button_max_torque_key2"){
-        this->typeMaxTorqueKey('2');
+    else if (state == "button_key2"){
+        this->typeKey('2');
     }
 
-    else if (state == "button_max_torque_key3"){
-        this->typeMaxTorqueKey('3');
+    else if (state == "button_key3"){
+        this->typeKey('3');
     }
 
-    else if (state == "button_max_torque_key4"){
-        this->typeMaxTorqueKey('4');
+    else if (state == "button_key4"){
+        this->typeKey('4');
     }
 
-    else if (state == "button_max_torque_key5"){
-        this->typeMaxTorqueKey('5');
+    else if (state == "button_key5"){
+        this->typeKey('5');
     }
 
-    else if (state == "button_max_torque_key6"){
-        this->typeMaxTorqueKey('6');
+    else if (state == "button_key6"){
+        this->typeKey('6');
     }
 
-    else if (state == "button_max_torque_key7"){
-        this->typeMaxTorqueKey('7');
+    else if (state == "button_key7"){
+        this->typeKey('7');
     }
 
-    else if (state == "button_max_torque_key8"){
-        this->typeMaxTorqueKey('8');
+    else if (state == "button_key8"){
+        this->typeKey('8');
     }
 
-    else if (state == "button_max_torque_key9"){
-        this->typeMaxTorqueKey('9');
+    else if (state == "button_key9"){
+        this->typeKey('9');
     }
 
-    else if (state == "button_max_torque_key0"){
-        this->typeMaxTorqueKey('0');
+    else if (state == "button_key0"){
+        this->typeKey('0');
     }
 
-    else if (state == "button_max_torque_key_dot"){
-        this->typeMaxTorqueKey('.');
+    else if (state == "button_key_dot"){
+        this->typeKey('.');
     }
 
-    else if (state == "button_max_torque_key_delete"){
-        this->deleteMaxTorqueKey();
-    }
-    
-    else if (state == "button_cycle_time_key1"){
-        this->typeCycleTimeKey('1');
-    }
-    
-    else if (state == "button_cycle_time_key2"){
-        this->typeCycleTimeKey('2');
-    }
-    
-    else if (state == "button_cycle_time_key3"){
-        this->typeCycleTimeKey('3');
-    }
-    
-    else if (state == "button_cycle_time_key4"){
-        this->typeCycleTimeKey('4');
-    }
-    
-    else if (state == "button_cycle_time_key5"){
-        this->typeCycleTimeKey('5');
-    }
-    
-    else if (state == "button_cycle_time_key6"){
-        this->typeCycleTimeKey('6');
-    }
-    
-    else if (state == "button_cycle_time_key7"){
-        this->typeCycleTimeKey('7');
-    }
-    
-    else if (state == "button_cycle_time_key8"){
-        this->typeCycleTimeKey('8');
-    }
-    
-    else if (state == "button_cycle_time_key9"){
-        this->typeCycleTimeKey('9');
-    }
-    
-    else if (state == "button_cycle_time_key0"){
-        this->typeCycleTimeKey('0');
-    }
-    
-    else if (state == "button_cycle_time_key_dot"){
-        this->typeCycleTimeKey('.');
-    }
-    
-    else if (state == "button_cycle_time_key_delete"){
-        this->deleteCycleTimeKey();
+    else if (state == "button_key_delete"){
+        this->deleteKey();
     }
 
     else if (state == "button_toggle_trial"){
@@ -258,61 +181,13 @@ void MainWindow::buttonClicked(){
     else if (state == "button_set_link_length"){
         this->setLinkLength();
     }
-
-    else if (state == "button_clear_link_length"){
-        ui->text_target_link_length->clear();
-    }
-
-    else if (state == "button_link_length_key1"){
-        this->typeLinkLengthKey('1');
-    }
-
-    else if (state == "button_link_length_key2"){
-        this->typeLinkLengthKey('2');
-    }
-
-    else if (state == "button_link_length_key3"){
-        this->typeLinkLengthKey('3');
-    }
-
-    else if (state == "button_link_length_key4"){
-        this->typeLinkLengthKey('4');
-    }
-
-    else if (state == "button_link_length_key5"){
-        this->typeLinkLengthKey('5');
-    }
-
-    else if (state == "button_link_length_key6"){
-        this->typeLinkLengthKey('6');
-    }
-
-    else if (state == "button_link_length_key7"){
-        this->typeLinkLengthKey('7');
-    }
-
-    else if (state == "button_link_length_key8"){
-        this->typeLinkLengthKey('8');
-    }
-
-    else if (state == "button_link_length_key9"){
-        this->typeLinkLengthKey('9');
-    }
-
-    else if (state == "button_link_length_key0"){
-        this->typeLinkLengthKey('0');
-    }
-
-    else if (state == "button_link_length_key_dot"){
-        this->typeLinkLengthKey('.');
-    }
-
-    else if (state == "button_link_length_key_delete"){
-        this->deleteLinkLengthKey();
-    }
     
     else if (state == "button_target_link_idx"){
         this->targetLinkIdx();
+    }
+
+    else if (state == "button_toggle_page"){
+        this->togglePage();
     }
 
 }
@@ -363,11 +238,11 @@ void MainWindow::soleCalibrationRight(){
 void MainWindow::setMaxTorque(){
     float t = 1;
     try{
-        t = stof(ui->text_target_max_torque->toPlainText().toStdString());
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
         qnode.pubMaxTorque(t);
         QString s("maximum torque set to ");
         s.append(QString::fromStdString(std::to_string(t)));
-        ui->text_target_max_torque->clear();
+        ui->text_target_parameter->clear();
         updateMaxTorqueValue();
         updateLog(s);
         return;
@@ -381,11 +256,11 @@ void MainWindow::setMaxTorque(){
 void MainWindow::setCycleTime(){
     float t = 1;
     try{
-        t = stof(ui->text_target_cycle_time->toPlainText().toStdString());
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
         qnode.pubCycleTime(t);
         QString s("Cycle time set to ");
         s.append(QString::fromStdString(std::to_string(t)));
-        ui->text_target_cycle_time->clear();
+        ui->text_target_parameter->clear();
         updateCycleTimeValue();
         updateLog(s);
         return;
@@ -402,9 +277,9 @@ void MainWindow::setLinkLength(){
     }
     float t = 1;
     try{
-        t = stof(ui->text_target_link_length->toPlainText().toStdString());
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
         qnode.updateLinkLength(this->currentLink, t);
-        ui->text_target_link_length->clear();
+        ui->text_target_parameter->clear();
     }
     catch(...){
         updateLog("Target link length is wrong");
@@ -478,47 +353,20 @@ void MainWindow::toggleStreaming(){
     updateLog("Toggle Sole Sensor Streaming");
 }
 
-void MainWindow::typeMaxTorqueKey(char c){
+void MainWindow::typeKey(char c){
     QString q;
-    q = ui->text_target_max_torque->toPlainText();
+    q = ui->text_target_parameter->toPlainText();
     q.append(QChar(c));
-    ui->text_target_max_torque->setPlainText(q);
+    ui->text_target_parameter->setPlainText(q);
 }
 
-void MainWindow::typeCycleTimeKey(char c){
+void MainWindow::deleteKey(){
     QString q;
-    q = ui->text_target_cycle_time->toPlainText();
-    q.append(QChar(c));
-    ui->text_target_cycle_time->setPlainText(q);
-}
-
-void MainWindow::typeLinkLengthKey(char c){
-    QString q;
-    q = ui->text_target_link_length->toPlainText();
-    q.append(QChar(c));
-    ui->text_target_link_length->setPlainText(q);
-}
-
-void MainWindow::deleteMaxTorqueKey(){
-    QString q;
-    q = ui->text_target_max_torque->toPlainText();
+    q = ui->text_target_parameter->toPlainText();
     q.remove(q.size() - 1);
-    ui->text_target_max_torque->setPlainText(q);
+    ui->text_target_parameter->setPlainText(q);
 }
 
-void MainWindow::deleteCycleTimeKey(){
-    QString q;
-    q = ui->text_target_cycle_time->toPlainText();
-    q.remove(q.size() - 1);
-    ui->text_target_cycle_time->setPlainText(q);
-}
-
-void MainWindow::deleteLinkLengthKey(){
-    QString q;
-    q = ui->text_target_link_length->toPlainText();
-    q.remove(q.size() - 1);
-    ui->text_target_link_length->setPlainText(q);
-}
 
 void MainWindow::toggleTrial(){
     if (this->is_trial_on){
@@ -554,6 +402,15 @@ void MainWindow::updateCycleTimeValue(){
     std::string s = std::to_string(cycle_time);
     ui->text_cycle_time_current->setPlainText(QString::fromStdString(s));
 }
+
+void MainWindow::togglePage(){
+    if(++currentPage == 3){
+        currentPage = 0;
+    }
+    ui->RightBox->setCurrentIndex(currentPage);
+
+}
+
 
 void MainWindow::updateLog(QString s){
     if (logNum > max_log){

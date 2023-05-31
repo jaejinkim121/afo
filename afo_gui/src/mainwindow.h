@@ -43,18 +43,15 @@ public:
     void togglePlantarRun();
     void toggleDorsiRun();
     void toggleStreaming();
-    void typeMaxTorqueKey(char c);
-    void deleteMaxTorqueKey();
-    void typeCycleTimeKey(char c);
-    void deleteCycleTimeKey();
-    void typeLinkLengthKey(char c);
-    void deleteLinkLengthKey();
+    void typeKey(char c);
+    void deleteKey();
     void toggleTrial();
     void emergencyStop();
     void updateMaxTorqueValue();
     void updateCycleTimeValue();
     void targetLinkIdx();
     void imuZero();
+    void togglePage();
     
     void updateLog(QString s);
     void set_emergency(bool on);
@@ -95,6 +92,7 @@ private:
     double max_torque = 0.3;
     double *linkX, *linkY, *linkZ;
     int currentLink = -1;
+    int currentPage = 0;
 
     double cycle_time = 1.0;
 
