@@ -525,13 +525,13 @@ void MainWindow::toggleTrial(){
         ui->button_toggle_trial->setStyleSheet("background-color: rgb(211, 211, 211)");
         ui->button_toggle_trial->setText("Run Trial");
         ui->button_emergency->stackUnder(ui->RightBox);
-        ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 0)");
+        ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 0%)");
     }
     else{
         ui->button_toggle_trial->setStyleSheet("background-color: rgb(255, 0, 0)");
         ui->button_toggle_trial->setText("Stop Trial");
         ui->RightBox->stackUnder(ui->button_emergency);
-        ui->button_emergency->setStyleSheet("background-color: rgba(255, 0, 0, 0)");
+        ui->button_emergency->setStyleSheet("background-color: rgba(255, 0, 0, 3%)");
     }
     this->is_trial_on = !this->is_trial_on;
 }
