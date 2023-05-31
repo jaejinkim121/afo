@@ -842,12 +842,14 @@ void MainWindow::initSolePlot(){
     s_l[3]->setShape(120, 80, 15, 15);
     s_l[4]->setShape(120, 140, 15, 15);
     s_l[5]->setShape(70, 350, 15, 15);
-    s_r[0]->setShape(260, 80, 15, 15);
+    s_r[0]->setShape(260, 180, 15, 15);
     s_r[1]->setShape(220, 70, 15, 15);
     s_r[2]->setShape(225, 145, 15, 15);
     s_r[3]->setShape(180, 80, 15, 15);
     s_r[4]->setShape(180, 140, 15, 15);
     s_r[5]->setShape(230, 350, 15, 15);
+    
+    ui->label_sole_image->stackUnder(ui->widget);
 }
 
 void MainWindow::updateSolePlot(int side, float* data){
