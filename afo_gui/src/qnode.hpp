@@ -119,5 +119,5 @@ private:
 };
 
 }
-Eigen::Matrix3d euler2Rotation(const double roll, const double pitch, const double yaw);
+Eigen::Matrix3d euler2Rotation(double roll, double pitch, double yaw);
 #endif

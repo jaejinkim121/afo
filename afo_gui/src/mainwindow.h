@@ -82,7 +82,7 @@ private:
     int max_log = 20;
     int voltPlotMaxNum = 45;
     int motorPlotMaxNum = 45;
-    int gaitPhasePlotMaxNum = 180;
+    int gaitPhasePlotMaxNum = 50;
     bool is_plot_data = false;
     bool is_plot_sole = false;
     bool is_plantar_run = false;

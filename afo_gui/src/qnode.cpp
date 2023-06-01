@@ -40,6 +40,7 @@ namespace afo_gui {
         }
         loadSoleZero(SOLE_LEFT);
         loadSoleZero(SOLE_RIGHT);
+        loadLinkLength();
 
         ros::init(init_argc, init_argv, "afo_gui");
         if ( ! ros::master::check() ) {
@@ -178,48 +179,53 @@ namespace afo_gui {
         linkX[0] = 0;
         linkY[0] = 0;
         linkZ[0] = 0;
+        int shuffle[7] = {3,2,1,0,4,5,6};
 
-        for (int i = 0; i<7; i++){
+        for (int j = 0; j<7; j++){
+            int i = shuffle[j];
             R0 = euler2Rotation(rz[i], pz[i], yz[i]);
             R1 = euler2Rotation(r[i], p[i], y[i]);
 
-            switch(i){
+            switch(j){
                 case 0:
-                    v = R1 * R0.transpose() * (-x);
+                    v = R1 * R0.transpose() * (-z);
                     break;
                 case 1:
-                    v = R1 * R0.transpose() * z;
+                    v = R1 * R0.transpose() * -y_;
                     break;
                 case 2:
-                    v = R1 * R0.transpose() * z;
+                    v = R1 * R0.transpose() * -y_;
                     break;
                 case 3:
-                    v = R1 * R0.transpose() * (-y_);
+                    v = R1 * R0.transpose() * -x;
                     break;
                 case 4:
-                    v = R1 * R0.transpose() * (-z);
+                    v = R1 * R0.transpose() * (y_);
                     break;
                 case 5:
-                    v = R1 * R0.transpose() * (-z);
+                    v = R1 * R0.transpose() * (y_);
                     break;
                 case 6:
-                    v = R1 * R0.transpose() * x;
+                    v = R1 * R0.transpose() * z;
             }
-            linkX[i+1] = linkX[i] + v[0] * linkLength[i];
-            linkY[i+1] = linkY[i] + v[1] * linkLength[i];
-            linkZ[i+1] = linkZ[i] + v[2] * linkLength[i];
-        }
-
-        double minZ = linkZ[0];
+            if (j == 0 || j == 6){
+                linkZ[j+1] = linkZ[j] + v[2] * linkLength[j];
+            }
+            else linkZ[j+1] = linkZ[j] - v[2] * linkLength[j];
+        
+            linkX[j+1] = linkX[j] + v[0] * linkLength[j];
+            linkY[j+1] = linkY[j] - v[1] * linkLength[j];
+            }
+        double minY = linkY[0];
 
         for (int i = 0; i < 8 ; i++){
-            if (linkZ[i] < minZ){
-                minZ = linkZ[i];
+            if (linkY[i] < minY){
+                minY = linkY[i];
             }
         }
 
         for (int i = 0; i < 8 ; i++){
-            linkZ[i] = linkZ[i] - minZ;
+            linkY[i] = linkY[i] - minY;
         }
 
         if (imuCnt++ > 9){
@@ -380,12 +386,16 @@ namespace afo_gui {
 
 }
 
-Eigen::Matrix3d euler2Rotation(const double roll, const double pitch, const double yaw){
-    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
-    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
-    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitX());
+Eigen::Matrix3d euler2Rotation(double roll, double pitch, double yaw){
+    roll = roll * M_PI / 180.0;
+    pitch = pitch * M_PI / 180.0;
+    yaw = yaw * M_PI / 180.0;
+    
+    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitX());
+    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitY());
+    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitZ());
 
-    Eigen::Quaternion<double> q = rollAngle * yawAngle * pitchAngle;
+    Eigen::Quaternion<double> q = rollAngle * pitchAngle * yawAngle;
 
     Eigen::Matrix3d rotationMatrix = q.matrix();
     return rotationMatrix;

@@ -640,11 +640,13 @@ void MainWindow::plotSoleRight(){
 }
 
 void MainWindow::plotKinematics(){
+    if(!is_plot_data) return;
     qnode.getLink(linkX, linkY, linkZ);
     for(int i = 0; i < 7 ; i++){
-        link[i]->start->setCoords(linkX[i], linkZ[i]);
-        link[i]->end->setCoords(linkX[i+1], linkZ[i+1]);
+        link[i]->start->setCoords(linkZ[i], linkY[i]);
+        link[i]->end->setCoords(linkZ[i+1], linkY[i+1]);
     }
+    ui->plot_kinematics->replot();
 }
 
 void MainWindow::plotPlantar(){
@@ -701,6 +703,16 @@ void MainWindow::initPlot(){
     linkX = new double[8];
     linkY = new double[8];
     linkZ = new double[8];
+
+    ui->plot_kinematics->xAxis->setTicks(false);
+    ui->plot_kinematics->yAxis->setTicks(false);
+    ui->plot_kinematics->xAxis2->setVisible(true);
+    ui->plot_kinematics->yAxis2->setVisible(true);
+    ui->plot_kinematics->xAxis2->setTicks(false);
+    ui->plot_kinematics->yAxis2->setTicks(false);
+
+    ui->plot_kinematics->xAxis->setRange(-0.8 * 31.5/22.0, 0.8 * 31.5/22.0);
+    ui->plot_kinematics->yAxis->setRange(-0.1, 1.5);
 
     state_gp[0] = 0.0;
     state_gp[1] = 0.0;

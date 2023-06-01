@@ -14,8 +14,8 @@
 	<!--node name="afo_arduino" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" output="screen">
 	</node-->
 	
-	<node name="afo_sync" pkg="afo_sync" type="afo_sync" output="screen">
-	</node>
+	<!--node name="afo_sync" pkg="afo_sync" type="afo_sync" output="screen">
+	</node-->
 	
 	<node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
 		<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
