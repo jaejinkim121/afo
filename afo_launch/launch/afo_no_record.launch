@@ -1,0 +1,24 @@
+<launch>
+	<arg name="rr" default="100" />
+	<param name="rr" value="$(arg rr)" />
+	
+	<node name="afo_gui" pkg="afo_gui" type="afo_gui" output="screen">
+	</node>
+	
+	<node name="afo_sensor" pkg="afo_sensor" type="afo_sensor" output="screen">
+	</node>
+	
+	<node name="afo_detector" pkg="afo_detector" type="afo_detector" output="screen">
+	</node>
+
+	<!--node name="afo_arduino" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" output="screen">
+	</node-->
+	
+	<!--node name="afo_sync" pkg="afo_sync" type="afo_sync" output="screen">
+	</node-->
+	
+	<node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
+		<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
+	</node>
+
+</launch>
