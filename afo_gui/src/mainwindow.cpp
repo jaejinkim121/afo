@@ -268,7 +268,7 @@ void MainWindow::setCycleTime(){
 
         QString s("Cycle time set to ");
         s.append(QString::fromStdString(std::to_string(t)));
-        
+
         updateCycleTimeValue();
         updateLog(s);
         return;
@@ -732,13 +732,13 @@ void MainWindow::initSolePlot(){
 void MainWindow::updateSolePlot(int side, float* data){
     if (side == SOLE_LEFT){
         for (int i = 0; i < 6; i++){
-            updateRGB(data[i+1] * 2);
+            updateRGB(data[i+1] * 3);
             s_l[i]->redraw(rgb[0], rgb[1], rgb[2]);
         }
     }
     else{
         for (int i = 0; i < 6; i++){
-            updateRGB(data[i+1] * 2);
+            updateRGB(data[i+1] * 3);
             s_r[i]->redraw(rgb[0], rgb[1], rgb[2]);
         }
     }
