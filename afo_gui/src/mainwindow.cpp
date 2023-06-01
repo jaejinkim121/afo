@@ -39,7 +39,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_key9, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_key0, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_key_dot, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_key_delete, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_trial, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_imu_zero, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -239,10 +239,14 @@ void MainWindow::setMaxTorque(){
     float t = 1;
     try{
         t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        max_torque = t;
         qnode.pubMaxTorque(t);
+
+        ui->text_target_parameter->clear();
+
         QString s("maximum torque set to ");
         s.append(QString::fromStdString(std::to_string(t)));
-        ui->text_target_parameter->clear();
+
         updateMaxTorqueValue();
         updateLog(s);
         return;
@@ -257,10 +261,14 @@ void MainWindow::setCycleTime(){
     float t = 1;
     try{
         t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        cycle_time = t;
         qnode.pubCycleTime(t);
+
+        ui->text_target_parameter->clear();
+
         QString s("Cycle time set to ");
         s.append(QString::fromStdString(std::to_string(t)));
-        ui->text_target_parameter->clear();
+        
         updateCycleTimeValue();
         updateLog(s);
         return;
