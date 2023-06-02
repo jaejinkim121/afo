@@ -955,12 +955,12 @@ Calibration</string>
     </property>
     <property name="font">
      <font>
-      <pointsize>36</pointsize>
+      <pointsize>200</pointsize>
       <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Emergency Stop</string>
+     <string>STOP</string>
     </property>
    </widget>
    <widget class="QPushButton" name="button_toggle_page">
