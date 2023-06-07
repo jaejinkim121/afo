@@ -433,8 +433,8 @@ void worker()
                         msg_motor_dorsi.data.clear();
                         msg_motor_dorsi.data.push_back(currentTimePercentage);
                         msg_motor_dorsi.data.push_back(dorsiModeInt);
-                        msg_motor_dorsi.data.push_back(dorsiTorqueInput);
-                        msg_motor_dorsi.data.push_back(dorsiPositionInput);
+                        msg_motor_dorsi.data.push_back(dirDorsi * (maxTorqueDorsi * dorsiTorque + dorsiPreTension));
+                        msg_motor_dorsi.data.push_back(dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi);
                         msg_motor_dorsi.data.push_back(reading.getActualCurrent());
                         msg_motor_dorsi.data.push_back(reading.getActualTorque());
                         msg_motor_dorsi.data.push_back(reading.getActualPosition());
