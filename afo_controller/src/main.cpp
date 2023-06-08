@@ -319,9 +319,9 @@ void worker()
                             afo_configuration_dorsiNeutralPosition.publish(m);
                             break;
                         }
-                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode);
+                        command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                         command.setTargetPosition(reading.getActualPosition() + dorsiZeroingIncrement * dirDorsi);
-                        command.setTargetTorque(0);
+                        command.setTargetTorque(dorsiPreTension * dirDorsi);
                         maxon_slave_ptr->stageCommand(command);
                     }
                 }
