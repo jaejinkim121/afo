@@ -424,11 +424,16 @@ void worker()
                         command.setTargetPosition(dorsiPositionInput);
                         maxon_slave_ptr->stageCommand(command);
                          
-                        float dorsiModeInt;
+                        float dorsiModeInt, dorsiInputModeInt;
                         if (dorsiMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
                             dorsiModeInt = 1.0;
                         else
                             dorsiModeInt = 2.0;
+
+                        if (dorsiInputMode == maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode)
+                            dorsiInputModeInt = 1.0;
+                        else
+                            dorsiInputModeInt = 2.0;
 
                         msg_motor_dorsi.data.clear();
                         msg_motor_dorsi.data.push_back(currentTimePercentage);
@@ -440,6 +445,7 @@ void worker()
                         msg_motor_dorsi.data.push_back(reading.getActualPosition());
                         msg_motor_dorsi.data.push_back(reading.getActualVelocity());
                         msg_motor_dorsi.data.push_back(reading.getBusVoltage());
+                        msg_motor_dorsi.data.push_back(dorsiInputModeInt);
                         
                         afo_motor_data_dorsi.publish(msg_motor_dorsi);
                     }
