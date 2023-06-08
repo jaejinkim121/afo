@@ -446,6 +446,7 @@ void worker()
                         msg_motor_dorsi.data.push_back(reading.getActualVelocity());
                         msg_motor_dorsi.data.push_back(reading.getBusVoltage());
                         msg_motor_dorsi.data.push_back(dorsiInputModeInt);
+                        msg_motor_dorsi.data.push_back(dorsiStage);
                         
                         afo_motor_data_dorsi.publish(msg_motor_dorsi);
                     }
