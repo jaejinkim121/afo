@@ -623,8 +623,8 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase->addGraph();
     ui->plot_gaitPhase->graph(0)->setPen(pen[0]);
     ui->plot_gaitPhase->graph(1)->setPen(pen[1]);
-    ui->plot_gaitPhase->graph(0)->setName("P");
-    ui->plot_gaitPhase->graph(1)->setName("NP");
+    ui->plot_gaitPhase->graph(0)->setName("NP");
+    ui->plot_gaitPhase->graph(1)->setName("P");
     ui->plot_gaitPhase->yAxis->setRange(0, 1.2);
 
     // Set plot title
