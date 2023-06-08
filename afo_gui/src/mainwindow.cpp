@@ -382,12 +382,18 @@ void MainWindow::toggleTrial(){
         ui->button_toggle_trial->setText("Run Trial");
         ui->button_emergency->stackUnder(ui->RightBox);
         ui->button_emergency->setStyleSheet("background-color: rgba(255, 255, 255, 0%)");
+
+        if (is_plantar_run) togglePlantarRun();
+        if (is_dorsi_run) toggleDorsiRun();
     }
     else{
         ui->button_toggle_trial->setStyleSheet("background-color: rgb(255, 0, 0)");
         ui->button_toggle_trial->setText("Stop Trial");
         ui->RightBox->stackUnder(ui->button_emergency);
         ui->button_emergency->setStyleSheet("color: rgba(255,255,255,40%); background-color: rgba(255, 0, 0, 40%); border:none");
+
+        if (!is_plantar_run) togglePlantarRun();
+        if (!is_dorsi_run) toggleDorsiRun();
     }
     this->is_trial_on = !this->is_trial_on;
 }
