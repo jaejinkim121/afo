@@ -468,14 +468,16 @@ void MainWindow::plotSoleLeft(){
         this->updatePlot(GAIT_PHASE);
     }
 
-    if (!is_plot_sole) return;
     appendCropQVector(&t_v_l, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
         appendCropQVector(&v_l[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_left_voltage->xAxis->setRange(t_v_l[0], t_v_l[0]+5.0);
+
+    if (is_plot_data)   this->updateSolePlot(SOLE_LEFT, data);
+
+    if (!is_plot_sole) return;
     this->updatePlot(SOLE_LEFT);
-    this->updateSolePlot(SOLE_LEFT, data);
 
     if(is_left_calib_on){
         double t_now = ros::Time::now().toSec();
@@ -489,15 +491,17 @@ void MainWindow::plotSoleLeft(){
 }
 
 void MainWindow::plotSoleRight(){
-    if (!is_plot_sole) return;
     float* data = qnode.getSoleRightData();
     appendCropQVector(&t_v_r, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
         appendCropQVector(&v_r[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_right_voltage->xAxis->setRange(t_v_r[0], t_v_r[0]+5.0);
+
+    if (is_plot_data)   this->updateSolePlot(SOLE_RIGHT, data);
+
+    if (!is_plot_sole) return;
     this->updatePlot(SOLE_RIGHT);
-    this->updateSolePlot(SOLE_RIGHT, data);
     
     if(is_right_calib_on){
         double t_now = ros::Time::now().toSec();
