@@ -425,7 +425,6 @@ void MainWindow::togglePage(){
 
 }
 
-
 void MainWindow::updateLog(QString s){
     if (logNum > max_log){
         QTextCursor cursor = ui->log->textCursor();
