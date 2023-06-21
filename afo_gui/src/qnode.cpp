@@ -66,6 +66,7 @@ namespace afo_gui {
         afo_gui_plantar_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/plantar_run", 100);
         afo_gui_dorsi_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/dorsi_run", 100);
         afo_gui_streaming_pub = nh->advertise<std_msgs::Bool>("/afo_gui/streaming", 100);
+        afo_gui_sync_pub = nh->advertise<std_msgs::Bool>("/afo_gui/sync", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
@@ -320,6 +321,12 @@ namespace afo_gui {
         std_msgs::Bool m;
         m.data = true;
         afo_gui_streaming_pub.publish(m);
+    }
+
+    void QNode::pubSync(){
+        std_msgs::Bool m;
+        m.data = sync;
+        afo_gui_sync_pub.publish(m);
     }
 
     void QNode::imuZeroing(){

@@ -46,6 +46,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_set_link_length, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_target_link_idx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_page, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_sync, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -188,6 +189,10 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_toggle_page"){
         this->togglePage();
+    }
+
+    else if (state == "button_sync"){
+        this->sendSync();
     }
 
 }
@@ -424,6 +429,20 @@ void MainWindow::togglePage(){
     ui->RightBox->setCurrentIndex(currentPage);
 
 }
+
+void MainWindow::sendSync(){
+    sync = !sync;
+    qnode.pubSync(sync);
+
+    if(sync){
+        ui->button_sync->setStyleSheet("color: rgb(0, 255, 0)");
+    }
+    else{
+        ui->button_sync->setStyleSheet("color: rgb(211,211, 211)");
+    }
+
+}
+
 
 void MainWindow::updateLog(QString s){
     if (logNum > max_log){

@@ -60,6 +60,7 @@ public:
     float* getDorsiData();
     float* getGaitPhase();
     void getLink(double* linkX, double* linkY, double* linkZ);
+    void sendSync(bool sync);
 
 
 Q_SIGNALS:
@@ -99,6 +100,7 @@ private:
     ros::Publisher afo_gui_plantar_run_pub;
     ros::Publisher afo_gui_dorsi_run_pub;
     ros::Publisher afo_gui_streaming_pub;
+    ros::Publisher afo_gui_sync_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;

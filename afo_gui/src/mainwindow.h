@@ -52,6 +52,7 @@ public:
     void targetLinkIdx();
     void imuZero();
     void togglePage();
+    void sendSync();
     
     void updateLog(QString s);
     void set_emergency(bool on);
@@ -87,6 +88,7 @@ private:
     bool is_trial_on = false;
     bool is_left_calib_on = false;
     bool is_right_calib_on = false;
+    bool sync = false;
     double t_left_calib = 0;
     double t_right_calib = 0;
     double max_torque = 0.3;
