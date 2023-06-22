@@ -134,6 +134,24 @@ void gaitDetector(int* result){
 
 }
 
+void callbackPolyCalib(const std_msgs::Int16MultiArray::Constptr& msg){
+    initialTimePolycalib = high_resolution_clock::now();
+    polySide = msg->data[0];
+    polySensor = msg->data[1];
+    polyForce = msg->data[2];
+    if (polySide == 0){
+        savePoly();
+        loadPoly();
+        return;
+    }
+    runPolycalib = true;
+    dataNum = 0;
+    for (int i = 0 ;i<6; i++){
+        meanLeft[i] = 0;
+        meanRight[i] = 0;
+    }
+}
+
 void loadThreshold(){
     ifstream thFile;
     bool side = thresholdSide;
@@ -206,7 +224,7 @@ void saveThreshold(){
     zeroFile.close();
 }
 
-void updateThreshold(){
+void updateAverage(){
     for (int i = 0; i < 6; i++){
         meanLeft[i] += (d_soleLeft[i] - meanLeft[i])/ (dataNum + 1);
         meanRight[i] += (d_soleRight[i] - meanRight[i]) / (dataNum + 1);
@@ -214,6 +232,64 @@ void updateThreshold(){
     dataNum++;
 
     return;
+}
+
+void updatePoly(){
+    if(polySide == 1){
+        polyLeft[polyForce][polySensor] = meanLeft[polySensor];
+    }
+    else if (polySide == 2){
+        polyRight[polyForce][polySensor] = meanRight[polySensor];
+    }
+}
+
+void savePoly(){
+    int a, b, c;
+    // poly fitting
+    ofstream polyFile;
+    std_msgs::Float32MultiArray msg;
+    polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv", ios::trunc);
+    for (int i = 0; i < 6; i++){
+        msg.data.clear();
+        c = polyLeft[0][i];
+        a = (f2 * (polyLeft[1][i] - c) - f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2)));
+        b = (-f2 * f2 * (polyLeft[1][i] - c) + f1 * f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2)));
+        polyFile << c << endl << b << endl << a << endl;
+    }
+
+    for (int i = 0; i < 6; i++){
+        msg.data.clear();
+        c = polyRight[0][i];
+        a = (f2 * (polyRight[1][i] - c) - f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2)));
+        b = (-f2 * f2 * (polyRight[1][i] - c) + f1 * f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2)));
+        polyFile << c << endl << b << endl << a << endl;
+    }
+}
+
+void loadPoly(){
+    std_msgs::Float32MultiArray msg;
+    ifstream polyFile;
+    polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv");
+
+    if(!polyFile){
+        return;
+    }
+    string str;
+    for (int i = 0; i < 6; i++){
+        for (int j = 0; j < 3; j++){
+            getline(polyFile, str);
+            polyLeft[j][i] = stof(str);
+            msg.data.push_back(polyLeft[j][i]);
+        }
+    }
+    for (int i = 0; i < 6; i++){
+        for (int j = 0; j < 3; j++){
+            getline(polyFile, str);
+            polyRight[j][i] = stof(str);
+            msg.data.push_back(polyRight[j][i]);
+        }
+    }
+    afo_poly_fitting_pub.publish(msg);
 }
 
 int main(int argc, char**argv)
@@ -233,18 +309,21 @@ int main(int argc, char**argv)
     string configPath;
     n.getParam("/rr", rr);
     ros::Rate loop_rate(rr);
-    ros::Subscriber afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
-    ros::Subscriber afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
-    ros::Subscriber afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
-    ros::Subscriber afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
-    ros::Publisher afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
-    ros::Publisher afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
+    afo_soleSensor_left_sub = n.subscribe("/afo_sensor/soleSensor_left", 1, callbackSoleLeft);
+    afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
+    afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
+    afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
+    afo_poly_calib_sub = n.subscribe("/afo_gui/run_poly_calib", 1, callbackPolyCalib);
+    afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
+    afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
+    afo_poly_fitting_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/poly_fit", 100);
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
     thresholdSide = LEFT;
     loadThreshold();    
     thresholdSide = RIGHT;
     loadThreshold();    
+    loadPoly();
 
     std::cout << "Startup finished" << std::endl;
     int r[4];
@@ -269,7 +348,16 @@ int main(int argc, char**argv)
                 saveThreshold();
                 loadThreshold();
             } 
-            else updateThreshold();
+            else updateAverage();
+        }
+
+        if (runPolycalib){
+            currentTimeGap = high_resolution_clock::now() - initialTimePolycalib;
+            if(currentTimeGap.count() > recordTimeThreshold){
+                runPolycalib = false;
+                updatePoly();
+            }
+            else updateAverage();
         }
 
 	    ros::spinOnce();

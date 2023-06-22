@@ -34,12 +34,29 @@ bool affectedSide;
 
 float thLeft[2][6];
 float thRight[2][6];
+float polyLeft[3][6];
+float polyRight[3][6];
 float meanLeft[6];
 float meanRight[6];
 int dataNum;
+int polySide, polySensor, polyForce;
+
+float f1 = 5.0;
+float f2 = 20.0;
 
 float recordTimeThreshold = 1.0;
 bool runThreshold = false;
+bool runPolycalib = false;
 bool thresholdSide;
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
+system_clock::time_point initialTimePolycalib, currentTimePolycalib;
 duration<double> currentTimeGap;
+
+ros::Subscriber afo_soleSensor_left_sub;
+ros::Subscriber afo_soleSensor_right_sub;
+ros::Subscriber afo_imu_sub;
+ros::Subscriber afo_threshold_sub;
+ros::Subscriber afo_poly_calib_sub;
+ros::Publisher afo_gait_nonparetic_pub;
+ros::Publisher afo_gait_paretic_pub;
+ros::Publisher afo_poly_fitting_pub;
