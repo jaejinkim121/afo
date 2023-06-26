@@ -313,7 +313,7 @@ int main(int argc, char**argv)
     afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
     afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
-    afo_poly_calib_sub = n.subscribe("/afo_gui/run_poly_calib", 1, callbackPolyCalib);
+    afo_poly_calib_sub = n.subscribe("/afo_gui/poly_calib", 1, callbackPolyCalib);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     afo_poly_fitting_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/poly_fit", 100);

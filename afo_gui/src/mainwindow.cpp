@@ -47,6 +47,12 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_target_link_idx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_page, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sync, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_polycalib_run, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_polycalib_reroll, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_polycalib_skip, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_polycalib_side, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_polycalib_num, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_polycalib_force, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -194,6 +200,31 @@ void MainWindow::buttonClicked(){
     else if (state == "button_sync"){
         this->sendSync();
     }
+
+    else if (state == "button_polycalib_run"){
+        this->runPolycalib();
+    }
+
+    else if (state == "button_polycalib_reroll"){
+        this->polyCalibToggle(false);
+    }
+
+    else if (state == "button_polycalib_skip"){
+        this->polyCalibToggle(true);
+    }
+
+    else if (state == "button_polycalib_side"){
+        this->polyCalibSide(true);
+    }
+
+    else if (state == "button_polycalib_num"){
+        this->polyCalibNum(true);
+    }
+
+    else if (state == "button_polycalib_force"){
+        this->polyCalibForce(true);
+    }
+
 
 }
 
@@ -440,9 +471,90 @@ void MainWindow::sendSync(){
     else{
         ui->button_sync->setStyleSheet("color: rgb(211,211, 211)");
     }
-
 }
 
+void MainWindow::runPolycalib(){
+    qnode.pubPolycalib(poly_side, poly_num, poly_force);
+    polyCalibToggle(true);
+    double t_start = ros::Time::now()::toSec();
+    ui->button_polycalib_run->setPlainText("Wait....");
+    ui->button_polycalib_run->setStyleSheet("background-color: rgb(0, 255, 0)");
+    while(ros::Time::now()::toSec() - t_start < 1.5){
+        continue;
+    }
+    ui->button_polycalib_run->setPlainText("Next Calib");
+    ui->button_polycalib_run->setStyleSheet("background-color: rgb(211, 211, 211)");
+
+    if(poly_side != 0) return;
+
+    qnode.pubPolycalib(poly_side, poly_num, poly_force);
+    poly_side = 1;
+    ui->horSlider_polycalib_side->setSliderPosition(poly_side - 1);
+
+    ui->button_polycalib_run->setPlainText("Run Calibration");
+    
+}
+
+void MainWindow::polyCalibToggle(bool forward){
+    if (!polyCalibForce(forward)) return;
+    if (!polyCalibNum(forward)) return;
+    polyCalibSide();
+
+    if(!forward) return;
+    
+    if (poly_side == 1 && poly_num == 1 && poly_force == 0){
+        poly_side = 0;
+    }
+}
+
+void MainWindow::polyCalibSide(){
+    poly_side = 3 - poly_side;
+    ui->horSlider_polycalib_side->setSliderPosition(poly_side - 1);
+}
+
+bool MainWindow::polyCalibNum(bool forward){
+    bool r = false;
+    if (forward){
+        poly_num++;
+        if (poly_num == 7){
+            poly_num = 1;
+            r = true;
+        }
+    }
+    else{
+        poly_num--;
+        if(poly_num == 0){
+            poly_num = 6;
+            r = true;
+        }            
+    }
+
+    ui->lcdNum_polycalib_num->display(std::to_string(poly_num));
+
+    return r;
+}
+
+bool MainWindow::polyCalibForce(bool forward){
+    bool r = false;
+    if (forward){
+        poly_force++;
+        if (poly_force == 4){
+            poly_force = 0;
+            r = true;
+        }
+    }
+    else{
+        poly_force--;
+        if (poly_force == 0){
+            poly_force = 3;
+            r = true;
+        }
+    }
+
+    ui->lcdNum_polycalib_force->display(std::to_string(poly_force));
+
+    return r;
+}
 
 void MainWindow::updateLog(QString s){
     if (logNum > max_log){

@@ -42,7 +42,7 @@ int dataNum;
 int polySide, polySensor, polyForce;
 
 float f1 = 5.0;
-float f2 = 20.0;
+float f2 = 10.0;
 
 float recordTimeThreshold = 1.0;
 bool runThreshold = false;

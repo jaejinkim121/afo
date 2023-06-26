@@ -49,6 +49,8 @@ public:
     void pubPlantarRun(bool run);
     void pubDorsiRun(bool run);
     void pubStreaming();
+    void pubPolycalib(int side, int num, int force);
+    void pubSync(bool sync);
     void imuZeroing();
     void updateLinkLength(int id, double data);
     void loadLinkLength();
@@ -101,6 +103,7 @@ private:
     ros::Publisher afo_gui_dorsi_run_pub;
     ros::Publisher afo_gui_streaming_pub;
     ros::Publisher afo_gui_sync_pub;
+    ros::Publisher afo_gui_polycalib;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
