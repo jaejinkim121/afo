@@ -323,7 +323,7 @@ namespace afo_gui {
         afo_gui_streaming_pub.publish(m);
     }
 
-    void QNode::pubSync(){
+    void QNode::pubSync(bool sync){
         std_msgs::Bool m;
         m.data = sync;
         afo_gui_sync_pub.publish(m);

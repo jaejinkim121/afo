@@ -49,6 +49,7 @@ public:
     void pubPlantarRun(bool run);
     void pubDorsiRun(bool run);
     void pubStreaming();
+    void pubSync(bool sync);
     void imuZeroing();
     void updateLinkLength(int id, double data);
     void loadLinkLength();
@@ -60,7 +61,6 @@ public:
     float* getDorsiData();
     float* getGaitPhase();
     void getLink(double* linkX, double* linkY, double* linkZ);
-    void sendSync(bool sync);
 
 
 Q_SIGNALS:
