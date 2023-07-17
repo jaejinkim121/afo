@@ -55,7 +55,7 @@ public:
     void sendSync();
     void runPolycalib();
     void polyCalibToggle(bool forward);
-    void polyCalibSide(bool forward);
+    void polyCalibSide();
     bool polyCalibNum(bool forward);
     bool polyCalibForce(bool forward);
     

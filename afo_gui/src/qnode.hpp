@@ -11,6 +11,7 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Int16.h>
+#include <std_msgs/Int16MultiArray.h>
 #include <geometry_msgs/Point.h>
 #include <Eigen/Dense>
 #include <iostream>

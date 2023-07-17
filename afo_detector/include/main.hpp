@@ -60,3 +60,9 @@ ros::Subscriber afo_poly_calib_sub;
 ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
 ros::Publisher afo_poly_fitting_pub;
+
+
+// Function Define
+void updatePloy();
+void savePoly();
+void loadPoly();

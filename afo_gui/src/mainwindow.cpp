@@ -214,7 +214,7 @@ void MainWindow::buttonClicked(){
     }
 
     else if (state == "button_polycalib_side"){
-        this->polyCalibSide(true);
+        this->polyCalibSide();
     }
 
     else if (state == "button_polycalib_num"){
@@ -476,13 +476,13 @@ void MainWindow::sendSync(){
 void MainWindow::runPolycalib(){
     qnode.pubPolycalib(poly_side, poly_num, poly_force);
     polyCalibToggle(true);
-    double t_start = ros::Time::now()::toSec();
-    ui->button_polycalib_run->setPlainText("Wait....");
+    double t_start = ros::Time::now().toSec();
+    ui->button_polycalib_run->setText("Wait....");
     ui->button_polycalib_run->setStyleSheet("background-color: rgb(0, 255, 0)");
-    while(ros::Time::now()::toSec() - t_start < 1.5){
+    while(ros::Time::now().toSec() - t_start < 1.5){
         continue;
     }
-    ui->button_polycalib_run->setPlainText("Next Calib");
+    ui->button_polycalib_run->setText("Next Calib");
     ui->button_polycalib_run->setStyleSheet("background-color: rgb(211, 211, 211)");
 
     if(poly_side != 0) return;
@@ -491,7 +491,7 @@ void MainWindow::runPolycalib(){
     poly_side = 1;
     ui->horSlider_polycalib_side->setSliderPosition(poly_side - 1);
 
-    ui->button_polycalib_run->setPlainText("Run Calibration");
+    ui->button_polycalib_run->setText("Run Calibration");
     
 }
 
@@ -529,7 +529,7 @@ bool MainWindow::polyCalibNum(bool forward){
         }            
     }
 
-    ui->lcdNum_polycalib_num->display(std::to_string(poly_num));
+    ui->lcdNum_polycalib_num->display(QString::fromStdString(std::to_string(poly_num)));
 
     return r;
 }
@@ -551,7 +551,7 @@ bool MainWindow::polyCalibForce(bool forward){
         }
     }
 
-    ui->lcdNum_polycalib_force->display(std::to_string(poly_force));
+    ui->lcdNum_polycalib_force->display(QString::fromStdString(std::to_string(poly_force)));
 
     return r;
 }

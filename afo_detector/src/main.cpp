@@ -134,7 +134,7 @@ void gaitDetector(int* result){
 
 }
 
-void callbackPolyCalib(const std_msgs::Int16MultiArray::Constptr& msg){
+void callbackPolyCalib(const std_msgs::Int16MultiArray::ConstPtr& msg){
     initialTimePolycalib = high_resolution_clock::now();
     polySide = msg->data[0];
     polySensor = msg->data[1];
@@ -252,16 +252,16 @@ void savePoly(){
     for (int i = 0; i < 6; i++){
         msg.data.clear();
         c = polyLeft[0][i];
-        a = (f2 * (polyLeft[1][i] - c) - f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2)));
-        b = (-f2 * f2 * (polyLeft[1][i] - c) + f1 * f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2)));
+        a = (f2 * (polyLeft[1][i] - c) - f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2));
+        b = (-f2 * f2 * (polyLeft[1][i] - c) + f1 * f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2));
         polyFile << c << endl << b << endl << a << endl;
     }
 
     for (int i = 0; i < 6; i++){
         msg.data.clear();
         c = polyRight[0][i];
-        a = (f2 * (polyRight[1][i] - c) - f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2)));
-        b = (-f2 * f2 * (polyRight[1][i] - c) + f1 * f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2)));
+        a = (f2 * (polyRight[1][i] - c) - f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2));
+        b = (-f2 * f2 * (polyRight[1][i] - c) + f1 * f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2));
         polyFile << c << endl << b << endl << a << endl;
     }
 }
