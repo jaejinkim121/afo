@@ -67,6 +67,7 @@ namespace afo_gui {
         afo_gui_dorsi_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/dorsi_run", 100);
         afo_gui_streaming_pub = nh->advertise<std_msgs::Bool>("/afo_gui/streaming", 100);
         afo_gui_sync_pub = nh->advertise<std_msgs::Bool>("/afo_gui/sync", 100);
+        afo_gui_polycalib = nh->advertise<std_msgs::Int16MultiArray>("/afo_gui/poly_calib", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
@@ -327,6 +328,14 @@ namespace afo_gui {
         std_msgs::Bool m;
         m.data = sync;
         afo_gui_sync_pub.publish(m);
+    }
+
+    void QNode::pubPolycalib(int side, int num, int force){
+        std_msgs::Int16MultiArray m;
+        m.data.push_back(side);
+        m.data.push_back(num);
+        m.data.push_back(force);
+        afo_gui_polycalib.publish(m);
     }
 
     void QNode::imuZeroing(){

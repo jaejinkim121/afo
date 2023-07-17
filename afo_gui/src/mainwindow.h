@@ -53,6 +53,11 @@ public:
     void imuZero();
     void togglePage();
     void sendSync();
+    void runPolycalib();
+    void polyCalibToggle(bool forward);
+    void polyCalibSide(bool forward);
+    bool polyCalibNum(bool forward);
+    bool polyCalibForce(bool forward);
     
     void updateLog(QString s);
     void set_emergency(bool on);
@@ -95,6 +100,9 @@ private:
     double *linkX, *linkY, *linkZ;
     int currentLink = -1;
     int currentPage = 0;
+    int poly_side = 1;
+    int poly_num = 1;
+    int poly_force = 0;
 
     double cycle_time = 1.0;
 
