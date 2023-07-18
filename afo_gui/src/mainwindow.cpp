@@ -481,7 +481,7 @@ void MainWindow::runPolycalibZero(){
     while(ros::Time::now.toSec() - t_start < 1.5){
         continue;
     }
-    ui->button_polycalib_zero->setText("Done Zero Calib");
+    ui->button_polycalib_zero->setText("Done\nZero");
     ui->button_polycalib_zero->setStyleSheet("background-colot: rgb(0,255,0)");
 }
 
@@ -494,7 +494,7 @@ void MainWindow::runPolycalib(){
     while(ros::Time::now().toSec() - t_start < 1.5){
         continue;
     }
-    ui->button_polycalib_run->setText("Next Calib");
+    ui->button_polycalib_run->setText("Next\nCalib");
     ui->button_polycalib_run->setStyleSheet("background-color: rgb(211, 211, 211)");
 
     if(poly_side != 0) return;
