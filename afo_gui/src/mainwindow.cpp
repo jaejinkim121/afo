@@ -501,7 +501,6 @@ void MainWindow::runPolycalib(){
 
     qnode.pubPolycalib(poly_side, poly_num, poly_force);
     poly_side = 1;
-    ui->horSlider_polycalib_side->setSliderPosition(poly_side - 1);
 
     ui->button_polycalib_run->setText("Run Calibration");
     
@@ -514,7 +513,7 @@ void MainWindow::polyCalibToggle(bool forward){
 
     if(!forward) return;
     
-    if (poly_side == 1 && poly_num == 1 && poly_force == 0){
+    if (poly_side == 1 && poly_num == 1 && poly_force == 1){
         poly_side = 0;
     }
 }
@@ -547,23 +546,10 @@ bool MainWindow::polyCalibNum(bool forward){
 }
 
 bool MainWindow::polyCalibForce(bool forward){
-    bool r = false;
-    if (forward){
-        poly_force++;
-        if (poly_force == 3){
-            poly_force = 0;
-            r = true;
-        }
-    }
-    else{
-        poly_force--;
-        if (poly_force == 0){
-            poly_force = 2;
-            r = true;
-        }
-    }
+    bool r = (poly_force == 2);
+    poly_force = 3 - poly_force;
 
-    ui->lcdNum_polycalib_force->display(QString::fromStdString(std::to_string(poly_force)));
+    ui->horSlider_polycalib_force->setSliderPosition(poly_force - 1);
 
     return r;
 }
