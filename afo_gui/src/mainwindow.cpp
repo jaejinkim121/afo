@@ -47,6 +47,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_target_link_idx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_page, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sync, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_polycalib_zero_run, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_run, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_reroll, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_skip, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -199,6 +200,10 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_sync"){
         this->sendSync();
+    }
+    
+    else if (state == "button_polycalib_zero_run"){
+        this->runPolycalibZero();
     }
 
     else if (state == "button_polycalib_run"){
