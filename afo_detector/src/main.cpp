@@ -142,6 +142,7 @@ void callbackPolyCalib(const std_msgs::Int16MultiArray::ConstPtr& msg){
     if (polySide == 0){
         savePoly();
         loadPoly();
+        runPolycalib = false;
         return;
     }
     runPolycalib = true;
@@ -240,6 +241,12 @@ void updatePoly(){
     }
     else if (polySide == 2){
         polyRight[polyForce][polySensor] = meanRight[polySensor];
+    }
+    else if (polySide == 3){
+        for (int i = 0; i<6; i++){
+            polyLeft[0][i] = meanLeft[i];
+            polyRight[0][i] = meanRight[i];
+        }
     }
 }
 

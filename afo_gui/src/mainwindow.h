@@ -53,6 +53,7 @@ public:
     void imuZero();
     void togglePage();
     void sendSync();
+    void runPolycalibZero();
     void runPolycalib();
     void polyCalibToggle(bool forward);
     void polyCalibSide();

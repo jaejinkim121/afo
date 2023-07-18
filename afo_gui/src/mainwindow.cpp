@@ -473,6 +473,18 @@ void MainWindow::sendSync(){
     }
 }
 
+void MainWindow::runPolycalibZero(){
+    qnode.pubPolycalib(3, 0, 0);
+    double t_start = ros::Time::now.toSec();
+    ui->button_polycalib_zero->setText("Wait...");
+    ui->button_polycalib_zero->setStyleSheet("background-color: rgb(0,255,0)");
+    while(ros::Time::now.toSec() - t_start < 1.5){
+        continue;
+    }
+    ui->button_polycalib_zero->setText("Done Zero Calib");
+    ui->button_polycalib_zero->setStyleSheet("background-colot: rgb(0,255,0)");
+}
+
 void MainWindow::runPolycalib(){
     qnode.pubPolycalib(poly_side, poly_num, poly_force);
     polyCalibToggle(true);
@@ -538,7 +550,7 @@ bool MainWindow::polyCalibForce(bool forward){
     bool r = false;
     if (forward){
         poly_force++;
-        if (poly_force == 4){
+        if (poly_force == 3){
             poly_force = 0;
             r = true;
         }
@@ -546,7 +558,7 @@ bool MainWindow::polyCalibForce(bool forward){
     else{
         poly_force--;
         if (poly_force == 0){
-            poly_force = 3;
+            poly_force = 2;
             r = true;
         }
     }
