@@ -75,6 +75,11 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     toggleTrial();
     updateMaxTorqueValue();
     updateCycleTimeValue();
+    setPFO();
+    setPIC();
+    setNFO();
+    setNIC();
+    
 
 }
 
