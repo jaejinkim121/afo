@@ -24,6 +24,12 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_sole_calibration_right, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_pfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_pic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_nfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_nic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_threshold, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_affected_side, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_clear_parameter, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -54,7 +60,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_polycalib_side, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_num, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_force, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-
+    
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
     QObject::connect(&qnode, SIGNAL(updateKinematics()), this, SLOT(plotKinematics()));
@@ -108,6 +114,30 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_set_cycle_time"){
         this->setCycleTime();
+    }
+
+    else if (state == "button_set_pfo"){
+        this->setPFO();
+    }
+
+    else if (state == "button_set_pic"){
+        this->setPIC();
+    }
+
+    else if (state == "button_set_nfo"){
+        this->setNFO();
+    }
+
+    else if (state == "button_set_nic"){
+        this->setNIC();
+    }
+
+    else if (state == "button_set_threshold"){
+        this->setThreshold();
+    }
+
+    else if (state == "button_affected_side"){
+        this->toggleAffectedSide();
     }
 
     else if (state == "button_clear_parameter"){
@@ -294,7 +324,6 @@ void MainWindow::setMaxTorque(){
     }
     catch(...){
         updateLog("Target Max Torque is empty");
-
     }
 }
 
@@ -334,7 +363,81 @@ void MainWindow::setLinkLength(){
         updateLog("Target link length is wrong");
     }
 }
- 
+
+void MainWindow::setPFO(){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        threshold[2] = t;
+
+        ui->text_target_parameter->clear();
+        }
+    catch(...){
+        updateLog("Target is empty");
+    }
+    std::string s = "PFO ";
+    s.append(std::to_string(threshold[2]));
+    ui->button_set_pfo->setText(QString::fromStdString(s));
+}
+
+void MainWindow::setPIC(){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        threshold[3] = t;
+
+        ui->text_target_parameter->clear();
+        }
+    catch(...){
+        updateLog("Target is empty");
+    }
+    std::string s = "PIC ";
+    s.append(std::to_string(threshold[3]));
+    ui->button_set_pfo->setText(QString::fromStdString(s));
+}
+
+void MainWindow::setNFO(){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        threshold[0] = t;
+
+        ui->text_target_parameter->clear();
+        }
+    catch(...){
+        updateLog("Target is empty");
+    }
+    std::string s = "NFO ";
+    s.append(std::to_string(threshold[0]));
+    ui->button_set_pfo->setText(QString::fromStdString(s));
+}
+
+void MainWindow::setNIC(){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        threshold[1] = t;
+
+        ui->text_target_parameter->clear();
+        }
+    catch(...){
+        updateLog("Target is empty");
+    }
+    std::string s = "NIC ";
+    s.append(std::to_string(threshold[1]));
+    ui->button_set_pfo->setText(QString::fromStdString(s));
+}
+
+void MainWindow::setThreshold(){
+    qnode.pubThresholdGap(this->threshold);
+}
+
+void MainWindow::toggleAffectedSide(){
+    current_affected_side = 1 - current_affected_side;
+    ui->horSlider_polycalib_side->setSliderPosition(current_affected_side);
+    qnode.pubAffectedSide(current_affected_side);
+}
+
 void MainWindow::targetLinkIdx(){
     switch(currentLink){
         case -1:

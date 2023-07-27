@@ -58,7 +58,7 @@ bool plantarRun, dorsiRun;
 int etherCatCommunicationRate = 5000; // us
 
 // Time Parameter
-double cycleTime = pow(10,6);
+double cycleTime = 2.0 * pow(10,6);
 double startTime = 0.25;
 double endTime = 0.65;
 double onTime = endTime - startTime;
@@ -69,8 +69,8 @@ double downtimeDF = 0.1;
 duration<double, micro> eventTimeGap;
 
 // Force Parameter
-double maxTorquePlantar = 0.3; // Nm at lowest level of motor.
-double maxTorqueDorsi = 0.3;
+double maxTorquePlantar = 0.5; // Nm at lowest level of motor.
+double maxTorqueDorsi = 0.5;
 double maxPositionDorsi = 3;
 double positionDiffLimit = 1;
 double dorsiZeroingIncrement = 0.1;

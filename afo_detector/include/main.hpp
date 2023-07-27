@@ -32,6 +32,7 @@ bool is_soleLeft, is_soleRight, is_imu; // ???
 bool leftSwing, rightSwing;
 bool affectedSide;
 
+float thresholdGap[4];
 float thLeft[2][6];
 float thRight[2][6];
 float polyLeft[3][6];
@@ -57,6 +58,8 @@ ros::Subscriber afo_soleSensor_right_sub;
 ros::Subscriber afo_imu_sub;
 ros::Subscriber afo_threshold_sub;
 ros::Subscriber afo_poly_calib_sub;
+ros::Subscriber afo_affected_side_sub;
+ros::Subscriber afo_threshold_gap_sub;
 ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
 ros::Publisher afo_poly_fitting_pub;

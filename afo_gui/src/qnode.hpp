@@ -44,6 +44,8 @@ public:
     void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
+    void pubThresholdGap(float* threshold);
+    void pubAffectedSide(bool current_affected_side);
     void pubThreshold(bool b);
     void pubMaxTorque(float t);
     void pubCycleTime(float t);
@@ -96,6 +98,8 @@ private:
 
     ros::NodeHandle* nh;
 
+    ros::Publisher afo_gui_affected_side_pub;
+    ros::Publisher afo_gui_threshold_gap_pub;
     ros::Publisher afo_gui_threshold_pub;
     ros::Publisher afo_gui_max_torque_pub;
     ros::Publisher afo_gui_cycle_time_pub;

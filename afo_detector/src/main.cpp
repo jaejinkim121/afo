@@ -69,6 +69,16 @@ void callbackThreshold(const std_msgs::Bool::ConstPtr& msg){
 
 }
 
+void callbackAffectedSide(const std_msgs::BoolConstPtr& msg){
+    affectedSide = msg->data;
+}
+
+void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    for (int i = 0; i < 4; i++){
+        thresholdGap[i] = msg->data[i];
+    }
+}
+
 // paretic side is left = 0
 // paretic side is right = 1
 void gaitDetector(int* result){
@@ -130,8 +140,6 @@ void gaitDetector(int* result){
         result[2+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
         std::cout << "Right Swing : " << rightSwing +1 << std::endl;
     }
-
-
 }
 
 void callbackPolyCalib(const std_msgs::Int16MultiArray::ConstPtr& msg){
@@ -201,23 +209,23 @@ void saveThreshold(){
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.15 << endl;
+            thFile << meanLeft[i] + thresholdGap[1+(affectedSide==LEFT)] << endl;
             zeroFile << meanLeft[i] << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + 0.12 << endl;
+            thFile << meanLeft[i] + thresholdGap[affectedSide==LEFT] << endl;
         }
     }
     else {
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + 0.12 << endl;
+            thFile << meanRight[i] + thresholdGap[1+(affectedSide==RIGHT)] << endl;
             zeroFile << meanRight[i] << endl;
 
         }
         for (int i = 0; i < 6 ; i++){
-            thFile << meanRight[i] + 0.09 << endl;
+            thFile << meanRight[i] + thresholdGap[affectedSide==RIGHT] << endl;
         }
     }
     
@@ -321,6 +329,8 @@ int main(int argc, char**argv)
     afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
     afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
     afo_poly_calib_sub = n.subscribe("/afo_gui/poly_calib", 1, callbackPolyCalib);
+    afo_affected_side_sub = n.subscribe("/afo_gui/affected_side", 1, callbackAffectedSide);
+    afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     afo_poly_fitting_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/poly_fit", 100);

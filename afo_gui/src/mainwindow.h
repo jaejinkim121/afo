@@ -40,6 +40,12 @@ public:
     void setMaxTorque();
     void setCycleTime();
     void setLinkLength();
+    void setPFO();
+    void setPIC();
+    void setNFO();
+    void setNIC();
+    void setThreshold();
+    void toggleAffectedSide();
     void togglePlantarRun();
     void toggleDorsiRun();
     void toggleStreaming();
@@ -97,15 +103,17 @@ private:
     bool sync = false;
     double t_left_calib = 0;
     double t_right_calib = 0;
-    double max_torque = 0.3;
     double *linkX, *linkY, *linkZ;
     int currentLink = -1;
     int currentPage = 0;
+    int current_affected_side = 0;
     int poly_side = 1;
     int poly_num = 1;
     int poly_force = 0;
 
-    double cycle_time = 1.0;
+    double cycle_time = 2.0;
+    double max_torque = 0.5;
+    float threshold[4] = {0.09, 0.12, 0.12, 0.15};
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
     QVector<double> v_l[6];

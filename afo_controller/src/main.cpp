@@ -167,8 +167,9 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
         timeOFO = high_resolution_clock::now();
         eventTimeGap = timeOFO - timeIC;
 }
-    else
-        std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;
+    else if (msg->data != 1){
+        std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;        
+    }
 
     setGaitEventNonAffected = true;
 

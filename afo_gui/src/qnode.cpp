@@ -58,6 +58,8 @@ namespace afo_gui {
     void QNode::init_nh(){
         nh = new ros::NodeHandle("afo_gui");
 
+        afo_gui_affected_side_pub = nh->advertise<std_msgs::Bool>("/afo_gui/affected_side", 100);
+        afo_gui_threshold_gap_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/threshold_gap", 100);
         afo_gui_threshold_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_threshold", 100);
         afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
@@ -286,6 +288,20 @@ namespace afo_gui {
 
     void QNode::callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg){
         doneDorsiZeroing();
+    }
+
+    void QNode::pubAffectedSide(bool affected_side){
+        std_msgs::Bool m;
+        m.data = affected_side;
+        afo_gui_affected_side_pub.publish(m);
+    }
+    
+    void QNode::pubThresholdGap(float* threshold){
+        std_msgs::Float32MultiArray m;
+        for (int i = 0; i < 4; i++){
+            m.data.push_back(threshold[i]);
+        }
+        afo_gui_threshold_gap_pub.publish(m);
     }
 
     void QNode::pubThreshold(bool b){
