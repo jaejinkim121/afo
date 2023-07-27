@@ -79,8 +79,6 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     setPIC();
     setNFO();
     setNIC();
-    
-
 }
 
 MainWindow::~MainWindow()
@@ -702,10 +700,15 @@ void MainWindow::imuZero(){
 void MainWindow::plotSoleLeft(){
     float* data = qnode.getSoleLeftData();
     if (is_plot_data){
-        appendCropQVector(&t_gp, data[0], gaitPhasePlotMaxNum);    
+        appendCropQVector(&t_gp, data[0], gaitPhasePlotMaxNum);
         appendCropQVector(&gp[0], state_gp[0], gaitPhasePlotMaxNum);
         appendCropQVector(&gp[1], state_gp[1], gaitPhasePlotMaxNum);
+        appendCropQVector(&t_gp2, data[0], gaitPhasePlotMaxNum2);
+        appendCropQVector(&gp2[0], state_gp[0], gaitPhasePlotMaxNum2);
+        appendCropQVector(&gp2[1], state_gp[1], gaitPhasePlotMaxNum2);
+
         ui->plot_gaitPhase->xAxis->setRange(t_gp[0], t_gp[0] + 20.0);
+        ui->plot_gaitPhase_2->xAxis->setRange(t_gp2[0], t_gp2[0] + 100.0);
         this->updatePlot(GAIT_PHASE);
     }
 
@@ -872,30 +875,42 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase->graph(1)->setName("P");
     ui->plot_gaitPhase->yAxis->setRange(0, 1.2);
 
+    ui->plot_gaitPhase_2->addGraph();
+    ui->plot_gaitPhase_2->addGraph();
+    ui->plot_gaitPhase_2->graph(0)->setPen(pen[0]);
+    ui->plot_gaitPhase_2->graph(1)->setPen(pen[1]);
+    ui->plot_gaitPhase_2->graph(0)->setName("NP");
+    ui->plot_gaitPhase_2->graph(1)->setName("P");
+    ui->plot_gaitPhase_2->yAxis->setRange(0, 1.2);
+
     // Set plot title
     ui->plot_sole_left_voltage->plotLayout()->insertRow(0);
     ui->plot_sole_right_voltage->plotLayout()->insertRow(0);
     ui->plot_plantar_command->plotLayout()->insertRow(0);
     ui->plot_dorsi_command->plotLayout()->insertRow(0);
     ui->plot_gaitPhase->plotLayout()->insertRow(0);
-
+    ui->plot_gaitPhase_2->plotLayout()->insertRow(0);
+    
     QCPTextElement *title_sole_left_voltage = new QCPTextElement(ui->plot_sole_left_voltage, "L Sole", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_sole_right_voltage = new QCPTextElement(ui->plot_sole_right_voltage, "R Sole", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_plantar_command = new QCPTextElement(ui->plot_plantar_command, "Plnatar", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_dorsi_command = new QCPTextElement(ui->plot_dorsi_command, "Dorsi", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_gaitPhase = new QCPTextElement(ui->plot_gaitPhase, "Gait Phase", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_gaitPhase2 = new QCPTextElement(ui->plot_gaitPhase_2, "Gait Phase", QFont("sans", 16, QFont::Bold));
     
     ui->plot_sole_left_voltage->plotLayout()->addElement(0, 0, title_sole_left_voltage);
     ui->plot_sole_right_voltage->plotLayout()->addElement(0, 0, title_sole_right_voltage);
     ui->plot_plantar_command->plotLayout()->addElement(0, 0, title_plantar_command);
     ui->plot_dorsi_command->plotLayout()->addElement(0, 0, title_dorsi_command);
     ui->plot_gaitPhase->plotLayout()->addElement(0, 0, title_gaitPhase);
+    ui->plot_gaitPhase_2->plotLayout()->addElement(0, 0, title_gaitPhase_2);
 
     ui->plot_sole_left_voltage->legend->setVisible(true);
     ui->plot_sole_right_voltage->legend->setVisible(true);
     ui->plot_plantar_command->legend->setVisible(true);
     ui->plot_dorsi_command->legend->setVisible(true);
     ui->plot_gaitPhase->legend->setVisible(true);
+    ui->plot_gaitPhase_2->legend->setVisible(true);
 
 }
 
@@ -930,7 +945,10 @@ void MainWindow::updatePlot(int dataType){
     else if (dataType == GAIT_PHASE){
         ui->plot_gaitPhase->graph(0)->setData(t_gp, gp[0]);
         ui->plot_gaitPhase->graph(1)->setData(t_gp, gp[1]);
+        ui->plot_gaitPhase_2->graph(0)->setData(t_gp2, gp2[0]);
+        ui->plot_gaitPhase_2->graph(1)->setData(t_gp2, gp2[1]);
         ui->plot_gaitPhase->replot();
+        ui->plot_gaitPhase_2->replot();
     }
 }
 

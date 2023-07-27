@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Config">
      <attribute name="title">
@@ -290,6 +290,19 @@ on/off</string>
         <string/>
        </property>
       </widget>
+      <widget class="QLabel" name="label_sole_image">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
       <widget class="QLabel" name="label_sole_image_right_1">
        <property name="geometry">
         <rect>
@@ -355,19 +368,19 @@ on/off</string>
         <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="label_sole_image">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
+      <zorder>label_sole_image</zorder>
+      <zorder>label_sole_image_left_1</zorder>
+      <zorder>label_sole_image_left_5</zorder>
+      <zorder>label_sole_image_left_2</zorder>
+      <zorder>label_sole_image_left_3</zorder>
+      <zorder>label_sole_image_left_4</zorder>
+      <zorder>label_sole_image_right_3</zorder>
+      <zorder>label_sole_image_right_5</zorder>
+      <zorder>label_sole_image_right_1</zorder>
+      <zorder>label_sole_image_right_6</zorder>
+      <zorder>label_sole_image_left_6</zorder>
+      <zorder>label_sole_image_right_2</zorder>
+      <zorder>label_sole_image_right_4</zorder>
      </widget>
     </widget>
     <widget class="QWidget" name="Developer">
@@ -377,9 +390,9 @@ on/off</string>
      <widget class="QCustomPlot" name="plot_sole_right_voltage" native="true">
       <property name="geometry">
        <rect>
-        <x>319</x>
-        <y>210</y>
-        <width>501</width>
+        <x>610</x>
+        <y>0</y>
+        <width>331</width>
         <height>211</height>
        </rect>
       </property>
@@ -387,9 +400,9 @@ on/off</string>
      <widget class="QCustomPlot" name="plot_sole_left_voltage" native="true">
       <property name="geometry">
        <rect>
-        <x>319</x>
+        <x>260</x>
         <y>0</y>
-        <width>501</width>
+        <width>331</width>
         <height>211</height>
        </rect>
       </property>
@@ -397,7 +410,7 @@ on/off</string>
      <widget class="QPushButton" name="button_toggle_plot_sole">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>20</y>
         <width>241</width>
         <height>91</height>
@@ -415,7 +428,7 @@ on/off</string>
      <widget class="QPushButton" name="button_toggle_streaming">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>120</y>
         <width>241</width>
         <height>91</height>
@@ -434,7 +447,7 @@ sole streaming</string>
      <widget class="QPushButton" name="button_sole_calibration_left">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>220</y>
         <width>241</width>
         <height>91</height>
@@ -453,7 +466,7 @@ Calibration</string>
      <widget class="QPushButton" name="button_sole_calibration_right">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>320</y>
         <width>241</width>
         <height>91</height>
@@ -467,6 +480,16 @@ Calibration</string>
       <property name="text">
        <string>Right sole 
 Calibration</string>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="plot_gaitPhase_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>210</y>
+        <width>681</width>
+        <height>211</height>
+       </rect>
       </property>
      </widget>
     </widget>

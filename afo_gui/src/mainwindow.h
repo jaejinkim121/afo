@@ -93,6 +93,7 @@ private:
     int voltPlotMaxNum = 45;
     int motorPlotMaxNum = 45;
     int gaitPhasePlotMaxNum = 50;
+    int gaitPhasePlotMaxNum2 = 250;
     bool is_plot_data = false;
     bool is_plot_sole = false;
     bool is_plantar_run = false;
@@ -115,12 +116,12 @@ private:
     double max_torque = 0.5;
     float threshold[4] = {0.09, 0.12, 0.12, 0.15};
 
-    QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp;
+    QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
     QVector<double> v_l[6];
     QVector<double> v_r[6];
     QVector<double> m_p[2];
     QVector<double> m_d[4];
-    QVector<double> gp[2];
+    QVector<double> gp[2], gp2[2];
 
     double state_gp[2];
     Draw *s_l[6], *s_r[6];
