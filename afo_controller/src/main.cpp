@@ -369,7 +369,7 @@ void worker()
                     double currentTimePercentage;
                     // CONTROL LOOP MAIN BODY
                     if (slave->getName() == "Plantar"){
-                        if (setGaitEventNonAffected && setGaitEventAffected){
+                        if (setGaitEventAffected){
                             currentTimePercentage = pathPlannerPlantarflexion();
                             std::cout << currentTimePercentage << std::endl;
                         }
@@ -531,8 +531,8 @@ int main(int argc, char**argv)
     // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
 
     afo_shutdown_sub = n.subscribe("/afo_sync/shutdown", 1, callbackShutdown);
-    afo_gait_nonparetic = n.subscribe("/afo_detector/gait_nonparetic", 1, callbackGaitPhaseNonAffected);
-    afo_gait_paretic = n.subscribe("/afo_detector/gait_paretic", 1, callbackGaitPhaseAffected);
+    afo_gait_nonparetic = n.subscribe("/afo_gui/gait_nonparetic", 1, callbackGaitPhaseNonAffected);
+    afo_gait_paretic = n.subscribe("/afo_gui/gait_paretic", 1, callbackGaitPhaseAffected);
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);

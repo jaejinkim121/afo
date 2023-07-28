@@ -44,6 +44,7 @@ public:
     void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
+    void pubForceTrigger();
     void pubThresholdGap(float* threshold);
     void pubAffectedSide(bool current_affected_side);
     void pubThreshold(bool b);
@@ -108,6 +109,7 @@ private:
     ros::Publisher afo_gui_streaming_pub;
     ros::Publisher afo_gui_sync_pub;
     ros::Publisher afo_gui_polycalib;
+    ros::Publisher afo_gui_force_trigger;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;

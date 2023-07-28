@@ -129,6 +129,8 @@ private:
     QCPItemLine *link[7];
     int *rgb;
 
+    // force trigger
+    double t_trial_on;
 };
 
 

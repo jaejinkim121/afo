@@ -70,6 +70,7 @@ namespace afo_gui {
         afo_gui_streaming_pub = nh->advertise<std_msgs::Bool>("/afo_gui/streaming", 100);
         afo_gui_sync_pub = nh->advertise<std_msgs::Bool>("/afo_gui/sync", 100);
         afo_gui_polycalib = nh->advertise<std_msgs::Int16MultiArray>("/afo_gui/poly_calib", 100);
+        afo_gui_force_trigger = nh->advertise<std_msgs::Int16>("/afo_gui/gait_paretic", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
@@ -295,7 +296,7 @@ namespace afo_gui {
         m.data = affected_side;
         afo_gui_affected_side_pub.publish(m);
     }
-    
+
     void QNode::pubThresholdGap(float* threshold){
         std_msgs::Float32MultiArray m;
         for (int i = 0; i < 4; i++){
@@ -340,6 +341,11 @@ namespace afo_gui {
         afo_gui_streaming_pub.publish(m);
     }
 
+    void QNode::pubForceTrigger(){
+        std_msgs::Int16 m;
+        m.data = 1;
+        afo_gui_force_trigger.publish(m);
+    }
     void QNode::pubSync(bool sync){
         std_msgs::Bool m;
         m.data = sync;
