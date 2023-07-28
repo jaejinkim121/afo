@@ -587,13 +587,13 @@ void MainWindow::sendSync(){
 void MainWindow::runPolycalibZero(){
     qnode.pubPolycalib(3, 0, 0);
     double t_start = ros::Time::now().toSec();
-    ui->button_polycalib_reroll->setText("Wait...");
-    ui->button_polycalib_reroll->setStyleSheet("background-color: rgb(0,255,0)");
+    ui->button_polycalib_zero_run->setText("Wait...");
+    ui->button_polycalib_zero_run->setStyleSheet("background-color: rgb(0,255,0)");
     while(ros::Time::now().toSec() - t_start < 1.5){
         continue;
     }
-    ui->button_polycalib_reroll->setText("Done\nZero");
-    ui->button_polycalib_reroll->setStyleSheet("background-colot: rgb(0,255,0)");
+    ui->button_polycalib_zero_run->setText("Done\nZero");
+    ui->button_polycalib_zero_run->setStyleSheet("background-colot: rgb(0,255,0)");
 }
 
 void MainWindow::runPolycalib(){
