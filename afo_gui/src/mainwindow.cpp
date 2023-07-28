@@ -79,6 +79,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     setPIC();
     setNFO();
     setNIC();
+    setThreshold();
 }
 
 MainWindow::~MainWindow()
@@ -397,6 +398,7 @@ void MainWindow::setPIC(){
     std::string s = "PIC\n";
     s.append(std::to_string(threshold[3]));
     ui->button_set_pic->setText(QString::fromStdString(s));
+    
 }
 
 void MainWindow::setNFO(){
