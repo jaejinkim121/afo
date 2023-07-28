@@ -378,7 +378,7 @@ void MainWindow::setPFO(){
     catch(...){
         updateLog("Target is empty");
     }
-    std::string s = "PFO ";
+    std::string s = "PFO\n";
     s.append(std::to_string(threshold[2]));
     ui->button_set_pfo->setText(QString::fromStdString(s));
 }
@@ -394,9 +394,9 @@ void MainWindow::setPIC(){
     catch(...){
         updateLog("Target is empty");
     }
-    std::string s = "PIC ";
+    std::string s = "PIC\n";
     s.append(std::to_string(threshold[3]));
-    ui->button_set_pfo->setText(QString::fromStdString(s));
+    ui->button_set_pic->setText(QString::fromStdString(s));
 }
 
 void MainWindow::setNFO(){
@@ -410,9 +410,9 @@ void MainWindow::setNFO(){
     catch(...){
         updateLog("Target is empty");
     }
-    std::string s = "NFO ";
+    std::string s = "NFO\n";
     s.append(std::to_string(threshold[0]));
-    ui->button_set_pfo->setText(QString::fromStdString(s));
+    ui->button_set_nfo->setText(QString::fromStdString(s));
 }
 
 void MainWindow::setNIC(){
@@ -426,9 +426,9 @@ void MainWindow::setNIC(){
     catch(...){
         updateLog("Target is empty");
     }
-    std::string s = "NIC ";
+    std::string s = "NIC\n";
     s.append(std::to_string(threshold[1]));
-    ui->button_set_pfo->setText(QString::fromStdString(s));
+    ui->button_set_nic->setText(QString::fromStdString(s));
 }
 
 void MainWindow::setThreshold(){
@@ -586,14 +586,14 @@ void MainWindow::sendSync(){
 
 void MainWindow::runPolycalibZero(){
     qnode.pubPolycalib(3, 0, 0);
-    double t_start = ros::Time::now.toSec();
-    ui->button_polycalib_zero->setText("Wait...");
-    ui->button_polycalib_zero->setStyleSheet("background-color: rgb(0,255,0)");
-    while(ros::Time::now.toSec() - t_start < 1.5){
+    double t_start = ros::Time::now().toSec();
+    ui->button_polycalib_reroll->setText("Wait...");
+    ui->button_polycalib_reroll->setStyleSheet("background-color: rgb(0,255,0)");
+    while(ros::Time::now().toSec() - t_start < 1.5){
         continue;
     }
-    ui->button_polycalib_zero->setText("Done\nZero");
-    ui->button_polycalib_zero->setStyleSheet("background-colot: rgb(0,255,0)");
+    ui->button_polycalib_reroll->setText("Done\nZero");
+    ui->button_polycalib_reroll->setStyleSheet("background-colot: rgb(0,255,0)");
 }
 
 void MainWindow::runPolycalib(){
@@ -903,7 +903,7 @@ void MainWindow::initPlot(){
     ui->plot_plantar_command->plotLayout()->addElement(0, 0, title_plantar_command);
     ui->plot_dorsi_command->plotLayout()->addElement(0, 0, title_dorsi_command);
     ui->plot_gaitPhase->plotLayout()->addElement(0, 0, title_gaitPhase);
-    ui->plot_gaitPhase_2->plotLayout()->addElement(0, 0, title_gaitPhase_2);
+    ui->plot_gaitPhase_2->plotLayout()->addElement(0, 0, title_gaitPhase2);
 
     ui->plot_sole_left_voltage->legend->setVisible(true);
     ui->plot_sole_right_voltage->legend->setVisible(true);
