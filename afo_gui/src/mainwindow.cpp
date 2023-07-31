@@ -875,7 +875,7 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase->graph(1)->setPen(pen[1]);
     ui->plot_gaitPhase->graph(0)->setName("NP");
     ui->plot_gaitPhase->graph(1)->setName("P");
-    ui->plot_gaitPhase->yAxis->setRange(0, 1.2);
+    ui->plot_gaitPhase->yAxis->setRange(-0.1, 1.2);
 
     ui->plot_gaitPhase_2->addGraph();
     ui->plot_gaitPhase_2->addGraph();
@@ -883,7 +883,7 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase_2->graph(1)->setPen(pen[1]);
     ui->plot_gaitPhase_2->graph(0)->setName("NP");
     ui->plot_gaitPhase_2->graph(1)->setName("P");
-    ui->plot_gaitPhase_2->yAxis->setRange(0, 1.2);
+    ui->plot_gaitPhase_2->yAxis->setRange(-0.1, 1.2);
 
     // Set plot title
     ui->plot_sole_left_voltage->plotLayout()->insertRow(0);
