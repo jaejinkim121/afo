@@ -442,11 +442,11 @@ void MainWindow::updatePlotThreshold(){
     infLineThreshold[0]->point1->setCoords(1, threshold[2 - 2 * current_affected_side]);
     infLineThreshold[0]->point2->setCoords(2, threshold[2 - 2 * current_affected_side]);
     infLineThreshold[1]->point1->setCoords(1, threshold[3 - 2 * current_affected_side]);
-    infLineThreshold[1]->point1->setCoords(2, threshold[3 - 2 * current_affected_side]);
+    infLineThreshold[1]->point2->setCoords(2, threshold[3 - 2 * current_affected_side]);
     infLineThreshold[2]->point1->setCoords(1, threshold[2 * current_affected_side]);
-    infLineThreshold[2]->point1->setCoords(2, threshold[2 * current_affected_side]);
+    infLineThreshold[2]->point2->setCoords(2, threshold[2 * current_affected_side]);
     infLineThreshold[3]->point1->setCoords(1, threshold[1 + 2 * current_affected_side]);
-    infLineThreshold[3]->point1->setCoords(2, threshold[1 + 2 * current_affected_side]);
+    infLineThreshold[3]->point2->setCoords(2, threshold[1 + 2 * current_affected_side]);
     ui->plot_sole_left_voltage->replot();
     ui->plot_sole_right_voltage->replot();
 }
@@ -811,9 +811,32 @@ void MainWindow::plotDorsi(){
 void MainWindow::updateGaitPhaseState(){
     if(!is_plot_data) return;
     float* data = qnode.getGaitPhase();
+    QPen pen[2];
+    pen[0].setColor(QColor(0,0,0));
+    pen[1].setColor(QColor(255, 0, 0));
 
     state_gp[0] = data[1] - 1;
     state_gp[1] = data[2] - 1;
+ 
+    if(state_gp[current_affected_side == 0] == 0){
+        infLineThreshold[0]->setPen(pen[0]);
+        infLineThreshold[1]->setPen(pen[1]);
+    }
+    else{
+        infLineThreshold[0]->setPen(pen[1]);
+        infLineThreshold[1]->setPen(pen[0]);
+    }
+    
+    if(state_gp[current_affected_side == 1] == 0){
+        infLineThreshold[2]->setPen(pen[0]);
+        infLineThreshold[3]->setPen(pen[1]);
+    }
+    else{
+        infLineThreshold[2]->setPen(pen[1]);
+        infLineThreshold[3]->setPen(pen[0]);
+    }
+    ui->plot_sole_left_voltage->replot();
+    ui->plot_sole_right_voltage->replot();
 }
 
 void MainWindow::dorsiZeroingDone(){
