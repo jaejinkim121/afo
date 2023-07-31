@@ -24,365 +24,8 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
-    <widget class="QWidget" name="Config">
-     <attribute name="title">
-      <string>Config</string>
-     </attribute>
-     <widget class="QPushButton" name="button_toggle_plot_data">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>10</y>
-        <width>211</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>24</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Data plot 
-on/off</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button_dorsi_zeroing_done">
-      <property name="geometry">
-       <rect>
-        <x>240</x>
-        <y>10</y>
-        <width>211</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Dorsi Zeroing</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button_run_dorsi">
-      <property name="geometry">
-       <rect>
-        <x>300</x>
-        <y>110</y>
-        <width>141</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Run Dorsi</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button_run_plantar">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>110</y>
-        <width>141</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Run Plantar</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button_imu_zero">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>10</y>
-        <width>211</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>IMU Zeroing</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="button_sync">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>110</y>
-        <width>261</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>28</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Send Sync</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="Data">
-     <attribute name="title">
-      <string>Data</string>
-     </attribute>
-     <widget class="QCustomPlot" name="plot_plantar_command" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>315</width>
-        <height>211</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QCustomPlot" name="plot_dorsi_command" native="true">
-      <property name="geometry">
-       <rect>
-        <x>320</x>
-        <y>0</y>
-        <width>315</width>
-        <height>211</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QCustomPlot" name="plot_gaitPhase" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>210</y>
-        <width>315</width>
-        <height>211</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QCustomPlot" name="plot_kinematics" native="true">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>320</x>
-        <y>210</y>
-        <width>315</width>
-        <height>211</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QWidget" name="widget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>640</x>
-        <y>10</y>
-        <width>300</width>
-        <height>400</height>
-       </rect>
-      </property>
-      <widget class="QLabel" name="label_sole_image_left_1">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_left_5">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_left_2">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_left_3">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_left_4">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_right_3">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_right_5">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_right_1">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_right_6">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_left_6">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_right_2">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_sole_image_right_4">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>300</width>
-         <height>400</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <zorder>label_sole_image</zorder>
-      <zorder>label_sole_image_left_1</zorder>
-      <zorder>label_sole_image_left_5</zorder>
-      <zorder>label_sole_image_left_2</zorder>
-      <zorder>label_sole_image_left_3</zorder>
-      <zorder>label_sole_image_left_4</zorder>
-      <zorder>label_sole_image_right_3</zorder>
-      <zorder>label_sole_image_right_5</zorder>
-      <zorder>label_sole_image_right_1</zorder>
-      <zorder>label_sole_image_right_6</zorder>
-      <zorder>label_sole_image_left_6</zorder>
-      <zorder>label_sole_image_right_2</zorder>
-      <zorder>label_sole_image_right_4</zorder>
-     </widget>
-    </widget>
     <widget class="QWidget" name="Developer">
      <attribute name="title">
       <string>Sole</string>
@@ -1110,6 +753,363 @@ Side</string>
       <property name="text">
        <string>Send Threshold</string>
       </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Config">
+     <attribute name="title">
+      <string>Config</string>
+     </attribute>
+     <widget class="QPushButton" name="button_toggle_plot_data">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>211</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>24</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Data plot 
+on/off</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_dorsi_zeroing_done">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>10</y>
+        <width>211</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Dorsi Zeroing</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_run_dorsi">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>110</y>
+        <width>141</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Run Dorsi</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_run_plantar">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>110</y>
+        <width>141</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Run Plantar</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_imu_zero">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>10</y>
+        <width>211</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>IMU Zeroing</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_sync">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>261</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>28</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Send Sync</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Data">
+     <attribute name="title">
+      <string>Data</string>
+     </attribute>
+     <widget class="QCustomPlot" name="plot_plantar_command" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>315</width>
+        <height>211</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="plot_dorsi_command" native="true">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>0</y>
+        <width>315</width>
+        <height>211</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="plot_gaitPhase" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>210</y>
+        <width>315</width>
+        <height>211</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="plot_kinematics" native="true">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>210</y>
+        <width>315</width>
+        <height>211</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>640</x>
+        <y>10</y>
+        <width>300</width>
+        <height>400</height>
+       </rect>
+      </property>
+      <widget class="QLabel" name="label_sole_image_left_1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_left_5">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_left_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_left_3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_left_4">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_right_3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_right_5">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_right_1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_right_6">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_left_6">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_right_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_sole_image_right_4">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>300</width>
+         <height>400</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <zorder>label_sole_image</zorder>
+      <zorder>label_sole_image_left_1</zorder>
+      <zorder>label_sole_image_left_5</zorder>
+      <zorder>label_sole_image_left_2</zorder>
+      <zorder>label_sole_image_left_3</zorder>
+      <zorder>label_sole_image_left_4</zorder>
+      <zorder>label_sole_image_right_3</zorder>
+      <zorder>label_sole_image_right_5</zorder>
+      <zorder>label_sole_image_right_1</zorder>
+      <zorder>label_sole_image_right_6</zorder>
+      <zorder>label_sole_image_left_6</zorder>
+      <zorder>label_sole_image_right_2</zorder>
+      <zorder>label_sole_image_right_4</zorder>
      </widget>
     </widget>
     <widget class="QWidget" name="tab">
