@@ -435,6 +435,20 @@ void MainWindow::setNIC(){
 
 void MainWindow::setThreshold(){
     qnode.pubThresholdGap(this->threshold);
+    updatePlotThreshold();
+}
+
+void MainWindow::updatePlotThreshold(){
+    infLineThreshold[0]->point1->setCoords(1, threshold[2 - 2 * current_affected_side]);
+    infLineThreshold[0]->point2->setCoords(2, threshold[2 - 2 * current_affected_side]);
+    infLineThreshold[1]->point1->setCoords(1, threshold[3 - 2 * current_affected_side]);
+    infLineThreshold[1]->point1->setCoords(2, threshold[3 - 2 * current_affected_side]);
+    infLineThreshold[2]->point1->setCoords(1, threshold[2 * current_affected_side]);
+    infLineThreshold[2]->point1->setCoords(2, threshold[2 * current_affected_side]);
+    infLineThreshold[3]->point1->setCoords(1, threshold[1 + 2 * current_affected_side]);
+    infLineThreshold[3]->point1->setCoords(2, threshold[1 + 2 * current_affected_side]);
+    ui->plot_sole_left_voltage->replot();
+    ui->plot_sole_right_voltage->replot();
 }
 
 void MainWindow::toggleAffectedSide(){
@@ -884,7 +898,7 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase->graph(1)->setPen(pen[1]);
     ui->plot_gaitPhase->graph(0)->setName("NP");
     ui->plot_gaitPhase->graph(1)->setName("P");
-    ui->plot_gaitPhase->yAxis->setRange(0, 1.2);
+    ui->plot_gaitPhase->yAxis->setRange(-0.1, 1.2);
 
     ui->plot_gaitPhase_2->addGraph();
     ui->plot_gaitPhase_2->addGraph();
@@ -892,7 +906,7 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase_2->graph(1)->setPen(pen[1]);
     ui->plot_gaitPhase_2->graph(0)->setName("NP");
     ui->plot_gaitPhase_2->graph(1)->setName("P");
-    ui->plot_gaitPhase_2->yAxis->setRange(0, 1.2);
+    ui->plot_gaitPhase_2->yAxis->setRange(-0.1, 1.2);
 
     // Set plot title
     ui->plot_sole_left_voltage->plotLayout()->insertRow(0);
@@ -909,6 +923,12 @@ void MainWindow::initPlot(){
     QCPTextElement *title_gaitPhase = new QCPTextElement(ui->plot_gaitPhase, "Gait Phase", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_gaitPhase2 = new QCPTextElement(ui->plot_gaitPhase_2, "Gait Phase", QFont("sans", 16, QFont::Bold));
     
+    for (int i = 0 ; i < 2; i++){
+        infLineThreshold[i] = new QCPItemStraightLine(ui->plot_sole_left_voltage);
+        infLineThreshold[i+2] = new QCPItemStraightLine(ui->plot_sole_right_voltage);
+    }
+    updatePlotThreshold();
+
     ui->plot_sole_left_voltage->plotLayout()->addElement(0, 0, title_sole_left_voltage);
     ui->plot_sole_right_voltage->plotLayout()->addElement(0, 0, title_sole_right_voltage);
     ui->plot_plantar_command->plotLayout()->addElement(0, 0, title_plantar_command);
