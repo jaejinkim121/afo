@@ -45,6 +45,7 @@ public:
     void setNFO();
     void setNIC();
     void setThreshold();
+    void updatePlotThreshold();
     void toggleAffectedSide();
     void togglePlantarRun();
     void toggleDorsiRun();
@@ -127,6 +128,7 @@ private:
     Draw *s_l[6], *s_r[6];
     QVBoxLayout *n_l[6], *n_r[6];
     QCPItemLine *link[7];
+    QCPItemStraightLine *infLineThreshold[4];
     int *rgb;
 
 };
