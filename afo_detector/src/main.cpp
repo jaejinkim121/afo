@@ -209,23 +209,23 @@ void saveThreshold(){
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[1+(affectedSide==LEFT)] << endl;
+            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] << endl;
             zeroFile << meanLeft[i] << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[affectedSide==LEFT] << endl;
+            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] << endl;
         }
     }
     else {
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + thresholdGap[1+(affectedSide==RIGHT)] << endl;
+            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] << endl;
             zeroFile << meanRight[i] << endl;
 
         }
         for (int i = 0; i < 6 ; i++){
-            thFile << meanRight[i] + thresholdGap[affectedSide==RIGHT] << endl;
+            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] << endl;
         }
     }
     
