@@ -79,7 +79,6 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     setPIC();
     setNFO();
     setNIC();
-    setThreshold();
 }
 
 MainWindow::~MainWindow()
@@ -296,6 +295,7 @@ void MainWindow::togglePlotSole(){
 void MainWindow::soleCalibrationLeft(){
     is_left_calib_on = true;
     t_left_calib = ros::Time::now().toSec();
+    qnode.pubThresholdGap(this->threshold);
     qnode.pubThreshold(true);
     ui->button_sole_calibration_left->setText("On...");
     ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(255, 0, 0)");
@@ -305,6 +305,7 @@ void MainWindow::soleCalibrationLeft(){
 void MainWindow::soleCalibrationRight(){
     is_right_calib_on = true;
     t_right_calib = ros::Time::now().toSec();
+    qnode.pubThresholdGap(this->threshold);
     qnode.pubThreshold(false);
     ui->button_sole_calibration_right->setText("On...");
     ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(255, 0, 0)");
