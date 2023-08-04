@@ -6,7 +6,7 @@ void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
     cout << "Debug - Sole Left data  - ";
     #endif
 
-    for (int i = 0; i< 7; i++){
+    for (int i = 0; i< 6; i++){
         d_soleLeft[i] = msg->data[i];
 
         #ifdef DEBUG
@@ -23,7 +23,7 @@ void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
     cout << "Debug - Sole Right data  - ";
     #endif
 
-    for (int i = 0; i< 7; i++){
+    for (int i = 0; i< 6; i++){
         d_soleRight[i] = msg->data[i];
 
         #ifdef DEBUG
@@ -40,7 +40,7 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     cout << "Debug - IMU data  - ";
     #endif
 
-    for (int i = 0; i< 64; i++){
+    for (int i = 0; i< 63; i++){
         d_imu[i] = msg->data[i];
 
         #ifdef DEBUG
@@ -96,7 +96,7 @@ void gaitDetector(int* result){
     // Left Detection
     if(leftSwing){
         for (int i= 0; i<6; i++){
-            if(d_soleLeft[i+1] > thLeft[IC][i]){
+            if(d_soleLeft[i] > thLeft[IC][i]){
                 leftSwing = false;
             }
         }
@@ -104,7 +104,7 @@ void gaitDetector(int* result){
     else{
         leftTmp = true;
         for (int i = 0; i< 6; i++){
-            if(d_soleLeft[i+1] > thLeft[FO][i]){
+            if(d_soleLeft[i] > thLeft[FO][i]){
                 leftTmp = false;
                 break;
             }
@@ -115,7 +115,7 @@ void gaitDetector(int* result){
     // Right Detection
     if(rightSwing){
         for (int i= 0; i<6; i++){
-            if(d_soleRight[i+1] > thRight[IC][i]){
+            if(d_soleRight[i] > thRight[IC][i]){
                 rightSwing = false;
             }
         }
@@ -123,7 +123,7 @@ void gaitDetector(int* result){
     else{
         rightTmp = true;
         for (int i = 0; i< 6; i++){
-            if(d_soleRight[i+1] > thRight[FO][i]){
+            if(d_soleRight[i] > thRight[FO][i]){
                 rightTmp = false;
                 break;
             }
