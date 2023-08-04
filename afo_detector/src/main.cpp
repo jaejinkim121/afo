@@ -82,6 +82,19 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
 // paretic side is left = 0
 // paretic side is right = 1
 void gaitDetector(int* result){
+    for (int i = 1; i< 7; i++){
+        cout << d_soleLeft[i] << ", ";
+    }
+    cout << "//////   ";
+    
+    for (int i = 1; i<7;i++){
+        cout << d_soleLeft[i] - thLeft[IC][i-1] << ", ";
+    }
+    cout << "//////   ";
+    for (int i = 1; i<7;i++){
+        cout << d_soleLeft[i] - thLeft[FO][i-1] << ", ";
+    }
+    
     result[0] = 0;
     result[1] = 0;
     result[2] = 0;
