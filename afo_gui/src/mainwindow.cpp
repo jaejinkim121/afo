@@ -582,6 +582,8 @@ void MainWindow::updateCycleTimeValue(){
 }
 
 void MainWindow::togglePage(){
+    currentPage = ui->RightBox->currentIndex();
+    
     if(++currentPage == 5){
         currentPage = 0;
     }
