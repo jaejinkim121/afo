@@ -26,7 +26,7 @@ namespace afo_gui {
         plantarData = new float[3];
         dorsiData = new float[5];
         gaitPhase = new float[3];
-        polyFit = new float[24]
+        polyFit = new float[24];
         linkX = new double[8];
         linkY = new double[8];
         linkZ = new double[8];
