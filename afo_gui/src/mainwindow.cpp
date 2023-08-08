@@ -637,7 +637,7 @@ void MainWindow::runPolycalib(){
 }
 
 void MainWindow::polyCalibToggle(bool forward){
-    if (!polyCalibForce(forward)) return;
+    //if (!polyCalibForce(forward)) return;
     if (!polyCalibNum(forward)) return;
     polyCalibSide();
 
