@@ -209,23 +209,23 @@ void saveThreshold(){
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] << endl;
+            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] / polyLeft[1][i] << endl;
             zeroFile << meanLeft[i] << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] << endl;
+            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] / polyLeft[1][i] << endl;
         }
     }
     else {
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] << endl;
+            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] / polyRight[1][i] << endl;
             zeroFile << meanRight[i] << endl;
 
         }
         for (int i = 0; i < 6 ; i++){
-            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] << endl;
+            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] / polyRight[1][i] << endl;
         }
     }
     
@@ -259,11 +259,24 @@ void updatePoly(){
 }
 
 void savePoly(){
-    int a, b, c;
+    int a, b;
     // poly fitting
     ofstream polyFile;
     std_msgs::Float32MultiArray msg;
     polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv", ios::trunc);
+
+    for (int i =0; i < 6; i++){
+        b = polyLeft[0][i];
+        a = referenceForceLow / (polyLeft[1][i] - b);
+        polyFile << a << endl << b << endl;
+    }
+    for (int i = 0; i < 6; i++){
+        b = polyRight[0][i];
+        a = referenceForceLow / (polyRight[1][i] - b);
+        polyFile << a << endl << b << endl;
+    }
+
+    /*
     for (int i = 0; i < 6; i++){
         msg.data.clear();
         c = polyLeft[0][i];
@@ -279,9 +292,18 @@ void savePoly(){
         b = (-f2 * f2 * (polyRight[1][i] - c) + f1 * f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2));
         polyFile << c << endl << b << endl << a << endl;
     }
+    */
 }
 
 void loadPoly(){
+    if (!usePolyCalib){
+        for (int i = 0; i < 6; i++){
+            polyLeft[1][i] = 1.0;
+            polyRight[1][i] = 1.0;
+        }
+        return;
+    }
+
     std_msgs::Float32MultiArray msg;
     ifstream polyFile;
     polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv");
@@ -291,7 +313,7 @@ void loadPoly(){
     }
     string str;
     for (int i = 0; i < 6; i++){
-        for (int j = 0; j < 3; j++){
+        for (int j = 0; j < 2; j++){
             getline(polyFile, str);
             polyLeft[j][i] = stof(str);
             msg.data.push_back(polyLeft[j][i]);
