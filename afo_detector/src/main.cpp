@@ -266,13 +266,13 @@ void savePoly(){
     polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv", ios::trunc);
 
     for (int i =0; i < 6; i++){
-        b = polyLeft[0][i];
-        a = referenceForceLow / (polyLeft[1][i] - b);
+        a = referenceForceLow / (polyLeft[1][i] - polyLeft[0][i]);
+        b = -polyLeft[0][i] * a;
         polyFile << a << endl << b << endl;
     }
     for (int i = 0; i < 6; i++){
-        b = polyRight[0][i];
-        a = referenceForceLow / (polyRight[1][i] - b);
+        a = referenceForceLow / (polyRight[1][i] - polyRight[0][i]);
+        b = -polyRight[0][i] * a;
         polyFile << a << endl << b << endl;
     }
 
