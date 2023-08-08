@@ -112,7 +112,7 @@ private:
     int current_affected_side = 0;
     int poly_side = 1;
     int poly_num = 1;
-    int poly_force = 0;
+    int poly_force = 1;
 
     double cycle_time = 2.0;
     double max_torque = 0.5;

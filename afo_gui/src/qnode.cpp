@@ -153,7 +153,10 @@ namespace afo_gui {
 
         for (int i = 0; i < 6; i++){
             soleRightData[i+1] = msg->data[i] * polyFit[12 + 2 * i] + polyFit[13 + 2 * i];
+            std::cout << soleRightData[i+1] << ", ";
         }
+        std::cout << std::endl;
+        
         updateSoleRight();
     }
 

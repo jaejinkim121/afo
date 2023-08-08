@@ -613,7 +613,7 @@ void MainWindow::runPolycalibZero(){
         continue;
     }
     ui->button_polycalib_zero_run->setText("Done\nZero");
-    ui->button_polycalib_zero_run->setStyleSheet("background-colot: rgb(0,255,0)");
+    ui->button_polycalib_zero_run->setStyleSheet("background-color: rgb(0,255,0)");
 }
 
 void MainWindow::runPolycalib(){

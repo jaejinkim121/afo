@@ -259,7 +259,7 @@ void updatePoly(){
 }
 
 void savePoly(){
-    int a, b;
+    float a, b;
     // poly fitting
     ofstream polyFile;
     std_msgs::Float32MultiArray msg;
