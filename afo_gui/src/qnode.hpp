@@ -43,6 +43,7 @@ public:
     void callbackGaitParetic(const std_msgs::Int16ConstPtr& msg);
     void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
     void pubThresholdGap(float* threshold);
     void pubAffectedSide(bool current_affected_side);
@@ -88,6 +89,7 @@ private:
     float* soleRightZero;
     float* plantarData;
     float* dorsiData;
+    float* polyFit;
     double* linkX;
     double* linkY;
     double* linkZ;
@@ -117,6 +119,7 @@ private:
     ros::Subscriber afo_dorsi_zeroing_done_sub;
     ros::Subscriber afo_gait_paretic_sub;
     ros::Subscriber afo_gait_nonparetic_sub;
+    ros::Subscriber afo_poly_fit_sub;
 
     int soleLeftCnt = 0;
     int soleRightCnt = 0;

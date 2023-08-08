@@ -67,6 +67,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(updatePlantar()), this, SLOT(plotPlantar()));
     QObject::connect(&qnode, SIGNAL(updateDorsi()), this, SLOT(plotDorsi()));
     QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
+    QObject::connect(&qnode, SIGNAL(updatePolyFitPlot()), this, SLOT(updatePolyFit()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
     
     initPlot();
@@ -583,7 +584,7 @@ void MainWindow::updateCycleTimeValue(){
 
 void MainWindow::togglePage(){
     currentPage = ui->RightBox->currentIndex();
-    
+
     if(++currentPage == 5){
         currentPage = 0;
     }
@@ -887,8 +888,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(-0.1, 0.5);
-    ui->plot_sole_right_voltage->yAxis->setRange(-0.1, 0.5);
+    ui->plot_sole_left_voltage->yAxis->setRange(-0.5, 15);
+    ui->plot_sole_right_voltage->yAxis->setRange(-0.5, 15);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();
