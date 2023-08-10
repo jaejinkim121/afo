@@ -37,6 +37,8 @@ float thLeft[2][6];
 float thRight[2][6];
 float polyLeft[2][6];
 float polyRight[2][6];
+float polyCoeffLeft[2][6];
+float polyCoeffRight[2][6];
 float meanLeft[6];
 float meanRight[6];
 int dataNum;

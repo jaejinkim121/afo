@@ -209,23 +209,23 @@ void saveThreshold(){
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] / polyLeft[1][i] << endl;
+            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] / polyCoeffLeft[1][i] << endl;
             zeroFile << meanLeft[i] << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] / polyLeft[1][i] << endl;
+            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] / polyCoeffLeft[1][i] << endl;
         }
     }
     else {
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] / polyRight[1][i] << endl;
+            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] / polyCoeffRight[1][i] << endl;
             zeroFile << meanRight[i] << endl;
 
         }
         for (int i = 0; i < 6 ; i++){
-            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] / polyRight[1][i] << endl;
+            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] / polyCoeffRight[1][i] << endl;
         }
     }
     
@@ -298,8 +298,8 @@ void savePoly(){
 void loadPoly(){
     if (!usePolyCalib){
         for (int i = 0; i < 6; i++){
-            polyLeft[1][i] = 1.0;
-            polyRight[1][i] = 1.0;
+            polyCoeffLeft[1][i] = 1.0;
+            polyCoeffRight[1][i] = 1.0;
         }
         return;
     }
@@ -315,15 +315,15 @@ void loadPoly(){
     for (int i = 0; i < 6; i++){
         for (int j = 0; j < 2; j++){
             getline(polyFile, str);
-            polyLeft[j][i] = stof(str);
-            msg.data.push_back(polyLeft[j][i]);
+            polyCoeffLeft[j][i] = stof(str);
+            msg.data.push_back(polyCoeffLeft[j][i]);
         }
     }
     for (int i = 0; i < 6; i++){
-        for (int j = 0; j < 3; j++){
+        for (int j = 0; j < 2; j++){
             getline(polyFile, str);
-            polyRight[j][i] = stof(str);
-            msg.data.push_back(polyRight[j][i]);
+            polyCoeffRight[j][i] = stof(str);
+            msg.data.push_back(polyCoeffRight[j][i]);
         }
     }
     afo_poly_fitting_pub.publish(msg);
