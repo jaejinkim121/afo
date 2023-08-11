@@ -26,6 +26,7 @@ namespace afo_gui {
         plantarData = new float[3];
         dorsiData = new float[5];
         gaitPhase = new float[3];
+        polyFit = new float[24];
         linkX = new double[8];
         linkY = new double[8];
         linkZ = new double[8];
@@ -80,6 +81,7 @@ namespace afo_gui {
         afo_dorsi_zeroing_done_sub = nh->subscribe("/afo_controller/dorsi_zeroing_done", 1, &QNode::callbackDorsiZeroingDone, this);
         afo_gait_paretic_sub = nh->subscribe("/afo_detector/gait_paretic", 1, &QNode::callbackGaitParetic, this);
         afo_gait_nonparetic_sub = nh->subscribe("/afo_detector/gait_nonparetic", 1, &QNode::callbackGaitNonparetic, this);
+        afo_poly_fit_sub = nh->subscribe("/afo_detector/poly_fit", 1, &QNode::callbackPolyFit, this);
     }
 
     void QNode::run() {
@@ -135,7 +137,7 @@ namespace afo_gui {
         soleLeftData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleLeftData[i+1] = msg->data[i] - soleLeftZero[i];
+            soleLeftData[i+1] = msg->data[i] * polyFit[2 * i] + polyFit[2 * i + 1];
         }
         updateSoleLeft();
     }
@@ -151,8 +153,11 @@ namespace afo_gui {
         soleRightData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleRightData[i+1] = msg->data[i] - soleRightZero[i];
+            soleRightData[i+1] = msg->data[i] * polyFit[12 + 2 * i] + polyFit[13 + 2 * i];
+            std::cout << soleRightData[i+1] << ", ";
         }
+        std::cout << std::endl;
+        
         updateSoleRight();
     }
 
@@ -289,6 +294,12 @@ namespace afo_gui {
 
     void QNode::callbackDorsiZeroingDone(const std_msgs::BoolConstPtr& msg){
         doneDorsiZeroing();
+    }
+
+    void QNode::callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        for (int i = 0; i < 24; i++){
+            polyFit[i] = msg->data[i];
+        }
     }
 
     void QNode::pubAffectedSide(bool affected_side){

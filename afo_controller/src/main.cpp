@@ -371,7 +371,6 @@ void worker()
                     if (slave->getName() == "Plantar"){
                         if (setGaitEventAffected){
                             currentTimePercentage = pathPlannerPlantarflexion();
-                            std::cout << currentTimePercentage << std::endl;
                         }
                         if(plantarRun){
                             command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);

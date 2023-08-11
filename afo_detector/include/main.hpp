@@ -35,20 +35,24 @@ bool affectedSide;
 float thresholdGap[4];
 float thLeft[2][6];
 float thRight[2][6];
-float polyLeft[3][6];
-float polyRight[3][6];
+float polyLeft[2][6];
+float polyRight[2][6];
+float polyCoeffLeft[2][6];
+float polyCoeffRight[2][6];
 float meanLeft[6];
 float meanRight[6];
 int dataNum;
 int polySide, polySensor, polyForce;
 
-float f1 = 5.0;
-float f2 = 10.0;
+float referenceForceLow = 5.0;
+float referenceForceHigh = 10.0;
 
 float recordTimeThreshold = 1.0;
 bool runThreshold = false;
 bool runPolycalib = false;
 bool thresholdSide;
+bool usePolyCalib = true;
+
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
 system_clock::time_point initialTimePolycalib, currentTimePolycalib;
 duration<double> currentTimeGap;
