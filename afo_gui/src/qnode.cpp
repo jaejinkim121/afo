@@ -39,6 +39,10 @@ namespace afo_gui {
             soleLeftZero[i] = 0;
             soleRightZero[i] = 0;
         }
+        for (int i = 0; i < 12; i++){
+            polyFit[2*i] = 1.0;
+            polyFit[2*i+1] = 0.0;
+        }
         loadSoleZero(SOLE_LEFT);
         loadSoleZero(SOLE_RIGHT);
         loadLinkLength();
@@ -136,7 +140,7 @@ namespace afo_gui {
         soleLeftData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleLeftData[i+1] = msg->data[i] * polyFit[2 * i] + polyFit[2 * i + 1];
+            soleLeftData[i+1] = msg->data[i] - soleLeftZero[i]; // * polyFit[2 * i] + polyFit[2 * i + 1];
         }
         updateSoleLeft();
     }
@@ -152,10 +156,8 @@ namespace afo_gui {
         soleRightData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleRightData[i+1] = msg->data[i] * polyFit[12 + 2 * i] + polyFit[13 + 2 * i];
-            std::cout << soleRightData[i+1] << ", ";
+            soleRightData[i+1] = msg->data[i] - soleRightZero[i]; // * polyFit[12 + 2 * i] + polyFit[13 + 2 * i];
         }
-        std::cout << std::endl;
         
         updateSoleRight();
     }

@@ -116,7 +116,7 @@ private:
 
     double cycle_time = 2.0;
     double max_torque = 0.5;
-    float threshold[4] = {3.5, 5, 3.5, 5};
+    float threshold[4] = {0.09, 0.12, 0.10, 0.13};
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
     QVector<double> v_l[6];

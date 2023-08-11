@@ -51,7 +51,7 @@ float recordTimeThreshold = 1.0;
 bool runThreshold = false;
 bool runPolycalib = false;
 bool thresholdSide;
-bool usePolyCalib = true;
+bool usePolyCalib = false;
 
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
 system_clock::time_point initialTimePolycalib, currentTimePolycalib;
