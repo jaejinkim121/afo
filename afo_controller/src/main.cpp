@@ -209,6 +209,9 @@ void callbackPlantarRun(const std_msgs::BoolConstPtr& msg){
 
 void callbackDorsiRun(const std_msgs::BoolConstPtr& msg){
     dorsiRun = msg->data;
+    std_msgs::Float32 m;
+    m.data = dorsiNeutralPosition;
+    afo_configuration_dorsiNeutralPosition.publish(m);
 }
 
 void worker()
@@ -418,6 +421,7 @@ void worker()
                             dorsiInputMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
                             dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * 0 * dirDorsi;
                             dorsiTorqueInput = dirDorsi * (maxTorqueDorsi * 0 + dorsiPreTension);
+                            dorsiNeutralPosition = reading.getActualPosition();
                         }
                             
                         command.setModeOfOperation(dorsiInputMode);
