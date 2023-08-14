@@ -727,8 +727,8 @@ void MainWindow::plotSoleLeft(){
         appendCropQVector(&gp2[0], state_gp[0], gaitPhasePlotMaxNum2);
         appendCropQVector(&gp2[1], state_gp[1], gaitPhasePlotMaxNum2);
 
-        ui->plot_gaitPhase->xAxis->setRange(t_gp[0], t_gp[0] + 20.0);
-        ui->plot_gaitPhase_2->xAxis->setRange(t_gp2[0], t_gp2[0] + 100.0);
+        ui->plot_gaitPhase->xAxis->setRange(t_gp[0], t_gp[0] + 7.0);
+        ui->plot_gaitPhase_2->xAxis->setRange(t_gp2[0], t_gp2[0] + 27.0);
         this->updatePlot(GAIT_PHASE);
     }
 
@@ -888,8 +888,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(-0.5, 15);
-    ui->plot_sole_right_voltage->yAxis->setRange(-0.5, 15);
+    ui->plot_sole_left_voltage->yAxis->setRange(-0.1, 0.7);
+    ui->plot_sole_right_voltage->yAxis->setRange(-0.1, 0.7);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();
