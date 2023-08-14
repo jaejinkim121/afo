@@ -122,6 +122,7 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
     }
 
     dorsiTorque = min(max(dorsiTorque, 0.0), 1.0);
+    dorsiPosition = min(max(dorsiPosition, 0.0), 1.0);
     return currentCyclePercentage;
 }
 

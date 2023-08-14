@@ -71,8 +71,8 @@ duration<double, micro> eventTimeGap;
 // Force Parameter
 double maxTorquePlantar = 0.5; // Nm at lowest level of motor.
 double maxTorqueDorsi = 0.5;
-double maxPositionDorsi = 3;
-double positionDiffLimit = 1;
+double maxPositionDorsi = 3000;
+double positionDiffLimit = 500;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
 double dorsiPreTension = 0.06;   // It's not normalized value.
