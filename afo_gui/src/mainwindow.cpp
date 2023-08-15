@@ -732,7 +732,7 @@ void MainWindow::plotSoleLeft(){
     float* data = qnode.getSoleLeftData();
     
     if (is_trial_on){
-        if (ros::Time::now().teSec() - t_trial_on > cycle_time){
+        if (ros::Time::now().toSec() - t_trial_on > cycle_time){
             t_trial_on = ros::Time::now().toSec();
             qnode.pubForceTrigger();
         }
