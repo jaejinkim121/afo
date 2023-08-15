@@ -347,9 +347,9 @@ namespace afo_gui {
         afo_gui_dorsi_run_pub.publish(m);
     }
 
-    void QNode::pubStreaming(int i){
+    void QNode::pubStreaming(){
         std_msgs::Bool m;
-        m.data = i;
+        m.data = true;
         afo_gui_streaming_pub.publish(m);
     }
 

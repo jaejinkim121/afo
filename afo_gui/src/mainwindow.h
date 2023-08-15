@@ -115,6 +115,7 @@ private:
     int poly_force = 1;
 
     double cycle_time = 2.0;
+    double stance_time = 0.65;
     double max_torque_plantar = 0.5;
     double max_torque_dorsi = 0.3;
     float threshold[4] = {0.09, 0.12, 0.10, 0.13};

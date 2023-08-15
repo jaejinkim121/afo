@@ -737,7 +737,9 @@ void MainWindow::plotSoleLeft(){
             t_trial_on = ros::Time::now().toSec();
             qnode.pubForceTrigger(1);
         }
-        if (ros::Time::now().toSec())
+        if (ros::Time::now().toSec() - t_trial_on > cycle_time * stance_time){
+            qnode.pubForceTrigger(2);
+        }
     }
 
     if (is_plot_data){

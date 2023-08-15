@@ -53,7 +53,7 @@ public:
     void pubCycleTime(float t);
     void pubPlantarRun(bool run);
     void pubDorsiRun(bool run);
-    void pubStreaming(int i);
+    void pubStreaming();
     void pubPolycalib(int side, int num, int force);
     void pubSync(bool sync);
     void imuZeroing();
