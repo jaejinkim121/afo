@@ -32,8 +32,8 @@ EthercatDeviceConfigurator::SharedPtr configurator;
 
 unsigned int counter = 0;
 
-double plantarPosition, plantarTorque;
-double dorsiPosition, dorsiTorque;
+double plantarPosition, plantarTorque, plantarCurrentTorque, plantarStopTorque;
+double dorsiPosition, dorsiTorque, dorsiCurrentTorque, dorsiStopTorque;
 double plantarNeutralPosition, dorsiNeutralPosition;
 bool setGaitEventAffected = false;
 bool setGaitEventNonAffected = false;
@@ -61,11 +61,12 @@ int etherCatCommunicationRate = 5000; // us
 double cycleTime = 2.0 * pow(10,6);
 double startTime = 0.25;
 double endTime = 0.65;
+double relaxTime = 0.3 * pow(10,6);
 double onTime = endTime - startTime;
 double upTimeRatio = 0.75;
 double acc = 4 / pow(upTimeRatio * onTime, 2);
-double uptimeDF = 0.1;
-double downtimeDF = 0.1;
+double uptimeDF = 0.2;
+double downtimeDF = 0.15;
 duration<double, micro> eventTimeGap;
 
 // Force Parameter
