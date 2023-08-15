@@ -22,7 +22,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_toggle_plot_sole, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sole_calibration_left, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sole_calibration_right, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_set_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_max_torque_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_max_torque_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -112,8 +113,12 @@ void MainWindow::buttonClicked(){
         this->soleCalibrationRight();
     }
 
-    else if (state == "button_set_max_torque"){
-        this->setMaxTorque();
+    else if (state == "button_set_max_torque_plantar"){
+        this->setMaxTorque(true);
+    }
+
+    else if (state == "button_set_max_torque_dorsi"){
+        this->setMaxTorque(false);
     }
 
     else if (state == "button_set_cycle_time"){
@@ -312,20 +317,19 @@ void MainWindow::soleCalibrationRight(){
     ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(255, 0, 0)");
 }
 
-void MainWindow::setMaxTorque(){
+void MainWindow::setMaxTorque(bool is_plantar){
     float t = 1;
     try{
         t = stof(ui->text_target_parameter->toPlainText().toStdString());
-        max_torque = t;
-        qnode.pubMaxTorque(t);
+        
+        if(is_plantar) max_torque_plantar = t;
+        else max_torque_dorsi = t;
+
+        qnode.pubMaxTorque(max_torque_plantar, max_torque_dorsi);
 
         ui->text_target_parameter->clear();
 
-        QString s("maximum torque set to ");
-        s.append(QString::fromStdString(std::to_string(t)));
-
-        updateMaxTorqueValue();
-        updateLog(s);
+        updateMaxTorqueValue(is_plantar);
         return;
     }
     catch(...){
@@ -572,9 +576,15 @@ void MainWindow::emergencyStop(){
     toggleTrial();
 }
 
-void MainWindow::updateMaxTorqueValue(){
-    std::string s = std::to_string(max_torque);
-    ui->text_max_torque_current->setPlainText(QString::fromStdString(s));
+void MainWindow::updateMaxTorqueValue(bool is_plantar){
+    if (is_plantar){
+        std::string s = std::to_string(max_torque_plantar);
+        ui->text_max_torque_plantar_current->setPlainText(QString::fromStdString(s));
+    }
+    else{
+        std::string s = std::to_string(max_torque_dorsi);
+        ui->text_max_torque_dorsi_current->setPlainText(QString::fromStdString(s));    
+    }
 }
 
 void MainWindow::updateCycleTimeValue(){

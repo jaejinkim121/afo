@@ -215,14 +215,14 @@ void callbackShutdown(const std_msgs::BoolConstPtr& msg){
     }
 }
 
-void callbackMaxTorque(const std_msgs::Float32ConstPtr& msg){
-    maxTorquePlantar = msg->data;
-    maxTorqueDorsi = msg->data;
-    std_msgs::Float32 m;
-    m.data = maxTorquePlantar;
-    afo_configuration_maxTorquePlantar.publish(m);
-    afo_configuration_maxTorqueDorsi.publish(m);
-    std::cout << "maximum torque set to " << maxTorquePlantar << std::endl;
+void callbackMaxTorque(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    maxTorquePlantar = msg->data[0];
+    maxTorqueDorsi = msg->data[1];
+    std_msgs::Float32 m_p, m_d;
+    m_p.data = maxTorquePlantar;
+    m_d.data = maxTorqueDorsi;
+    afo_configuration_maxTorquePlantar.publish(m_p);
+    afo_configuration_maxTorqueDorsi.publish(m_d);
 }
 
 void callbackCycleTime(const std_msgs::Float32ConstPtr& msg){
@@ -231,7 +231,6 @@ void callbackCycleTime(const std_msgs::Float32ConstPtr& msg){
     m.data = msg->data;
     afo_configuration_cycle_time.publish(m);
 
-    std::cout << "cycle time set to " << msg->data << std::endl;
 }
 
 void callbackPlantarRun(const std_msgs::BoolConstPtr& msg){

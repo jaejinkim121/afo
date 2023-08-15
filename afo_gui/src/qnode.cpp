@@ -66,9 +66,7 @@ namespace afo_gui {
         afo_gui_affected_side_pub = nh->advertise<std_msgs::Bool>("/afo_gui/affected_side", 100);
         afo_gui_threshold_gap_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/threshold_gap", 100);
         afo_gui_threshold_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_threshold", 100);
-        afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
-        afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
-        afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
+        afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/max_torque", 100);
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
         afo_gui_plantar_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/plantar_run", 100);
         afo_gui_dorsi_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/dorsi_run", 100);
@@ -323,9 +321,10 @@ namespace afo_gui {
         this->afo_gui_threshold_pub.publish(m);
     }
 
-    void QNode::pubMaxTorque(float t){
-        std_msgs::Float32 m;
-        m.data = t;
+    void QNode::pubMaxTorque(float p, float d){
+        std_msgs::Float32MultiArray m;
+        m.data.push_back(p);
+        m.data.push_back(d);
         afo_gui_max_torque_pub.publish(m);
     }
     

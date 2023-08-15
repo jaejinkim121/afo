@@ -54,7 +54,7 @@ public:
     void deleteKey();
     void toggleTrial();
     void emergencyStop();
-    void updateMaxTorqueValue();
+    void updateMaxTorqueValue(bool is_plantar);
     void updateCycleTimeValue();
     void targetLinkIdx();
     void imuZero();
@@ -115,7 +115,8 @@ private:
     int poly_force = 1;
 
     double cycle_time = 2.0;
-    double max_torque = 0.5;
+    double max_torque_plantar = 0.5;
+    double max_torque_dorsi = 0.3;
     float threshold[4] = {0.09, 0.12, 0.10, 0.13};
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
