@@ -45,7 +45,7 @@ public:
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
-    void pubForceTrigger();
+    void pubForceTrigger(int i);
     void pubThresholdGap(float* threshold);
     void pubAffectedSide(bool current_affected_side);
     void pubThreshold(bool b);

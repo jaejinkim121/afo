@@ -353,9 +353,9 @@ namespace afo_gui {
         afo_gui_streaming_pub.publish(m);
     }
 
-    void QNode::pubForceTrigger(){
+    void QNode::pubForceTrigger(int i){
         std_msgs::Int16 m;
-        m.data = 1;
+        m.data = i;
         afo_gui_force_trigger.publish(m);
     }
     void QNode::pubSync(bool sync){
