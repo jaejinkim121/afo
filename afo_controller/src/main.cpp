@@ -107,7 +107,7 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
             currentCyclePercentage);
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
-    
+    cout << dorsiTorque << endl;
     // After Initial Contact, deactivate dorsiflexion.
     // stage 1
     // if (currentCyclePercentage < downtimeDF){
@@ -440,7 +440,7 @@ void worker()
                         afo_motor_data_plantar.publish(msg_motor_plantar);
                     }
                     else if (slave->getName() == "Dorsi"){
-                        if (setGaitEventNonAffected && setGaitEventAffected){
+                        if (setGaitEventAffected){
                             currentTimePercentage = pathPlannerDorsiflexion(reading);
                         }
                         
