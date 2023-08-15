@@ -37,7 +37,7 @@ public:
     void togglePlotSole();
     void soleCalibrationLeft();
     void soleCalibrationRight();
-    void setMaxTorque();
+    void setMaxTorque(bool is_plantar);
     void setCycleTime();
     void setLinkLength();
     void setPFO();

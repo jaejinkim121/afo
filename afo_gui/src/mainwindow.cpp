@@ -75,7 +75,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     initSolePlot();
     toggleTrial();
     toggleTrial();
-    updateMaxTorqueValue();
+    updateMaxTorqueValue(true);
+    updateMaxTorqueValue(false);    
     updateCycleTimeValue();
     setPFO();
     setPIC();

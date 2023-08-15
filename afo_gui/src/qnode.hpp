@@ -48,7 +48,7 @@ public:
     void pubThresholdGap(float* threshold);
     void pubAffectedSide(bool current_affected_side);
     void pubThreshold(bool b);
-    void pubMaxTorque(float t);
+    void pubMaxTorque(float p, float d);
     void pubCycleTime(float t);
     void pubPlantarRun(bool run);
     void pubDorsiRun(bool run);
