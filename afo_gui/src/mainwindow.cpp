@@ -22,7 +22,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_toggle_plot_sole, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sole_calibration_left, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sole_calibration_right, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-    QObject::connect(ui->button_set_max_torque, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_max_torque_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_max_torque_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -67,6 +68,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(updatePlantar()), this, SLOT(plotPlantar()));
     QObject::connect(&qnode, SIGNAL(updateDorsi()), this, SLOT(plotDorsi()));
     QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
+    QObject::connect(&qnode, SIGNAL(updatePolyFitPlot()), this, SLOT(updatePolyFit()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
     
     initPlot();
@@ -79,7 +81,6 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     setPIC();
     setNFO();
     setNIC();
-    setThreshold();
 }
 
 MainWindow::~MainWindow()
@@ -112,8 +113,12 @@ void MainWindow::buttonClicked(){
         this->soleCalibrationRight();
     }
 
-    else if (state == "button_set_max_torque"){
-        this->setMaxTorque();
+    else if (state == "button_set_max_torque_plantar"){
+        this->setMaxTorque(true);
+    }
+
+    else if (state == "button_set_max_torque_dorsi"){
+        this->setMaxTorque(false);
     }
 
     else if (state == "button_set_cycle_time"){
@@ -296,6 +301,7 @@ void MainWindow::togglePlotSole(){
 void MainWindow::soleCalibrationLeft(){
     is_left_calib_on = true;
     t_left_calib = ros::Time::now().toSec();
+    qnode.pubThresholdGap(this->threshold);
     qnode.pubThreshold(true);
     ui->button_sole_calibration_left->setText("On...");
     ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(255, 0, 0)");
@@ -305,25 +311,25 @@ void MainWindow::soleCalibrationLeft(){
 void MainWindow::soleCalibrationRight(){
     is_right_calib_on = true;
     t_right_calib = ros::Time::now().toSec();
+    qnode.pubThresholdGap(this->threshold);
     qnode.pubThreshold(false);
     ui->button_sole_calibration_right->setText("On...");
     ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(255, 0, 0)");
 }
 
-void MainWindow::setMaxTorque(){
+void MainWindow::setMaxTorque(bool is_plantar){
     float t = 1;
     try{
         t = stof(ui->text_target_parameter->toPlainText().toStdString());
-        max_torque = t;
-        qnode.pubMaxTorque(t);
+        
+        if(is_plantar) max_torque_plantar = t;
+        else max_torque_dorsi = t;
+
+        qnode.pubMaxTorque(max_torque_plantar, max_torque_dorsi);
 
         ui->text_target_parameter->clear();
 
-        QString s("maximum torque set to ");
-        s.append(QString::fromStdString(std::to_string(t)));
-
-        updateMaxTorqueValue();
-        updateLog(s);
+        updateMaxTorqueValue(is_plantar);
         return;
     }
     catch(...){
@@ -442,11 +448,11 @@ void MainWindow::updatePlotThreshold(){
     infLineThreshold[0]->point1->setCoords(1, threshold[2 - 2 * current_affected_side]);
     infLineThreshold[0]->point2->setCoords(2, threshold[2 - 2 * current_affected_side]);
     infLineThreshold[1]->point1->setCoords(1, threshold[3 - 2 * current_affected_side]);
-    infLineThreshold[1]->point1->setCoords(2, threshold[3 - 2 * current_affected_side]);
+    infLineThreshold[1]->point2->setCoords(2, threshold[3 - 2 * current_affected_side]);
     infLineThreshold[2]->point1->setCoords(1, threshold[2 * current_affected_side]);
-    infLineThreshold[2]->point1->setCoords(2, threshold[2 * current_affected_side]);
+    infLineThreshold[2]->point2->setCoords(2, threshold[2 * current_affected_side]);
     infLineThreshold[3]->point1->setCoords(1, threshold[1 + 2 * current_affected_side]);
-    infLineThreshold[3]->point1->setCoords(2, threshold[1 + 2 * current_affected_side]);
+    infLineThreshold[3]->point2->setCoords(2, threshold[1 + 2 * current_affected_side]);
     ui->plot_sole_left_voltage->replot();
     ui->plot_sole_right_voltage->replot();
 }
@@ -571,9 +577,15 @@ void MainWindow::emergencyStop(){
     toggleTrial();
 }
 
-void MainWindow::updateMaxTorqueValue(){
-    std::string s = std::to_string(max_torque);
-    ui->text_max_torque_current->setPlainText(QString::fromStdString(s));
+void MainWindow::updateMaxTorqueValue(bool is_plantar){
+    if (is_plantar){
+        std::string s = std::to_string(max_torque_plantar);
+        ui->text_max_torque_plantar_current->setPlainText(QString::fromStdString(s));
+    }
+    else{
+        std::string s = std::to_string(max_torque_dorsi);
+        ui->text_max_torque_dorsi_current->setPlainText(QString::fromStdString(s));    
+    }
 }
 
 void MainWindow::updateCycleTimeValue(){
@@ -582,6 +594,8 @@ void MainWindow::updateCycleTimeValue(){
 }
 
 void MainWindow::togglePage(){
+    currentPage = ui->RightBox->currentIndex();
+
     if(++currentPage == 5){
         currentPage = 0;
     }
@@ -610,7 +624,7 @@ void MainWindow::runPolycalibZero(){
         continue;
     }
     ui->button_polycalib_zero_run->setText("Done\nZero");
-    ui->button_polycalib_zero_run->setStyleSheet("background-colot: rgb(0,255,0)");
+    ui->button_polycalib_zero_run->setStyleSheet("background-color: rgb(0,255,0)");
 }
 
 void MainWindow::runPolycalib(){
@@ -635,7 +649,7 @@ void MainWindow::runPolycalib(){
 }
 
 void MainWindow::polyCalibToggle(bool forward){
-    if (!polyCalibForce(forward)) return;
+    //if (!polyCalibForce(forward)) return;
     if (!polyCalibNum(forward)) return;
     polyCalibSide();
 
@@ -732,8 +746,8 @@ void MainWindow::plotSoleLeft(){
         appendCropQVector(&gp2[0], state_gp[0], gaitPhasePlotMaxNum2);
         appendCropQVector(&gp2[1], state_gp[1], gaitPhasePlotMaxNum2);
 
-        ui->plot_gaitPhase->xAxis->setRange(t_gp[0], t_gp[0] + 20.0);
-        ui->plot_gaitPhase_2->xAxis->setRange(t_gp2[0], t_gp2[0] + 100.0);
+        ui->plot_gaitPhase->xAxis->setRange(t_gp[0], t_gp[0] + 7.0);
+        ui->plot_gaitPhase_2->xAxis->setRange(t_gp2[0], t_gp2[0] + 27.0);
         this->updatePlot(GAIT_PHASE);
     }
 
@@ -820,9 +834,32 @@ void MainWindow::plotDorsi(){
 void MainWindow::updateGaitPhaseState(){
     if(!is_plot_data) return;
     float* data = qnode.getGaitPhase();
+    QPen pen[2];
+    pen[0].setColor(QColor(0,0,0));
+    pen[1].setColor(QColor(255, 0, 0));
 
     state_gp[0] = data[1] - 1;
     state_gp[1] = data[2] - 1;
+ 
+    if(state_gp[current_affected_side == 0] == 0){
+        infLineThreshold[0]->setPen(pen[0]);
+        infLineThreshold[1]->setPen(pen[1]);
+    }
+    else{
+        infLineThreshold[0]->setPen(pen[1]);
+        infLineThreshold[1]->setPen(pen[0]);
+    }
+    
+    if(state_gp[current_affected_side == 1] == 0){
+        infLineThreshold[2]->setPen(pen[0]);
+        infLineThreshold[3]->setPen(pen[1]);
+    }
+    else{
+        infLineThreshold[2]->setPen(pen[1]);
+        infLineThreshold[3]->setPen(pen[0]);
+    }
+    ui->plot_sole_left_voltage->replot();
+    ui->plot_sole_right_voltage->replot();
 }
 
 void MainWindow::dorsiZeroingDone(){
@@ -870,8 +907,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(-0.1, 0.5);
-    ui->plot_sole_right_voltage->yAxis->setRange(-0.1, 0.5);
+    ui->plot_sole_left_voltage->yAxis->setRange(-0.1, 0.7);
+    ui->plot_sole_right_voltage->yAxis->setRange(-0.1, 0.7);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();

@@ -6,7 +6,7 @@ void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
     cout << "Debug - Sole Left data  - ";
     #endif
 
-    for (int i = 0; i< 7; i++){
+    for (int i = 0; i< 6; i++){
         d_soleLeft[i] = msg->data[i];
 
         #ifdef DEBUG
@@ -23,7 +23,7 @@ void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
     cout << "Debug - Sole Right data  - ";
     #endif
 
-    for (int i = 0; i< 7; i++){
+    for (int i = 0; i< 6; i++){
         d_soleRight[i] = msg->data[i];
 
         #ifdef DEBUG
@@ -40,7 +40,7 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     cout << "Debug - IMU data  - ";
     #endif
 
-    for (int i = 0; i< 64; i++){
+    for (int i = 0; i< 63; i++){
         d_imu[i] = msg->data[i];
 
         #ifdef DEBUG
@@ -96,7 +96,7 @@ void gaitDetector(int* result){
     // Left Detection
     if(leftSwing){
         for (int i= 0; i<6; i++){
-            if(d_soleLeft[i+1] > thLeft[IC][i]){
+            if(d_soleLeft[i] > thLeft[IC][i]){
                 leftSwing = false;
             }
         }
@@ -104,7 +104,7 @@ void gaitDetector(int* result){
     else{
         leftTmp = true;
         for (int i = 0; i< 6; i++){
-            if(d_soleLeft[i+1] > thLeft[FO][i]){
+            if(d_soleLeft[i] > thLeft[FO][i]){
                 leftTmp = false;
                 break;
             }
@@ -115,7 +115,7 @@ void gaitDetector(int* result){
     // Right Detection
     if(rightSwing){
         for (int i= 0; i<6; i++){
-            if(d_soleRight[i+1] > thRight[IC][i]){
+            if(d_soleRight[i] > thRight[IC][i]){
                 rightSwing = false;
             }
         }
@@ -123,7 +123,7 @@ void gaitDetector(int* result){
     else{
         rightTmp = true;
         for (int i = 0; i< 6; i++){
-            if(d_soleRight[i+1] > thRight[FO][i]){
+            if(d_soleRight[i] > thRight[FO][i]){
                 rightTmp = false;
                 break;
             }
@@ -209,23 +209,23 @@ void saveThreshold(){
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[1+(affectedSide==LEFT)] << endl;
+            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] / polyCoeffLeft[1][i] << endl;
             zeroFile << meanLeft[i] << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[affectedSide==LEFT] << endl;
+            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] / polyCoeffLeft[1][i] << endl;
         }
     }
     else {
         thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + thresholdGap[1+(affectedSide==RIGHT)] << endl;
+            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] / polyCoeffRight[1][i] << endl;
             zeroFile << meanRight[i] << endl;
 
         }
         for (int i = 0; i < 6 ; i++){
-            thFile << meanRight[i] + thresholdGap[affectedSide==RIGHT] << endl;
+            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] / polyCoeffRight[1][i] << endl;
         }
     }
     
@@ -259,11 +259,24 @@ void updatePoly(){
 }
 
 void savePoly(){
-    int a, b, c;
+    float a, b;
     // poly fitting
     ofstream polyFile;
     std_msgs::Float32MultiArray msg;
     polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv", ios::trunc);
+
+    for (int i =0; i < 6; i++){
+        a = referenceForceLow / (polyLeft[1][i] - polyLeft[0][i]);
+        b = -polyLeft[0][i] * a;
+        polyFile << a << endl << b << endl;
+    }
+    for (int i = 0; i < 6; i++){
+        a = referenceForceLow / (polyRight[1][i] - polyRight[0][i]);
+        b = -polyRight[0][i] * a;
+        polyFile << a << endl << b << endl;
+    }
+
+    /*
     for (int i = 0; i < 6; i++){
         msg.data.clear();
         c = polyLeft[0][i];
@@ -279,9 +292,18 @@ void savePoly(){
         b = (-f2 * f2 * (polyRight[1][i] - c) + f1 * f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2));
         polyFile << c << endl << b << endl << a << endl;
     }
+    */
 }
 
 void loadPoly(){
+    if (!usePolyCalib){
+        for (int i = 0; i < 6; i++){
+            polyCoeffLeft[1][i] = 1.0;
+            polyCoeffRight[1][i] = 1.0;
+        }
+        return;
+    }
+
     std_msgs::Float32MultiArray msg;
     ifstream polyFile;
     polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv");
@@ -291,17 +313,17 @@ void loadPoly(){
     }
     string str;
     for (int i = 0; i < 6; i++){
-        for (int j = 0; j < 3; j++){
+        for (int j = 0; j < 2; j++){
             getline(polyFile, str);
-            polyLeft[j][i] = stof(str);
-            msg.data.push_back(polyLeft[j][i]);
+            polyCoeffLeft[j][i] = stof(str);
+            msg.data.push_back(polyCoeffLeft[j][i]);
         }
     }
     for (int i = 0; i < 6; i++){
-        for (int j = 0; j < 3; j++){
+        for (int j = 0; j < 2; j++){
             getline(polyFile, str);
-            polyRight[j][i] = stof(str);
-            msg.data.push_back(polyRight[j][i]);
+            polyCoeffRight[j][i] = stof(str);
+            msg.data.push_back(polyCoeffRight[j][i]);
         }
     }
     afo_poly_fitting_pub.publish(msg);

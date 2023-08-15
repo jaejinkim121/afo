@@ -26,6 +26,7 @@ namespace afo_gui {
         plantarData = new float[3];
         dorsiData = new float[5];
         gaitPhase = new float[3];
+        polyFit = new float[24];
         linkX = new double[8];
         linkY = new double[8];
         linkZ = new double[8];
@@ -37,6 +38,10 @@ namespace afo_gui {
         for (int i = 0; i<6; i++){
             soleLeftZero[i] = 0;
             soleRightZero[i] = 0;
+        }
+        for (int i = 0; i < 12; i++){
+            polyFit[2*i] = 1.0;
+            polyFit[2*i+1] = 0.0;
         }
         loadSoleZero(SOLE_LEFT);
         loadSoleZero(SOLE_RIGHT);
@@ -61,9 +66,7 @@ namespace afo_gui {
         afo_gui_affected_side_pub = nh->advertise<std_msgs::Bool>("/afo_gui/affected_side", 100);
         afo_gui_threshold_gap_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/threshold_gap", 100);
         afo_gui_threshold_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_threshold", 100);
-        afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
-        afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
-        afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32>("/afo_gui/max_torque", 100);
+        afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/max_torque", 100);
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
         afo_gui_plantar_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/plantar_run", 100);
         afo_gui_dorsi_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/dorsi_run", 100);
@@ -80,6 +83,7 @@ namespace afo_gui {
         afo_dorsi_zeroing_done_sub = nh->subscribe("/afo_controller/dorsi_zeroing_done", 1, &QNode::callbackDorsiZeroingDone, this);
         afo_gait_paretic_sub = nh->subscribe("/afo_detector/gait_paretic", 1, &QNode::callbackGaitParetic, this);
         afo_gait_nonparetic_sub = nh->subscribe("/afo_detector/gait_nonparetic", 1, &QNode::callbackGaitNonparetic, this);
+        afo_poly_fit_sub = nh->subscribe("/afo_detector/poly_fit", 1, &QNode::callbackPolyFit, this);
     }
 
     void QNode::run() {
@@ -135,7 +139,7 @@ namespace afo_gui {
         soleLeftData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleLeftData[i+1] = msg->data[i] - soleLeftZero[i];
+            soleLeftData[i+1] = msg->data[i] - soleLeftZero[i]; // * polyFit[2 * i] + polyFit[2 * i + 1];
         }
         updateSoleLeft();
     }
@@ -151,8 +155,9 @@ namespace afo_gui {
         soleRightData[0] = t;
 
         for (int i = 0; i < 6; i++){
-            soleRightData[i+1] = msg->data[i] - soleRightZero[i];
+            soleRightData[i+1] = msg->data[i] - soleRightZero[i]; // * polyFit[12 + 2 * i] + polyFit[13 + 2 * i];
         }
+        
         updateSoleRight();
     }
 
@@ -291,6 +296,12 @@ namespace afo_gui {
         doneDorsiZeroing();
     }
 
+    void QNode::callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        for (int i = 0; i < 24; i++){
+            polyFit[i] = msg->data[i];
+        }
+    }
+
     void QNode::pubAffectedSide(bool affected_side){
         std_msgs::Bool m;
         m.data = affected_side;
@@ -311,9 +322,10 @@ namespace afo_gui {
         this->afo_gui_threshold_pub.publish(m);
     }
 
-    void QNode::pubMaxTorque(float t){
-        std_msgs::Float32 m;
-        m.data = t;
+    void QNode::pubMaxTorque(float p, float d){
+        std_msgs::Float32MultiArray m;
+        m.data.push_back(p);
+        m.data.push_back(d);
         afo_gui_max_torque_pub.publish(m);
     }
     
