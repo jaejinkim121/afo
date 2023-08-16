@@ -65,6 +65,10 @@ public:
     float* getPlantarData();
     float* getDorsiData();
     float* getGaitPhase();
+    double getMaxToeClearance(bool isLeft);
+    void clearMaxToeClearance();
+    double getStride();
+    void clearStride();
     void getLink(double* linkX, double* linkY, double* linkZ);
 
 
@@ -95,7 +99,8 @@ private:
     double* linkZ;
     double *rz, *pz, *yz;
     double* linkLength;
-
+    float leftToe, rightToe, leftToeMax, rightToeMax;
+    float stride;
     double t_begin;
 
     ros::NodeHandle* nh;
@@ -110,6 +115,9 @@ private:
     ros::Publisher afo_gui_streaming_pub;
     ros::Publisher afo_gui_sync_pub;
     ros::Publisher afo_gui_polycalib;
+    ros::Publisher afo_gui_leftToeClearance_pub;
+    ros::Publisher afo_gui_rightToeClearance_pub;
+    ros::Publisher afo_gui_stride_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;

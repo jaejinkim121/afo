@@ -35,6 +35,12 @@ namespace afo_gui {
         pz = new double[7];
         yz = new double[7];
 
+        leftToe = 0;
+        leftToeMax = 0.0;
+        rightToe = 0;
+        rightToeMax = 0.0;
+        stride = 0;
+
         for (int i = 0; i<6; i++){
             soleLeftZero[i] = 0;
             soleRightZero[i] = 0;
@@ -73,6 +79,9 @@ namespace afo_gui {
         afo_gui_streaming_pub = nh->advertise<std_msgs::Bool>("/afo_gui/streaming", 100);
         afo_gui_sync_pub = nh->advertise<std_msgs::Bool>("/afo_gui/sync", 100);
         afo_gui_polycalib = nh->advertise<std_msgs::Int16MultiArray>("/afo_gui/poly_calib", 100);
+        afo_gui_leftToeClearance_pub = nh->advertise<std_msgs::Float32>("/afo_gui/left_toe_clearance", 100);
+        afo_gui_rightToeClearance_pub = nh->advertise<std_msgs::Float32>("/afo_gui/right_toe_clearance", 100);
+        afo_gui_stride_pub = nh->advertise<std_msgs::Float32>("/afo_gui/stride", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
@@ -116,6 +125,24 @@ namespace afo_gui {
 
     float* QNode::getGaitPhase(){
         return this->gaitPhase;
+    }
+
+    double QNode::getMaxToeClearance(bool isLeft){
+        if (isLeft) return leftToeMax;
+        else return rightToeMax;
+    }
+
+    void QNode::clearMaxToeClearance(){
+        leftToeMax = 0.0;
+        rightToeMax = 0.0;
+    }
+
+    double QNode::getStride(){
+        return stride;
+    }
+
+    void QNode::clearStride(){
+        stride = 0;
     }
 
     void QNode::getLink(double* linkX, double* linkY, double* linkZ){
@@ -226,7 +253,6 @@ namespace afo_gui {
             linkY[j+1] = linkY[j] - v[1] * linkLength[j];
             }
         double minY = linkY[0];
-
         for (int i = 0; i < 8 ; i++){
             if (linkY[i] < minY){
                 minY = linkY[i];
@@ -236,6 +262,13 @@ namespace afo_gui {
         for (int i = 0; i < 8 ; i++){
             linkY[i] = linkY[i] - minY;
         }
+
+        leftToe = linkY[0] + 0.0;
+        rightToe = linkY[7] + 0.0;
+        stride = abs(linkZ[7] - linkZ[0]);
+
+        if (leftToe > leftToeMax) leftToeMax = leftToe + 0.0;
+        if (rightToe > rightToeMax) rightToeMax = rightToe + 0.0;
 
         if (imuCnt++ > 9){
             imuCnt = 0;
@@ -280,6 +313,17 @@ namespace afo_gui {
         
         gaitPhase[0] = t;
         gaitPhase[2] = msg->data;
+
+        std_msgs::float32 m;
+        if (gaitPhase[2] == 1){
+            m.data = leftToeMax;
+            afo_gui_leftToeClearance_pub.publish(m);
+            m.data = stride;
+            afo_gui_stride_pub.publish(m);
+            clearMaxToeClearance();
+            clearStride();
+        }
+
         updateGaitPhase();
     }
 
@@ -288,6 +332,16 @@ namespace afo_gui {
         
         gaitPhase[0] = t;
         gaitPhase[1] = msg->data;
+
+        std_msgs::float32 m;
+        if (gaitPhase[1] == 1){
+            m.data = rightToeMax;
+            afo_gui_rightToeClearance_pub.publish(m);
+            m.data = stride;
+            afo_gui_stride_pub.publish(m);
+            clearMaxToeClearance();
+            clearStride();
+        }
         updateGaitPhase();
     }
 
