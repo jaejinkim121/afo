@@ -2,10 +2,11 @@
 
 double cubic(double init_time, double final_time, double current_time){
     if (current_time > final_time) return 1;
+    if (current_time < init_time) return 0;
 
     double duration = final_time - init_time;
     double t = (current_time - init_time) / duration;
-    return 2 * pow(t,3) - 3 * pow(t,2);
+    return 3 * pow(t,2) - 2 * pow(t,3);
 }
 
 double pathPlannerPlantarflexion(){
