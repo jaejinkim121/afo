@@ -283,16 +283,6 @@ void worker()
     std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
 	string now_str = to_string(now->tm_mday) + "_" + to_string(now->tm_hour) + "_" + to_string(now->tm_min);
-    ofstream outFileController;
-    outFileController.open("/home/dl/catkin_ws/src/afo/afo_controller/log/controller_" + now_str + ".csv");
-    outFileController << 
-        "Max Plantar Torque=" << maxTorquePlantar << 
-        ", Max Dorsi Torque=" << maxTorqueDorsi << 
-        ", start time=" << startTime << 
-        ", endTime=" << endTime <<
-        ", upTimeRatio=" << upTimeRatio <<
-        ", dirPlantar=" << dirPlantar <<
-        ", ";
     
     std_msgs::Float32 m;
     
