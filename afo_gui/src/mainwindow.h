@@ -38,6 +38,9 @@ public:
     void soleCalibrationLeft();
     void soleCalibrationRight();
     void setMaxTorque(bool is_plantar);
+    void setRiseTime(bool is_plantar);
+    void setFallTime(bool is_plantar);
+    void setTriggerTime(bool is_plantar);
     void setCycleTime();
     void setLinkLength();
     void setPFO();
@@ -55,10 +58,13 @@ public:
     void toggleTrial();
     void emergencyStop();
     void updateMaxTorqueValue(bool is_plantar);
+    void updateRiseTimeValue(bool is_plantar);
+    void updateFallTimeValue(bool is_plantar);
+    void updateTriggerTimeValue(bool is_plantar);
     void updateCycleTimeValue();
     void targetLinkIdx();
     void imuZero();
-    void togglePage();
+    void togglePage(bool page);
     void sendSync();
     void runPolycalibZero();
     void runPolycalib();
@@ -108,15 +114,16 @@ private:
     double t_right_calib = 0;
     double *linkX, *linkY, *linkZ;
     int currentLink = -1;
-    int currentPage = 0;
     int current_affected_side = 0;
     int poly_side = 1;
     int poly_num = 1;
     int poly_force = 1;
 
     double cycle_time = 2.0;
-    double max_torque_plantar = 0.5;
-    double max_torque_dorsi = 0.3;
+    double max_torque[2] = {0.5, 0.3};
+    double rise_time[2] = {0.5, 0.5};
+    double fall_time[2] = {0.5, 0.5};
+    double trigger_time[2] = {0.5, 0.5};
     float threshold[4] = {0.09, 0.12, 0.10, 0.13};
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
@@ -137,5 +144,5 @@ private:
 
 
 void appendCropQVector(QVector<double> *vector, double data, int maxNum);
-
+std::string CutOnDecimalPt(std::string num, int point);
 #endif // MAINWINDOW_H

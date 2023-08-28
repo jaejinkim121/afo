@@ -24,6 +24,12 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_sole_calibration_right, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_max_torque_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_max_torque_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_rise_time_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_rise_time_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_fall_time_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_fall_time_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_trigger_time_plantar, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_trigger_time_dorsi, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -53,6 +59,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_set_link_length, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_target_link_idx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_page, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_param_toggle_page, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sync, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_zero_run, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_run, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -120,6 +127,30 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_set_max_torque_dorsi"){
         this->setMaxTorque(false);
+    }
+
+    else if (state == "button_set_rise_time_plantar"){
+        this->setRiseTime(true);
+    }
+
+    else if (state == "button_set_rise_time_dorsi"){
+        this->setRiseTime(false);
+    }
+
+    else if (state == "button_set_fall_time_plantar"){
+        this->setFallTime(true);
+    }
+
+    else if (state == "button_set_fall_time_dorsi"){
+        this->setFallTime(false);
+    }
+
+    else if (state == "button_set_trigger_time_plantar"){
+        this->setTriggerTime(true);
+    }
+
+    else if (state == "button_set_trigger_time_dorsi"){
+        this->setTriggerTime(false);
     }
 
     else if (state == "button_set_cycle_time"){
@@ -235,7 +266,11 @@ void MainWindow::buttonClicked(){
     }
 
     else if (state == "button_toggle_page"){
-        this->togglePage();
+        this->togglePage(true);
+    }
+
+    else if (state == "button_param_toggle_page"){
+        this->togglePage(false);
     }
 
     else if (state == "button_sync"){
@@ -269,8 +304,6 @@ void MainWindow::buttonClicked(){
     else if (state == "button_polycalib_force"){
         this->polyCalibForce(true);
     }
-
-
 }
 
 void MainWindow::togglePlotData(){
@@ -323,14 +356,73 @@ void MainWindow::setMaxTorque(bool is_plantar){
     try{
         t = stof(ui->text_target_parameter->toPlainText().toStdString());
         
-        if(is_plantar) max_torque_plantar = t;
-        else max_torque_dorsi = t;
+        if(is_plantar) max_torque[0] = t;
+        else max_torque[1] = t;
 
-        qnode.pubMaxTorque(max_torque_plantar, max_torque_dorsi);
+        qnode.pubMaxTorque(max_torque[0], max_torque[1]);
 
         ui->text_target_parameter->clear();
 
         updateMaxTorqueValue(is_plantar);
+        return;
+    }
+    catch(...){
+        updateLog("Target Max Torque is empty");
+    }
+}
+
+void MainWindow::setRiseTime(bool is_plantar){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        
+        if(is_plantar) rise_time[0] = t;
+        else rise_time[1] = t;
+
+        qnode.pubRiseTime(rise_time[0], rise_time[1]);
+
+        ui->text_target_parameter->clear();
+
+        updateRiseTimeValue(is_plantar);
+        return;
+    }
+    catch(...){
+        updateLog("Target Max Torque is empty");
+    }
+}
+
+void MainWindow::setFallTime(bool is_plantar){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        
+        if(is_plantar) fall_time[0] = t;
+        else fall_time[1] = t;
+
+        qnode.pubFallTime(fall_time[0], fall_time[1]);
+
+        ui->text_target_parameter->clear();
+
+        updateFallTimeValue(is_plantar);
+        return;
+    }
+    catch(...){
+        updateLog("Target Max Torque is empty");
+    }
+}
+void MainWindow::setTriggerTime(bool is_plantar){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        
+        if(is_plantar) trigger_time[0] = t;
+        else trigger_time[1] = t;
+
+        qnode.pubTriggerTime(trigger_time[0], trigger_time[1]);
+
+        ui->text_target_parameter->clear();
+
+        updateTriggerTimeValue(is_plantar);
         return;
     }
     catch(...){
@@ -387,7 +479,7 @@ void MainWindow::setPFO(){
         updateLog("Target is empty");
     }
     std::string s = "PFO\n";
-    s.append(std::to_string(threshold[2]));
+    s.append(CutOnDecimalPt(std::to_string(threshold[2])));
     ui->button_set_pfo->setText(QString::fromStdString(s));
 }
 
@@ -403,7 +495,7 @@ void MainWindow::setPIC(){
         updateLog("Target is empty");
     }
     std::string s = "PIC\n";
-    s.append(std::to_string(threshold[3]));
+    s.append(CutOnDecimalPt(std::to_string(threshold[3])));
     ui->button_set_pic->setText(QString::fromStdString(s));
     
 }
@@ -420,7 +512,7 @@ void MainWindow::setNFO(){
         updateLog("Target is empty");
     }
     std::string s = "NFO\n";
-    s.append(std::to_string(threshold[0]));
+    s.append(CutOnDecimalPt(std::to_string(threshold[0])));
     ui->button_set_nfo->setText(QString::fromStdString(s));
 }
 
@@ -436,7 +528,7 @@ void MainWindow::setNIC(){
         updateLog("Target is empty");
     }
     std::string s = "NIC\n";
-    s.append(std::to_string(threshold[1]));
+    s.append(CutOnDecimalPt(std::to_string(threshold[1])));
     ui->button_set_nic->setText(QString::fromStdString(s));
 }
 
@@ -579,12 +671,53 @@ void MainWindow::emergencyStop(){
 
 void MainWindow::updateMaxTorqueValue(bool is_plantar){
     if (is_plantar){
-        std::string s = std::to_string(max_torque_plantar);
-        ui->text_max_torque_plantar_current->setPlainText(QString::fromStdString(s));
+        std::string s = std::to_string(max_torque[0]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_max_torque_plantar->setText(QString::fromStdString(s));
     }
     else{
-        std::string s = std::to_string(max_torque_dorsi);
-        ui->text_max_torque_dorsi_current->setPlainText(QString::fromStdString(s));    
+        std::string s = std::to_string(max_torque[1]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_max_torque_dorsi->setText(QString::fromStdString(s));    
+    }
+}
+
+void MainWindow::updateRiseTimeValue(bool is_plantar){
+    if (is_plantar){
+        std::string s = std::to_string(rise_time[0]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_rise_time_plantar->setText(QString::fromStdString(s));
+    }
+    else{
+        std::string s = std::to_string(rise_time[1]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_rise_time_dorsi->setText(QString::fromStdString(s));
+    }
+}
+
+void MainWindow::updateFallTimeValue(bool is_plantar){
+    if (is_plantar){
+        std::string s = std::to_string(fall_time[0]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_fall_time_plantar->setText(QString::fromStdString(s));
+    }
+    else{
+        std::string s = std::to_string(fall_time[1]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_fall_time_dorsi->setText(QString::fromStdString(s));
+    }
+}
+
+void MainWindow::updateTriggerTimeValue(bool is_plantar){
+    if (is_plantar){
+        std::string s = std::to_string(trigger_time[0]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_trigger_time_plantar->setText(QString::fromStdString(s));
+    }
+    else{
+        std::string s = std::to_string(trigger_time[1]);
+        s = CutOnDecimalPt(s);
+        ui->button_set_trigger_time_dorsi->setText(QString::fromStdString(s));
     }
 }
 
@@ -593,14 +726,26 @@ void MainWindow::updateCycleTimeValue(){
     ui->text_cycle_time_current->setPlainText(QString::fromStdString(s));
 }
 
-void MainWindow::togglePage(){
-    currentPage = ui->RightBox->currentIndex();
-
-    if(++currentPage == 5){
-        currentPage = 0;
+void MainWindow::togglePage(bool page){
+    int currentPage;
+    if (page){
+        currentPage = ui->RightBox->currentIndex();
+        
+        if(++currentPage == 5){
+            currentPage = 0;
+        }
+        
+        ui->RightBox->setCurrentIndex(currentPage);
     }
-    ui->RightBox->setCurrentIndex(currentPage);
-
+    else{
+        currentPage = ui->tabWidget->currentIndex();
+        
+        if(++currentPage == 3){
+            currentPage = 0;
+        }
+        
+        ui->tabWidget->setCurrentIndex(currentPage);
+    }
 }
 
 void MainWindow::sendSync(){
@@ -1102,3 +1247,7 @@ void appendCropQVector(QVector<double> *vector, double data, int maxNum){
     return;
 }
 
+static std::string CutOnDecimalPt(std::string num, int pos)
+{
+    return num.substr(0, num.find('.') + pos + 1);
+}
