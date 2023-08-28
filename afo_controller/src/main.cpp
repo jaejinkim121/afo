@@ -228,6 +228,36 @@ void callbackMaxTorque(const std_msgs::Float32MultiArray::ConstPtr& msg){
     afo_configuration_maxTorqueDorsi.publish(m_d);
 }
 
+void callbackRiseTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    riseTimePF = msg->data[0];
+    riseTimeDF = msg->data[1];
+    std_msgs::Float32 m_p, m_d;
+    m_p.data = riseTimePF;
+    m_d.data = riseTimeDF;
+    afo_configuration_riseTimePlantar.publish(m_p);
+    afo_configuration_riseTimeDorsi.publish(m_d);
+}
+
+void callbackFallTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    fallTimePF = msg->data[0];
+    fallTimeDF = msg->data[1];
+    std_msgs::Float32 m_p, m_d;
+    m_p.data = fallTimePF;
+    m_d.data = fallTimeDF;
+    afo_configuration_fallTimePlantar.publish(m_p);
+    afo_configuration_fallTimeDorsi.publish(m_d);
+}
+
+void callbacktriggerTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    startTimePF = msg->data[0];
+    startTimeDF = msg->data[1];
+    std_msgs::Float32 m_p, m_d;
+    m_p.data = startTimePF;
+    m_d.data = startTimeDF;
+    afo_configuration_startTimePlantar.publish(m_p);
+    afo_configuration_startTimeDorsi.publish(m_d);
+}
+
 void callbackCycleTime(const std_msgs::Float32ConstPtr& msg){
     cycleTime = msg->data * 1000000.0;
     std_msgs::Float32 m;
@@ -272,14 +302,23 @@ void worker()
     m.data = maxTorqueDorsi;
     afo_configuration_maxTorqueDorsi.publish(m);
 
-    m.data = startTime;
-    afo_configuration_startTime.publish(m);
+    m.data = riseTimePF;
+    afo_configuration_riseTimePlantar.publish(m);
 
-    m.data = endTime;
-    afo_configuration_endTime.publish(m);
+    m.data = riseTimeDF;
+    afo_configuration_riseTimeDorsi.publish(m);
 
-    m.data = upTimeRatio;
-    afo_configuration_upTimeRatio.publish(m);
+    m.data = fallTimePF;
+    afo_configuration_fallTimePlantar.publish(m);
+
+    m.data = fallTimeDF;
+    afo_configuration_fallTimeDorsi.publish(m);
+
+    m.data = startTimePF;
+    afo_configuration_startTimePlantar.publish(m);
+
+    m.data = startTimeDF;
+    afo_configuration_startTimeDorsi.publish(m);
 
     m.data = dirPlantar;
     afo_configuration_dirPlantar.publish(m);
@@ -580,12 +619,15 @@ int main(int argc, char**argv)
     afo_configuration_cycle_time = n.advertise<std_msgs::Float32>("/afo_controller/cycle_time", 10);
     afo_configuration_maxTorquePlantar = n.advertise<std_msgs::Float32>("/afo_controller/maxTorquePlantar", 10);
     afo_configuration_maxTorqueDorsi = n.advertise<std_msgs::Float32>("/afo_controller/maxTorqueDorsi", 10);
+    afo_configuration_riseTimePlantar = n.advertise<std_msgs::Float32>("/afo_controller/rise_time_plantar", 10);
+    afo_configuration_riseTimeDorsi = n.advertise<std_msgs::Float32>("/afo_controller/rise_time_dorsi", 10);
+    afo_configuration_fallTimePlantar = n.advertise<std_msgs::Float32>("/afo_controller/fall_time_plantar", 10);
+    afo_configuration_fallTimeDorsi = n.advertise<std_msgs::Float32>("/afo_controller/fall_time_dorsi", 10);
+    afo_configuration_startTimePlantar = n.advertise<std_msgs::Float32>("/afo_controller/start_time_plantar", 10);
+    afo_configuration_startTimeDorsi = n.advertise<std_msgs::Float32>("/afo_controller/start_time_dorsi", 10);
     afo_configuration_maxPositionDorsi = n.advertise<std_msgs::Float32>("/afo_controller/maxPositionDorsi", 10);
     afo_configuration_dorsiPreTension = n.advertise<std_msgs::Float32>("/afo_controller/dorsi_pretension", 10);
     afo_configuration_plantarPreTension = n.advertise<std_msgs::Float32>("/afo_controller/plantar_pretension", 10);
-    afo_configuration_startTime = n.advertise<std_msgs::Float32>("/afo_controller/startTime", 10);
-    afo_configuration_endTime = n.advertise<std_msgs::Float32>("/afo_controller/endTime", 10);
-    afo_configuration_upTimeRatio = n.advertise<std_msgs::Float32>("/afo_controller/upTimeRatio", 10);
     afo_configuration_dirPlantar = n.advertise<std_msgs::Float32>("/afo_controller/dirPlantar", 10);
     afo_configuration_dorsiNeutralPosition = n.advertise<std_msgs::Float32>("/afo_controller/dorsiNeutralPosition", 10);
     afo_dorsi_zeroing_done = n.advertise<std_msgs::Bool>("/afo_controller/dorsi_zeroing_done", 10);

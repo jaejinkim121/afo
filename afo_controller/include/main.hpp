@@ -59,14 +59,14 @@ int etherCatCommunicationRate = 5000; // us
 
 // Time Parameter
 double cycleTime = 2.0 * pow(10,6);
-double startTime = 0.25;
-double endTime = 0.65;
+double startTimePF = 0.25;
+double riseTimePF = 0.3;
+double fallTimePF = 0.1;
+double endTimePF = startTime + riseTime + fallTime;
 double relaxTime = 0.3 * pow(10,6);
-double onTime = endTime - startTime;
-double upTimeRatio = 0.75;
-double acc = 4 / pow(upTimeRatio * onTime, 2);
-double uptimeDF = 0.2;
-double downtimeDF = 0.15;
+double startTimeDF = 0.0;
+double riseTimeDF = 0.2;
+double fallTimeDF = 0.15;
 duration<double, micro> eventTimeGap;
 
 // Force Parameter
@@ -97,12 +97,15 @@ ros::Publisher afo_motor_data_dorsi;
 ros::Publisher afo_configuration_cycle_time;
 ros::Publisher afo_configuration_maxTorquePlantar;
 ros::Publisher afo_configuration_maxTorqueDorsi;
+ros::Publisher afo_configuration_riseTimePlantar;
+ros::Publisher afo_configuration_riseTimeDorsi;
+ros::Publisher afo_configuration_fallTimePlantar;
+ros::Publisher afo_configuration_fallTimeDorsi;
+ros::Publisher afo_configuration_startTimePlantar;
+ros::Publisher afo_configuration_startTimeDorsi;
 ros::Publisher afo_configuration_maxPositionDorsi;
 ros::Publisher afo_configuration_dorsiPreTension;
 ros::Publisher afo_configuration_plantarPreTension;
-ros::Publisher afo_configuration_startTime;
-ros::Publisher afo_configuration_endTime;
-ros::Publisher afo_configuration_upTimeRatio;
 ros::Publisher afo_configuration_dirPlantar;
 ros::Publisher afo_configuration_dorsiNeutralPosition;
 ros::Publisher afo_dorsi_zeroing_done;

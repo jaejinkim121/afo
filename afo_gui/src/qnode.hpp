@@ -49,6 +49,9 @@ public:
     void pubAffectedSide(bool current_affected_side);
     void pubThreshold(bool b);
     void pubMaxTorque(float p, float d);
+    void pubRiseTime(float p, float d);
+    void pubFallTime(float p, float d);
+    void pubTriggerTime(float p, float d);
     void pubCycleTime(float t);
     void pubPlantarRun(bool run);
     void pubDorsiRun(bool run);
@@ -109,6 +112,9 @@ private:
     ros::Publisher afo_gui_threshold_gap_pub;
     ros::Publisher afo_gui_threshold_pub;
     ros::Publisher afo_gui_max_torque_pub;
+    ros::Publisher afo_gui_rise_time_pub;
+    ros::Publisher afo_gui_fall_time_pub;
+    ros::Publisher afo_gui_trigger_time_pub;
     ros::Publisher afo_gui_cycle_time_pub;
     ros::Publisher afo_gui_plantar_run_pub;
     ros::Publisher afo_gui_dorsi_run_pub;
