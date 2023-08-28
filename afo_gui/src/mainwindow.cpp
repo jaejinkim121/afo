@@ -868,6 +868,55 @@ void MainWindow::updateLog(QString s){
     ui->log->update();
 }
 
+void MainWindow::updateParameterFile(){
+    ofstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
+    f << max_torque[0] << "\n " << max_torque[1] << '\n';
+    f << rise_time[0] << "\n " << rise_time[1] << '\n';
+    f << fall_time[0] << "\n " << fall_time[1] << '\n';
+    f << trigger_time[0] << "\n " << trigger_time[1] << '\n';
+    f << cycle_time << '\n';
+    f << threshold[0] << "\n " 
+      << threshold[1] << "\n " 
+      << threshold[2] << "\n " 
+      << threshold[3] << "\n";
+    f.close();
+}
+
+void MainWindow::loadParamterFile(){
+    ifstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
+
+    std::string str;
+    getline(f, str);
+    max_torque[0] = stof(str);
+    getline(f, str);
+    max_torque[1] = stof(str);
+    getline(f, str);
+    rise_time[0] = stof(str);
+    getline(f, str);
+    rise_time[1] = stof(str);
+    getline(f, str);
+    fall_time[0] = stof(str);
+    getline(f, str);
+    fall_time[1] = stof(str);
+    getline(f, str);
+    trigger_time[0] = stof(str);
+    getline(f, str);
+    trigger_time[1] = stof(str);
+    getline(f, str);
+    cycle_time = stof(str);
+    getline(f, str);
+    threshold[0] = stof(str);
+    getline(f, str);
+    threshold[1] = stof(str);
+    getline(f, str);
+    threshold[2] = stof(str);
+    getline(f, str);
+    threshold[3] = stof(str);
+
+    f.close();
+    
+}
+
 void MainWindow::set_emergency(bool on){
     if (on){
         ui->button_emergency->setStyleSheet("background-color: rgb(211, 211, 211)");

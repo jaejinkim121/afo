@@ -74,6 +74,7 @@ public:
     bool polyCalibForce(bool forward);
     
     void updateLog(QString s);
+    void updateParameterFile();
     void set_emergency(bool on);
     
     void updatePlot(int dataType);
