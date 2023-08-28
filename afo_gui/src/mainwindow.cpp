@@ -77,12 +77,21 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(updatePolyFitPlot()), this, SLOT(updatePolyFit()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
     
+    ui->RightBox->setCurrentIndex(0);
+    ui->tabWidget->setCurrentIndex(0);
+
     initPlot();
     initSolePlot();
     toggleTrial();
     toggleTrial();
     updateMaxTorqueValue(true);
-    updateMaxTorqueValue(false);    
+    updateMaxTorqueValue(false);
+    updateRiseTimeValue(true);
+    updateRiseTimeValue(false);
+    updateFallTimeValue(true);
+    updateFallTimeValue(false);
+    updateTriggerTimeValue(true);
+    updateTriggerTimeValue(false);
     updateCycleTimeValue();
     setPFO();
     setPIC();
