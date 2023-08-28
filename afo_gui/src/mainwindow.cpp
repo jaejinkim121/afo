@@ -17,7 +17,6 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     rgb = new int[3];
 
     // Connect QObject to ui objects.
-    //QObject::connect(ui->test, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_plot_data, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_toggle_plot_sole, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_sole_calibration_left, SIGNAL(clicked()), this, SLOT(buttonClicked()));
