@@ -30,40 +30,25 @@ double pathPlannerPlantarflexion(){
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // Before actuation
-    else if (currentCyclePercentage < startTime){
+    else if (currentCyclePercentage < startTimePF){
         plantarPosition = 0;
         plantarTorque = 0;
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
     }
     // Start plantarflexion, torque increasing
-    else if (currentCyclePercentage < startTime + onTime * upTimeRatio){
-        t = currentCyclePercentage - startTime;
+    else if (currentCyclePercentage < startTimePF + riseTimePF){
+        t = currentCyclePercentage - startTimePF;
         
         plantarPosition = 0;
-        // Acceleration
-        if (t < 0.5 * upTimeRatio * onTime){
-            plantarTorque = 0.5 * acc * pow(t,2);
-        }
-        // Deceleration
-        else{
-            plantarTorque = 1 - 0.5 * acc * pow(t - onTime * upTimeRatio, 2);
-        }
+        plantarTorque = cubic(0, riseTimePF, t);
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;     
     }
     // Still Plantarflexion, torque decreasing
-    else if (currentCyclePercentage < endTime){
-        t = currentCyclePercentage - startTime - onTime * upTimeRatio;
+    else if (currentCyclePercentage < endTimePF){
+        t = currentCyclePercentage - startTimePF - riseTimePF;
 
         plantarPosition = 0;
-
-        // Acceleration
-        if (t < 0.5 * (1 - upTimeRatio) * onTime) {
-            plantarTorque = 1 - 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * pow(t, 2);
-        }
-        // Deceleration
-        else {
-            plantarTorque = 0.5 * acc * upTimeRatio / (1 - upTimeRatio) * pow(t - onTime * (1 - upTimeRatio), 2);
-        }
+        plantarTorque = 1 - cubic(0, fallTimePF, t);
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // After end of plantarflexion
@@ -95,16 +80,16 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
         dorsiTorque = dorsiStopTorque * (1 - cubic(0, relaxTime / cycleTime, currentCyclePercentage));
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
-    else if (currentCyclePercentage < footOffPercentage + uptimeDF){
+    else if (currentCyclePercentage < footOffPercentage + riseTimeDF){
         dorsiPosition = 0;
-        dorsiTorque = cubic(footOffPercentage, footOffPercentage + uptimeDF, currentCyclePercentage);
+        dorsiTorque = cubic(footOffPercentage, footOffPercentage + riseTimeDF, currentCyclePercentage);
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     else{
         dorsiPosition = 0;
         dorsiTorque = 1 - cubic(
-            footOffPercentage + uptimeDF, 
-            footOffPercentage + uptimeDF + downtimeDF, 
+            footOffPercentage + riseTimeDF, 
+            footOffPercentage + riseTimeDF + fallTimeDF, 
             currentCyclePercentage);
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
@@ -377,8 +362,7 @@ void worker()
                             }
                             isDorsiZeroing = true;
                             dorsiNeutralPosition = reading.getActualPosition();
-			                outFileController << "dorsiNeutralPosition=" << dorsiNeutralPosition << endl;
-		                    cout << "Dorsi Zeroing Done: " << reading.getActualTorque() << endl;
+			                cout << "Dorsi Zeroing Done: " << reading.getActualTorque() << endl;
                             std_msgs::Bool m_dz;
                             m_dz.data = true;
                             afo_dorsi_zeroing_done.publish(m_dz);

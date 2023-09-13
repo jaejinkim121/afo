@@ -62,7 +62,7 @@ double cycleTime = 2.0 * pow(10,6);
 double startTimePF = 0.25;
 double riseTimePF = 0.3;
 double fallTimePF = 0.1;
-double endTimePF = startTime + riseTime + fallTime;
+double endTimePF = startTimePF + riseTimePF + fallTimePF;
 double relaxTime = 0.3 * pow(10,6);
 double startTimeDF = 0.0;
 double riseTimeDF = 0.2;
@@ -76,8 +76,8 @@ double maxPositionDorsi = 3000;
 double positionDiffLimit = 500;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
-double dorsiPreTension = 0.06;   // It's not normalized value.
-double plantarPreTension = 0.06; // It's not normalized value.
+double dorsiPreTension = 0.0;   // It's not normalized value.
+double plantarPreTension = 0.0; // It's not normalized value.
 
 // To switch target direction easily. CW = 1, CCW = -1
 double dirPlantar = -1;

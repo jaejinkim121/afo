@@ -317,7 +317,7 @@ namespace afo_gui {
         gaitPhase[0] = t;
         gaitPhase[2] = msg->data;
 
-        std_msgs::float32 m;
+        std_msgs::Float32 m;
         if (gaitPhase[2] == 1){
             m.data = leftToeMax;
             afo_gui_leftToeClearance_pub.publish(m);
@@ -336,7 +336,7 @@ namespace afo_gui {
         gaitPhase[0] = t;
         gaitPhase[1] = msg->data;
 
-        std_msgs::float32 m;
+        std_msgs::Float32 m;
         if (gaitPhase[1] == 1){
             m.data = rightToeMax;
             afo_gui_rightToeClearance_pub.publish(m);

@@ -487,7 +487,7 @@ void MainWindow::setPFO(){
         updateLog("Target is empty");
     }
     std::string s = "PFO\n";
-    s.append(CutOnDecimalPt(std::to_string(threshold[2])));
+    s.append(CutOnDecimalPt(std::to_string(threshold[2]), 2));
     ui->button_set_pfo->setText(QString::fromStdString(s));
 }
 
@@ -503,7 +503,7 @@ void MainWindow::setPIC(){
         updateLog("Target is empty");
     }
     std::string s = "PIC\n";
-    s.append(CutOnDecimalPt(std::to_string(threshold[3])));
+    s.append(CutOnDecimalPt(std::to_string(threshold[3]), 2));
     ui->button_set_pic->setText(QString::fromStdString(s));
     
 }
@@ -520,7 +520,7 @@ void MainWindow::setNFO(){
         updateLog("Target is empty");
     }
     std::string s = "NFO\n";
-    s.append(CutOnDecimalPt(std::to_string(threshold[0])));
+    s.append(CutOnDecimalPt(std::to_string(threshold[0]), 2));
     ui->button_set_nfo->setText(QString::fromStdString(s));
 }
 
@@ -536,7 +536,7 @@ void MainWindow::setNIC(){
         updateLog("Target is empty");
     }
     std::string s = "NIC\n";
-    s.append(CutOnDecimalPt(std::to_string(threshold[1])));
+    s.append(CutOnDecimalPt(std::to_string(threshold[1]), 2));
     ui->button_set_nic->setText(QString::fromStdString(s));
 }
 
@@ -680,12 +680,12 @@ void MainWindow::emergencyStop(){
 void MainWindow::updateMaxTorqueValue(bool is_plantar){
     if (is_plantar){
         std::string s = std::to_string(max_torque[0]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_max_torque_plantar->setText(QString::fromStdString(s));
     }
     else{
         std::string s = std::to_string(max_torque[1]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_max_torque_dorsi->setText(QString::fromStdString(s));    
     }
 }
@@ -693,12 +693,12 @@ void MainWindow::updateMaxTorqueValue(bool is_plantar){
 void MainWindow::updateRiseTimeValue(bool is_plantar){
     if (is_plantar){
         std::string s = std::to_string(rise_time[0]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_rise_time_plantar->setText(QString::fromStdString(s));
     }
     else{
         std::string s = std::to_string(rise_time[1]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_rise_time_dorsi->setText(QString::fromStdString(s));
     }
 }
@@ -706,12 +706,12 @@ void MainWindow::updateRiseTimeValue(bool is_plantar){
 void MainWindow::updateFallTimeValue(bool is_plantar){
     if (is_plantar){
         std::string s = std::to_string(fall_time[0]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_fall_time_plantar->setText(QString::fromStdString(s));
     }
     else{
         std::string s = std::to_string(fall_time[1]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_fall_time_dorsi->setText(QString::fromStdString(s));
     }
 }
@@ -719,19 +719,19 @@ void MainWindow::updateFallTimeValue(bool is_plantar){
 void MainWindow::updateTriggerTimeValue(bool is_plantar){
     if (is_plantar){
         std::string s = std::to_string(trigger_time[0]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_trigger_time_plantar->setText(QString::fromStdString(s));
     }
     else{
         std::string s = std::to_string(trigger_time[1]);
-        s = CutOnDecimalPt(s);
+        s = CutOnDecimalPt(s, 2);
         ui->button_set_trigger_time_dorsi->setText(QString::fromStdString(s));
     }
 }
 
 void MainWindow::updateCycleTimeValue(){
     std::string s = std::to_string(cycle_time);
-    ui->text_cycle_time_current->setPlainText(QString::fromStdString(s));
+    ui->button_set_cycle_time->setText(QString::fromStdString(s));
 }
 
 void MainWindow::togglePage(bool page){
@@ -869,7 +869,7 @@ void MainWindow::updateLog(QString s){
 }
 
 void MainWindow::updateParameterFile(){
-    ofstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
+    std::ofstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
     f << max_torque[0] << "\n " << max_torque[1] << '\n';
     f << rise_time[0] << "\n " << rise_time[1] << '\n';
     f << fall_time[0] << "\n " << fall_time[1] << '\n';
@@ -882,8 +882,8 @@ void MainWindow::updateParameterFile(){
     f.close();
 }
 
-void MainWindow::loadParamterFile(){
-    ifstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
+void MainWindow::loadParameterFile(){
+    std::ifstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
 
     std::string str;
     getline(f, str);
@@ -1304,7 +1304,7 @@ void appendCropQVector(QVector<double> *vector, double data, int maxNum){
     return;
 }
 
-static std::string CutOnDecimalPt(std::string num, int pos)
+std::string CutOnDecimalPt(std::string num, int pos)
 {
     return num.substr(0, num.find('.') + pos + 1);
 }
