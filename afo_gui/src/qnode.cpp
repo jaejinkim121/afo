@@ -84,6 +84,9 @@ namespace afo_gui {
         afo_gui_polycalib = nh->advertise<std_msgs::Int16MultiArray>("/afo_gui/poly_calib", 100);
         afo_gui_leftToeClearance_pub = nh->advertise<std_msgs::Float32>("/afo_gui/left_toe_clearance", 100);
         afo_gui_rightToeClearance_pub = nh->advertise<std_msgs::Float32>("/afo_gui/right_toe_clearance", 100);
+        afo_gui_kinematics_x_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_x", 100);
+        afo_gui_kinematics_y_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_y", 100);
+        afo_gui_kinematics_z_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_z", 100);
         afo_gui_stride_pub = nh->advertise<std_msgs::Float32>("/afo_gui/stride", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
@@ -277,6 +280,20 @@ namespace afo_gui {
             imuCnt = 0;
             updateKinematics();
         }
+
+        // Log kinematics data
+        std_msgs::Float32MultiArray m_x, m_y, m_z;
+        m_x.data.clear();
+        m_y.data.clear();
+        m_z.data.clear();
+        for (int i = 0; i < 8; i++){
+            m_x.data.push_back(linkX[i]);
+            m_y.data.push_back(linkY[i]);
+            m_z.data.push_back(linkZ[i]);
+        }
+        afo_gui_kinematics_x_pub.publish(m_x);
+        afo_gui_kinematics_y_pub.publish(m_y);
+        afo_gui_kinematics_z_pub.publish(m_z);
     }
 
     void QNode::callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg){

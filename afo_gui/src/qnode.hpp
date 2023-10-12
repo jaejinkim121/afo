@@ -124,6 +124,9 @@ private:
     ros::Publisher afo_gui_leftToeClearance_pub;
     ros::Publisher afo_gui_rightToeClearance_pub;
     ros::Publisher afo_gui_stride_pub;
+    ros::Publisher afo_gui_kinematics_x_pub;
+    ros::Publisher afo_gui_kinematics_y_pub;
+    ros::Publisher afo_gui_kinematics_z_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
