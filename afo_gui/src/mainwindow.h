@@ -75,6 +75,7 @@ public:
     
     void updateLog(QString s);
     void updateParameterFile();
+    void loadParameterFile();
     void set_emergency(bool on);
     
     void updatePlot(int dataType);
