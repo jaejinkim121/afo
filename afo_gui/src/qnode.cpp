@@ -87,6 +87,7 @@ namespace afo_gui {
         afo_gui_kinematics_x_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_x", 100);
         afo_gui_kinematics_y_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_y", 100);
         afo_gui_kinematics_z_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_z", 100);
+        afo_gui_kinematics_zero_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_zero", 100);
         afo_gui_stride_pub = nh->advertise<std_msgs::Float32>("/afo_gui/stride", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
@@ -210,6 +211,17 @@ namespace afo_gui {
                 yz[i] = y[i];
             }
             return;
+        }
+        if (pubIMUZero){
+            std_msgs::Float32MultiArray m;
+            m.data.clear();
+            for (int i = 0; i < 7; i++){
+                m.data.push_back(rz[i]);
+                m.data.push_back(pz[i]);
+                m.data.push_back(yz[i]);
+            }
+            afo_gui_kinematics_zero_pub.publish(m);
+            pubIMUZero = false;
         }
 
         Eigen::Vector3d x, y_, z, v;
@@ -463,6 +475,7 @@ namespace afo_gui {
 
     void QNode::imuZeroing(){
         isIMUZero = !isIMUZero;
+        pubIMUZero = isIMUZero;
     }
 
     void QNode::updateLinkLength(int id, double data){

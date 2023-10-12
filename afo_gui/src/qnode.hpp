@@ -127,6 +127,7 @@ private:
     ros::Publisher afo_gui_kinematics_x_pub;
     ros::Publisher afo_gui_kinematics_y_pub;
     ros::Publisher afo_gui_kinematics_z_pub;
+    ros::Publisher afo_gui_kinematics_zero_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
@@ -144,6 +145,7 @@ private:
     int motorPlantarCnt = 0;
     int motorDorsiCnt = 0;
     bool isIMUZero = false;
+    bool pubIMUZero = false;
     
 };
 
