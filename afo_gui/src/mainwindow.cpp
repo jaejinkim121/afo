@@ -67,6 +67,20 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_polycalib_side, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_num, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_polycalib_force, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_10bx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_10xx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_10ox, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_10bo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_10xo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_10xx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_2bx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_2xx, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_2ox, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_2bo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_2xo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_2oo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_session_na, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_forced_trigger, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -312,6 +326,47 @@ void MainWindow::buttonClicked(){
     else if (state == "button_polycalib_force"){
         this->polyCalibForce(true);
     }
+    
+    else if (state == "button_set_session_10bx"){
+        this->setSessionType(0, 0, 0);
+    }
+    else if (state == "button_set_session_10xx"){
+        this->setSessionType(0, 1, 0);
+    }
+    else if (state == "button_set_session_10ox"){
+        this->setSessionType(0, 2, 0);
+    }
+    else if (state == "button_set_session_10bo"){
+        this->setSessionType(0, 0, 1);
+    }
+    else if (state == "button_set_session_10xo"){
+        this->setSessionType(0, 1, 1);
+    }
+    else if (state == "button_set_session_10oo"){
+        this->setSessionType(0, 2, 1);
+    }
+    else if (state == "button_set_session_2bx"){
+        this->setSessionType(1, 0, 0);
+    }
+    else if (state == "button_set_session_2xx"){
+        this->setSessionType(1, 1, 0);
+    }
+    else if (state == "button_set_session_2ox"){
+        this->setSessionType(1, 2, 0);
+    }
+    else if (state == "button_set_session_2bo"){
+        this->setSessionType(1, 0, 1);
+    }
+    else if (state == "button_set_session_2xo"){
+        this->setSessionType(1, 1, 1);
+    }
+    else if (state == "button_set_session_2oo"){
+        this->setSessionType(1, 2, 1);
+    }
+    else if (state == "button_set_session_na"){
+        this->setSessionType(2, 0, 0);
+    }
+
 }
 
 void MainWindow::togglePlotData(){
@@ -826,6 +881,8 @@ bool MainWindow::polyCalibNum(bool forward){
             poly_num = 1;
             r = true;
         }
+
+
     }
     else{
         poly_num--;
@@ -848,6 +905,12 @@ bool MainWindow::polyCalibForce(bool forward){
 
     return r;
 }
+
+void MainWindow::setSessionType(unsigned int type_trial, unsigned int type_control, unsigned int type_cue)
+{
+    
+}
+
 
 void MainWindow::updateLog(QString s){
     if (logNum > max_log){

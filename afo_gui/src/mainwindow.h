@@ -72,6 +72,11 @@ public:
     void polyCalibSide();
     bool polyCalibNum(bool forward);
     bool polyCalibForce(bool forward);
+    void setSessionType(
+        unsigned int type_trial, 
+        unsigned int type_control, 
+        unsigned int type_cue
+        );
     
     void updateLog(QString s);
     void updateParameterFile();
