@@ -45,6 +45,8 @@ public:
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
+    void pubRunPFMH();
+    void pubRunDFMH();
     void pubThresholdGap(float* threshold);
     void pubAffectedSide(bool current_affected_side);
     void pubThreshold(bool b);
@@ -128,6 +130,8 @@ private:
     ros::Publisher afo_gui_kinematics_y_pub;
     ros::Publisher afo_gui_kinematics_z_pub;
     ros::Publisher afo_gui_kinematics_zero_pub;
+    ros::Publisher afo_gui_run_pf_mh_pub;
+    ros::Publisher afo_gui_run_df_mh_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;

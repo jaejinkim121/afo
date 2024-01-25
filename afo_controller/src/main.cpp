@@ -8,6 +8,41 @@ double cubic(double init_time, double final_time, double current_time){
     double t = (current_time - init_time) / duration;
     return 3 * pow(t,2) - 2 * pow(t,3);
 }
+double pathPlannerPF_MH(){
+    auto time = high_resolution_clock::now();
+    duration<double, micro> currentTimeGap = time - timeCuePF;
+    
+    double currentTime = currentTimeGap.count() / 10^6;
+    plantarPosition = 0;
+    plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
+    if (currentTime < 15){
+        plantarTorque = currentTime / 15.0;
+    }
+    else if (currentTime < 45){
+        plantarTorque = 1;
+    }
+    else if (currentTime < 60){
+        plantarTorque = (60 - currnetTime) / 15.0;
+    }
+}
+
+double pathPlannerDF_MH(){
+    auto time = high_resolution_clock::now();
+    duration<double, micro> currentTimeGap = time - timeCueDF;
+    
+    double currentTime = currentTimeGap.count() / 10^6;
+    dorsiPosition = 0;
+    dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
+    if (currentTime < 15){
+        dorsiTorque = currentTime / 15.0;
+    }
+    else if (currentTime < 45){
+        dorsiTorque = 1;
+    }
+    else if (currentTime < 60){
+        dorsiTorque = (60 - currnetTime) / 15.0;
+    }
+}
 
 double pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
@@ -262,6 +297,16 @@ void callbackDorsiRun(const std_msgs::BoolConstPtr& msg){
     afo_configuration_dorsiNeutralPosition.publish(m);
 }
 
+void callbackMHPF_run(const std_msgs::BoolConstPtr& msg){
+    timeCuePF = high_resolution_clock::now();
+    setPF_cue_MH = true;
+}
+
+void callbackMHDF_run(const std_msgs::BoolConstPtr& msg){
+    timeCueDF = high_resolution_clock::now();
+    setDF_cue_MH = true;
+}
+
 void worker()
 {
     // Define Output file stream for controller logging.
@@ -422,6 +467,9 @@ void worker()
                         if (setGaitEventNonAffected && setGaitEventAffected){
                             currentTimePercentage = pathPlannerPlantarflexion();
                         }
+                        if (setPF_cue_MH){
+                            pathPlannerPF_MH();
+                        }
                         if(plantarRun){
                             command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                             command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
@@ -457,7 +505,9 @@ void worker()
                         if (setGaitEventNonAffected && setGaitEventAffected){
                             currentTimePercentage = pathPlannerDorsiflexion(reading);
                         }
-                        
+                        if (setDF_cue_MH){
+                            pathPlannerDF_MH();
+                        }
                         if (dorsiRun){
                             dorsiInputMode = dorsiMode;
                             dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
@@ -587,6 +637,8 @@ int main(int argc, char**argv)
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
     afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
+    afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
+    afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);

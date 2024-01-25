@@ -33,7 +33,7 @@
      <string notr="true">QTabBar::tab { height: 50px; width: 100px;}</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="Developer">
      <attribute name="title">
@@ -1571,6 +1571,63 @@ Side</string>
       </property>
       <property name="text">
        <string>Forced Trigger</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_run_pf_mh">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>20</y>
+        <width>141</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Run PF MH</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_run_df_mh">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>120</y>
+        <width>141</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Run DF MH</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_run_both_mh">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>220</y>
+        <width>141</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Run Both MH</string>
       </property>
      </widget>
     </widget>

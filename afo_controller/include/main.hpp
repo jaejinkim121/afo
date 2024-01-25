@@ -44,7 +44,9 @@ int dorsiStage = 0;
 int dorsiTorqueDir = 1;
 
 bool isPlantar, isDorsi;
-system_clock::time_point timeIC, timeOFO, timeFO;
+bool setDF_cue_MH, setPF_cue_MH;
+
+system_clock::time_point timeIC, timeOFO, timeFO, timeCuePF, timeCueDF;
 
 int dorsiBufferFlushingIndex = 0;
 

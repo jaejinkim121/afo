@@ -89,6 +89,8 @@ namespace afo_gui {
         afo_gui_kinematics_z_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_z", 100);
         afo_gui_kinematics_zero_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/kinematics_zero", 100);
         afo_gui_stride_pub = nh->advertise<std_msgs::Float32>("/afo_gui/stride", 100);
+        afo_gui_run_pf_mh_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_pf_mh", 100);
+        afo_gui_run_df_mh_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_df_mh", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
@@ -385,6 +387,18 @@ namespace afo_gui {
         for (int i = 0; i < 24; i++){
             polyFit[i] = msg->data[i];
         }
+    }
+
+    void QNode::pubRunPFMH(){
+        std_msgs::Bool m;
+        m.data = true;
+        afo_gui_run_pf_mh_pub.publish(m);
+    }
+
+    void QNode::pubRunDFMH(){
+        std_msgs::Bool m;
+        m.data = true;
+        afo_gui_run_df_mh_pub.publish(m);
     }
 
     void QNode::pubAffectedSide(bool affected_side){

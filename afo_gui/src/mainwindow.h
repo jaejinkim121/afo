@@ -78,6 +78,11 @@ public:
         unsigned int type_cue
         );
     
+    // MH
+    void runPFMH();
+    void runDFMH();
+
+    
     void updateLog(QString s);
     void updateParameterFile();
     void loadParameterFile();

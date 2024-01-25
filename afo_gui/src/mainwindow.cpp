@@ -81,6 +81,10 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_set_session_2oo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_session_na, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_forced_trigger, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_run_pf_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_run_df_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_run_both_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    
     
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
     QObject::connect(&qnode, SIGNAL(updateSoleRight()), this, SLOT(plotSoleRight()));
@@ -366,7 +370,23 @@ void MainWindow::buttonClicked(){
     else if (state == "button_set_session_na"){
         this->setSessionType(2, 0, 0);
     }
+    else if (state == "button_run_pf_mh"){
+        runPFMH();
+    }
+    else if (state == "button_run_df_mh"){
+        runDFMH();
+    }
+    else if (state == "button_run_both_mh"){
+        runPFMH();
+        runDFMH();
+    }
 
+}
+void MainWindow::runPFMH(){
+    qnode.pubRunPFMH();
+}
+void MainWindow::runDFMH(){
+    qnode.pubRunDFMH();
 }
 
 void MainWindow::togglePlotData(){
