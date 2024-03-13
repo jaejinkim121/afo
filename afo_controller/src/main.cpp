@@ -12,7 +12,7 @@ double pathPlannerPF_MH(){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeCuePF;
     
-    double currentTime = currentTimeGap.count() / 10^6;
+    double currentTime = currentTimeGap.count() / 10;
     plantarPosition = 0;
     plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     if (currentTime < 15){
@@ -22,15 +22,17 @@ double pathPlannerPF_MH(){
         plantarTorque = 1;
     }
     else if (currentTime < 60){
-        plantarTorque = (60 - currnetTime) / 15.0;
+        plantarTorque = (60 - currentTime) / 15.0;
     }
+
+    return 0.1;
 }
 
 double pathPlannerDF_MH(){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeCueDF;
     
-    double currentTime = currentTimeGap.count() / 10^6;
+    double currentTime = currentTimeGap.count() / 10;
     dorsiPosition = 0;
     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     if (currentTime < 15){
@@ -40,8 +42,10 @@ double pathPlannerDF_MH(){
         dorsiTorque = 1;
     }
     else if (currentTime < 60){
-        dorsiTorque = (60 - currnetTime) / 15.0;
+        dorsiTorque = (60 - currentTime) / 15.0;
     }
+
+    return 0.1;
 }
 
 double pathPlannerPlantarflexion(){
@@ -50,11 +54,11 @@ double pathPlannerPlantarflexion(){
     if (forced_trigger){
         duration<double, micro> forcedTriggerTimeGap = time - timeFT;
         if (forcedTriggerTimeGap.count() > cycleTime) {
-            timeFT += cycleTime;
-            timeIC = timeFT + 0.0;
+            timeFT = time;
+            timeIC = timeFT;
         }
         if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
-            if (timeFO < timeIC) timeFO = time + 0.0;
+            if (timeFO < timeIC) timeFO = time;
         }
     }
 
@@ -115,11 +119,11 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
     if (forced_trigger){
         duration<double, micro> forcedTriggerTimeGap = time - timeFT;
         if (forcedTriggerTimeGap.count() > cycleTime) {
-            timeFT += cycleTime;
-            timeIC = timeFT + 0.0;
+            timeFT = time;
+            timeIC = timeFT;
         }
         if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
-            if (timeFO < timeIC) timeFO = time + 0.0;
+            if (timeFO < timeIC) timeFO = time;
         }
     }
 
@@ -259,7 +263,8 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
 void callbackForcedTrigger(const std_msgs::BoolConstPtr& msg){
     forced_trigger = !forced_trigger;
     if (!forced_trigger) timeFT = high_resolution_clock::now();
-
+    setGaitEventAffected = true;
+    setGaitEventNonAffected = true;
     return;
 }
 
