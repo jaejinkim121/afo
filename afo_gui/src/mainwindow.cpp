@@ -380,6 +380,9 @@ void MainWindow::buttonClicked(){
         runPFMH();
         runDFMH();
     }
+    else if (state == "button_forced_trigger"){
+        qnode.pubForcedTrigger();
+    }
 
 }
 void MainWindow::runPFMH(){

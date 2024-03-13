@@ -60,6 +60,7 @@ public:
     void pubStreaming();
     void pubPolycalib(int side, int num, int force);
     void pubSync(bool sync);
+    void pubForcedTrigger();
     void imuZeroing();
     void updateLinkLength(int id, double data);
     void loadLinkLength();
@@ -132,6 +133,7 @@ private:
     ros::Publisher afo_gui_kinematics_zero_pub;
     ros::Publisher afo_gui_run_pf_mh_pub;
     ros::Publisher afo_gui_run_df_mh_pub;
+    ros::Publisher afo_gui_forced_trigger_pub;
 
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;

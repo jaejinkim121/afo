@@ -38,6 +38,7 @@ double plantarNeutralPosition, dorsiNeutralPosition;
 bool setGaitEventAffected = false;
 bool setGaitEventNonAffected = false;
 bool isDorsiZeroing = false;
+bool forced_trigger = false;
 maxon::ModeOfOperationEnum plantarMode, dorsiMode;
 
 int dorsiStage = 0;
@@ -47,6 +48,7 @@ bool isPlantar, isDorsi;
 bool setDF_cue_MH, setPF_cue_MH;
 
 system_clock::time_point timeIC, timeOFO, timeFO, timeCuePF, timeCueDF;
+system_clock::time_point timeFT;
 
 int dorsiBufferFlushingIndex = 0;
 
@@ -69,6 +71,7 @@ double relaxTime = 0.3 * pow(10,6);
 double startTimeDF = 0.0;
 double riseTimeDF = 0.2;
 double fallTimeDF = 0.15;
+double stance_time = 0.65;
 duration<double, micro> eventTimeGap;
 
 // Force Parameter

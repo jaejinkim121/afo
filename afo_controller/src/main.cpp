@@ -46,6 +46,19 @@ double pathPlannerDF_MH(){
 
 double pathPlannerPlantarflexion(){
     auto time = high_resolution_clock::now();
+    
+    if (forced_trigger){
+        duration<double, micro> forcedTriggerTimeGap = time - timeFT;
+        if (forcedTriggerTimeGap.count() > cycleTime) {
+            timeFT += cycleTime;
+            timeIC = timeFT + 0.0;
+        }
+        if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
+            if (timeFO < timeIC) timeFO = time + 0.0;
+        }
+    }
+
+
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> eventGap = timeFO - timeIC;
     double currentCyclePercentage;
@@ -98,6 +111,18 @@ double pathPlannerPlantarflexion(){
 
 double pathPlannerDorsiflexion(maxon::Reading reading){
     auto time = high_resolution_clock::now();
+
+    if (forced_trigger){
+        duration<double, micro> forcedTriggerTimeGap = time - timeFT;
+        if (forcedTriggerTimeGap.count() > cycleTime) {
+            timeFT += cycleTime;
+            timeIC = timeFT + 0.0;
+        }
+        if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
+            if (timeFO < timeIC) timeFO = time + 0.0;
+        }
+    }
+
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> footOffTimeGap = timeFO - timeIC;
     double currentCyclePercentage, footOffPercentage;
@@ -227,6 +252,13 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
     }
 
     setGaitEventNonAffected = true;
+
+    return;
+}
+
+void callbackForcedTrigger(const std_msgs::BoolConstPtr& msg){
+    forced_trigger = !forced_trigger;
+    if (!forced_trigger) timeFT = high_resolution_clock::now();
 
     return;
 }
@@ -639,6 +671,7 @@ int main(int argc, char**argv)
     afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
     afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
     afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
+    afo_gui_forced_trigger = n.subscribe("/afo_gui/forced_trigger", 1, callbackForcedTrigger);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
