@@ -677,6 +677,7 @@ int main(int argc, char**argv)
     afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
     afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
     afo_gui_forced_trigger = n.subscribe("/afo_gui/forced_trigger", 1, callbackForcedTrigger);
+    afo_mw_forced_trigger = n.subscribe("/afo_arduino/forced_trigger", 1, callbackForcedTrigger);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);

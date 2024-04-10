@@ -99,6 +99,7 @@ ros::Subscriber afo_shutdown_sub;
 ros::Subscriber afo_gui_mh_df_run;
 ros::Subscriber afo_gui_mh_pf_run;
 ros::Subscriber afo_gui_forced_trigger;
+ros::Subscriber afo_mw_forced_trigger;
 
 ros::Publisher afo_motor_data_plantar;
 ros::Publisher afo_motor_data_dorsi;
