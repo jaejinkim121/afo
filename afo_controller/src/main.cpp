@@ -49,27 +49,28 @@ double pathPlannerDF_MH(){
 }
 
 double pathPlannerPlantarflexion(){
-    auto time = high_resolution_clock::now();
-    
-    if (forced_trigger){
-        duration<double, micro> forcedTriggerTimeGap = time - timeFT;
-        if (forcedTriggerTimeGap.count() > cycleTime) {
-            timeFT = time;
-            timeIC = timeFT;
-        }
-        if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
-            if (timeFO < timeIC) timeFO = time;
-        }
-    }
+     auto time = high_resolution_clock::now();
 
-
-    duration<double, micro> currentTimeGap = time - timeIC;
-    duration<double, micro> eventGap = timeFO - timeIC;
+    // if (forced_trigger){
+    //     duration<double, micro> forcedTriggerTimeGap = time - time;
+    //     if (forcedTriggerTimeGap.count() > cycleTime) {
+    //         timeFT = time;
+    //         timeIC = timeFT;
+    //     }
+    //     if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
+    //         if (timeFO < timeIC) timeFO = time;
+    //     }
+    // }
     double currentCyclePercentage;
-    if (controlMode == EST)
-        currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
-    else
-        currentCyclePercentage = currentTimeGap.count() / cycleTime;
+    duration<double, micro> currentTimeGap = time - timeIC;
+    
+    currentCyclePercentage = (currentTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;    // unit conversion: trigger_layback ms to us
+    if (currentCyclePercentage > 1.0){
+        forced_Trigger = false;
+    }
+    if (currentCyclePercentage > stance_time){
+        if (timeFO < timeIC) timeFO = time;
+    }
 
     // Dummy variable to simplify formulation.
     double t;   
@@ -116,28 +117,28 @@ double pathPlannerPlantarflexion(){
 double pathPlannerDorsiflexion(maxon::Reading reading){
     auto time = high_resolution_clock::now();
 
-    if (forced_trigger){
-        duration<double, micro> forcedTriggerTimeGap = time - timeFT;
-        if (forcedTriggerTimeGap.count() > cycleTime) {
-            timeFT = time;
-            timeIC = timeFT;
-        }
-        if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
-            if (timeFO < timeIC) timeFO = time;
-        }
-    }
-
-    duration<double, micro> currentTimeGap = time - timeIC;
-    duration<double, micro> footOffTimeGap = timeFO - timeIC;
+    // if (forced_trigger){
+    //     duration<double, micro> forcedTriggerTimeGap = time - time;
+    //     if (forcedTriggerTimeGap.count() > cycleTime) {
+    //         timeFT = time;
+    //         timeIC = timeFT;
+    //     }
+    //     if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
+    //         if (timeFO < timeIC) timeFO = time;
+    //     }
+    // }
     double currentCyclePercentage, footOffPercentage;
-    if (controlMode == EST){
-        currentCyclePercentage = currentTimeGap.count() / eventTimeGap.count() * 0.12;
-        footOffPercentage = footOffTimeGap.count() / eventTimeGap.count() * 0.12;
+    duration<double, micro> currentTimeGap = time - timeIC;
+    
+    currentCyclePercentage = (currentTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;    // unit conversion: trigger_layback ms to us
+    if (currentCyclePercentage > 1.0){
+        forced_Trigger = false;
     }
-    else{
-        currentCyclePercentage = currentTimeGap.count() / cycleTime;
-        footOffPercentage = footOffTimeGap.count() / cycleTime;
+    if (currentCyclePercentage > stance_time){
+        if (timeFO < timeIC) timeFO = time;
     }
+    duration<double, micro> footOffTimeGap = timeFO - timeIC;
+    footOffPercentage = (footOffTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;
 
     if(footOffPercentage < 0){
         dorsiPosition = 0;
@@ -260,9 +261,10 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
     return;
 }
 
-void callbackForcedTrigger(const std_msgs::BoolConstPtr& msg){
-    forced_trigger = !forced_trigger;
-    if (!forced_trigger) timeFT = high_resolution_clock::now();
+void callbackForcedTrigger(const std_msgs::Float32ConstPtr& msg){
+    trigger_layback_ms = msg.data;
+    if (!forced_trigger) timeIC = high_resolution_clock::now();
+    forced_trigger = true;
     setGaitEventAffected = true;
     setGaitEventNonAffected = true;
     return;

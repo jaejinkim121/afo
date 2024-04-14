@@ -72,6 +72,7 @@ double startTimeDF = 0.0;
 double riseTimeDF = 0.2;
 double fallTimeDF = 0.15;
 double stance_time = 0.65;
+double trigger_layback_ms = 0.0;
 duration<double, micro> eventTimeGap;
 
 // Force Parameter
