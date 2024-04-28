@@ -59,7 +59,7 @@ bool plantarRun, dorsiRun;
 //
 
 // Communication param.
-int etherCatCommunicationRate = 5000; // us
+int etherCatCommunicationRate = 6000; // us
 
 // Time Parameter
 double cycleTime = 2.0 * pow(10,6);
@@ -76,14 +76,14 @@ double trigger_layback_ms = 0.0;
 duration<double, micro> eventTimeGap;
 
 // Force Parameter
-double maxTorquePlantar = 0.5; // Nm at lowest level of motor.
-double maxTorqueDorsi = 0.5;
+double maxTorquePlantar = 0.1; // Nm at lowest level of motor.
+double maxTorqueDorsi = 0.1;
 double maxPositionDorsi = 3000;
 double positionDiffLimit = 500;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
-double dorsiPreTension = 0.0;   // It's not normalized value.
-double plantarPreTension = 0.0; // It's not normalized value.
+double dorsiPreTension = 0.01;   // It's not normalized value.
+double plantarPreTension = 0.01; // It's not normalized value.
 
 // To switch target direction easily. CW = 1, CCW = -1
 double dirPlantar = -1;

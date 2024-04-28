@@ -22,7 +22,7 @@ Hardware:
   motor_constant: 1.0
   working_voltage: 24
   pole_pairs: 7
-  speed_constant: 26
+  speed_constant: 182
   torque_constant: 0.047756
   max_current: 15.421
   nominal_current: 5.14

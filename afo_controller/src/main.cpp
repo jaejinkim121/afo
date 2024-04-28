@@ -51,27 +51,22 @@ double pathPlannerDF_MH(){
 double pathPlannerPlantarflexion(){
      auto time = high_resolution_clock::now();
 
-    // if (forced_trigger){
-    //     duration<double, micro> forcedTriggerTimeGap = time - time;
-    //     if (forcedTriggerTimeGap.count() > cycleTime) {
-    //         timeFT = time;
-    //         timeIC = timeFT;
-    //     }
-    //     if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
-    //         if (timeFO < timeIC) timeFO = time;
-    //     }
-    // }
+     if (forced_trigger){
+        duration<double, micro> forcedTriggerTimeGap = time - timeFT;
+        if (forcedTriggerTimeGap.count() > cycleTime) {
+            timeFT = time;
+             timeIC = timeFT;
+         }
+         if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
+             if (timeFO < timeIC) timeFO = time;
+         }
+     }
     double currentCyclePercentage;
     duration<double, micro> currentTimeGap = time - timeIC;
+    duration<double, micro> eventGap;
     
-    currentCyclePercentage = (currentTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;    // unit conversion: trigger_layback ms to us
-    if (currentCyclePercentage > 1.0){
-        forced_Trigger = false;
-    }
-    if (currentCyclePercentage > stance_time){
-        if (timeFO < timeIC) timeFO = time;
-    }
-
+    currentCyclePercentage = (currentTimeGap.count()) / cycleTime;    // 
+    eventGap = timeFO - timeIC;
     // Dummy variable to simplify formulation.
     double t;   
 
@@ -117,26 +112,20 @@ double pathPlannerPlantarflexion(){
 double pathPlannerDorsiflexion(maxon::Reading reading){
     auto time = high_resolution_clock::now();
 
-    // if (forced_trigger){
-    //     duration<double, micro> forcedTriggerTimeGap = time - time;
-    //     if (forcedTriggerTimeGap.count() > cycleTime) {
-    //         timeFT = time;
-    //         timeIC = timeFT;
-    //     }
-    //     if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
-    //         if (timeFO < timeIC) timeFO = time;
-    //     }
-    // }
+     if (forced_trigger){
+         duration<double, micro> forcedTriggerTimeGap = time - timeFT;
+         if (forcedTriggerTimeGap.count() > cycleTime) {
+             timeFT = time;
+             timeIC = timeFT;
+         }
+         if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
+             if (timeFO < timeIC) timeFO = time;
+         }
+     }
     double currentCyclePercentage, footOffPercentage;
     duration<double, micro> currentTimeGap = time - timeIC;
     
-    currentCyclePercentage = (currentTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;    // unit conversion: trigger_layback ms to us
-    if (currentCyclePercentage > 1.0){
-        forced_Trigger = false;
-    }
-    if (currentCyclePercentage > stance_time){
-        if (timeFO < timeIC) timeFO = time;
-    }
+    currentCyclePercentage = (currentTimeGap.count()) / cycleTime;    // unit conversion: trigger_layback ms to us
     duration<double, micro> footOffTimeGap = timeFO - timeIC;
     footOffPercentage = (footOffTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;
 
@@ -159,47 +148,6 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     
-    // After Initial Contact, deactivate dorsiflexion.
-    // stage 1
-    // if (currentCyclePercentage < downtimeDF){
-    //     dorsiStage = 1;
-    //     dorsiPosition = 1 - currentCyclePercentage / downtimeDF;
-    //     dorsiTorque = 0;
-    //     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
-    // }
-    // // Pretension torque control mode until foot off
-    // // stage 2
-    // else if (footOffPercentage < 0) {
-    //     dorsiStage = 2;
-    //     dorsiPosition = 0;
-    //     dorsiTorque = 0;
-    //     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
-    // }
-    // // Sustain target position
-    // // stage 3
-    // else if (
-    //     dorsiStage == 3 || 
-    //     abs(reading.getActualPosition() - dorsiNeutralPosition - maxPositionDorsi) < positionDiffLimit)
-    //     {
-    //     dorsiStage = 3;
-    //     dorsiPosition = 1;
-    //     dorsiTorque = 0;
-    //     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousPositionMode;
-    // }
-    // // make increment to achieve target position
-    // // stage 4
-    // else if (currentCyclePercentage < footOffPercentage + uptimeDF){
-    //     if (dorsiStage !=4){
-    //         dorsiStage = 4;
-    //         dorsiTorqueDir = reading.getActualPosition() - dorsiNeutralPosition > maxPositionDorsi;
-    //     }
-
-    //     if (dorsiTorqueDir) dorsiTorque = (reading.getActualTorque() - dorsiTorqueSlope) / maxTorqueDorsi;
-    //     else dorsiTorque = (reading.getActualTorque() + dorsiTorqueSlope) / maxTorqueDorsi;
-
-    //     dorsiPosition = 0;
-    //     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
-    // }
 
     dorsiTorque = min(max(dorsiTorque, 0.0), 1.0);
     dorsiPosition = min(max(dorsiPosition, 0.0), 1.0);
@@ -261,9 +209,9 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
     return;
 }
 
-void callbackForcedTrigger(const std_msgs::Float32ConstPtr& msg){
-    trigger_layback_ms = msg.data;
-    if (!forced_trigger) timeIC = high_resolution_clock::now();
+void callbackForcedTrigger(const std_msgs::BoolConstPtr& msg){
+    trigger_layback_ms = msg->data * 1000.0;
+    if (!forced_trigger) timeFT = high_resolution_clock::now();
     forced_trigger = true;
     setGaitEventAffected = true;
     setGaitEventNonAffected = true;
@@ -679,7 +627,6 @@ int main(int argc, char**argv)
     afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
     afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
     afo_gui_forced_trigger = n.subscribe("/afo_gui/forced_trigger", 1, callbackForcedTrigger);
-    afo_mw_forced_trigger = n.subscribe("/afo_arduino/forced_trigger", 1, callbackForcedTrigger);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
