@@ -12,7 +12,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     ui->setupUi(this);
     
     // Load sole image
-    QPixmap soleImage("/home/srbl/catkin_ws/src/afo/afo_gui/img_sole.png");
+    QPixmap soleImage("/home/afo/catkin_ws/src/afo/afo_gui/img_sole.png");
     ui->label_sole_image->setPixmap(soleImage.scaled(300, 400));
     rgb = new int[3];
 
@@ -955,7 +955,7 @@ void MainWindow::updateLog(QString s){
 }
 
 void MainWindow::updateParameterFile(){
-    std::ofstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
+    std::ofstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
     f << max_torque[0] << "\n " << max_torque[1] << '\n';
     f << rise_time[0] << "\n " << rise_time[1] << '\n';
     f << fall_time[0] << "\n " << fall_time[1] << '\n';
@@ -969,7 +969,7 @@ void MainWindow::updateParameterFile(){
 }
 
 void MainWindow::loadParameterFile(){
-    std::ifstream f("/home/srbl/catkin_ws/src/afo/parameter_list.csv");
+    std::ifstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
 
     std::string str;
     getline(f, str);

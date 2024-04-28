@@ -165,10 +165,10 @@ void loadThreshold(){
     ifstream thFile;
     bool side = thresholdSide;
     if (side == LEFT){
-        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv");
+        thFile.open("/home/afo/catkin_ws/src/afo/threshold_left.csv");
     }
     else{
-        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv");
+        thFile.open("/home/afo/catkin_ws/src/afo/threshold_right.csv");
     }
 
     if(!thFile){
@@ -206,8 +206,8 @@ void saveThreshold(){
     bool side = thresholdSide;
     ofstream thFile, zeroFile;
     if (side == LEFT){
-        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
-        zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
+        thFile.open("/home/afo/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
+        zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
             thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] / polyCoeffLeft[1][i] << endl;
             zeroFile << meanLeft[i] << endl;
@@ -217,8 +217,8 @@ void saveThreshold(){
         }
     }
     else {
-        thFile.open("/home/srbl/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
-        zeroFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
+        thFile.open("/home/afo/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
+        zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
             thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] / polyCoeffRight[1][i] << endl;
             zeroFile << meanRight[i] << endl;

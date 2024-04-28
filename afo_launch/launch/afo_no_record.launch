@@ -18,7 +18,7 @@
 	</node-->
 	
 	<node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
-		<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
+		<param name="configPath" value="/home/afo/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
 	</node>
 
 </launch>
