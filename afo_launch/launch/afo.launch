@@ -18,10 +18,10 @@
 	</node-->
 	
 	<node name="afo_controller" pkg="afo_controller" type="afo_controller" output="screen" clear_params="true" >
-		<param name="configPath" value="/home/srbl/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
+		<param name="configPath" value="/home/afo/catkin_ws/src/afo/afo_controller/config/setup.yaml"/>
 	</node>
 
-	<node name="afo_rosbag_record" pkg="rosbag" type="record" args="-a -o /home/srbl/catkin_ws/src/afo/log/log">
+	<node name="afo_rosbag_record" pkg="rosbag" type="record" args="-a -o /home/afo/catkin_ws/src/afo/log/log">
 	</node>
 
 </launch>

@@ -503,7 +503,7 @@ namespace afo_gui {
         loadLinkLength();
         
         std::ofstream llfile;
-        llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
+        llfile.open("/home/afo/catkin_ws/src/afo/link_length.csv");
 
         for (int i = 0; i < 7; i++){
             if (i == id) llfile << data;
@@ -517,7 +517,7 @@ namespace afo_gui {
     
     void QNode::loadLinkLength(){
         std::ifstream llfile;
-        llfile.open("/home/srbl/catkin_ws/src/afo/link_length.csv");
+        llfile.open("/home/afo/catkin_ws/src/afo/link_length.csv");
         if (!llfile){
             for (int i = 0; i < 7; i++){
                 linkLength[i] = 0.5;
@@ -539,7 +539,7 @@ namespace afo_gui {
     void QNode::loadSoleZero(int side){
         std::ifstream thFile;
         if (side == SOLE_LEFT){
-            thFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_left.csv");
+            thFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv");
             for (int i = 0; i < 6; i++){
                 std::string str;
                 getline(thFile, str);
@@ -547,7 +547,7 @@ namespace afo_gui {
             }
         }
         else{
-            thFile.open("/home/srbl/catkin_ws/src/afo/sole_zero_right.csv");
+            thFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv");
             for (int i = 0; i < 6; i++){
                 std::string str;
                 getline(thFile, str);
