@@ -931,7 +931,7 @@ bool MainWindow::polyCalibForce(bool forward){
 
 void MainWindow::setSessionType(unsigned int type_trial, unsigned int type_control, unsigned int type_cue)
 {
-    
+    qnode.pubSessionType(type_trial, type_control, type_cue);
 }
 
 
