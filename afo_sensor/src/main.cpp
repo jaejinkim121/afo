@@ -52,9 +52,9 @@ int main(int argc, char** argv){
     // GUI 노드로 넘어가야할 가능성이 있음.
     ofstream outFileSoleRight, outFileSoleLeft, outIMU;
 
-	outFileSoleRight.open("/home/srbl/catkin_ws/src/afo/afo_sensor/log/raw_data/soleSensor_right_" + now_str + test_suffix + ".csv");
-	outFileSoleLeft.open("/home/srbl/catkin_ws/src/afo/afo_sensor/log/raw_data/soleSensor_left_" + now_str + test_suffix + ".csv");
-	outIMU.open("/home/srbl/catkin_ws/src/afo/afo_sensor/log/raw_data/IMU_" + now_str + test_suffix + ".csv");
+	outFileSoleRight.open("/home/afo/catkin_ws/src/afo/afo_sensor/log/raw_data/soleSensor_right_" + now_str + test_suffix + ".csv");
+	outFileSoleLeft.open("/home/afo/catkin_ws/src/afo/afo_sensor/log/raw_data/soleSensor_left_" + now_str + test_suffix + ".csv");
+	outIMU.open("/home/afo/catkin_ws/src/afo/afo_sensor/log/raw_data/IMU_" + now_str + test_suffix + ".csv");
 
 	outFileSoleLeft.precision(6);
 	outFileSoleRight.precision(6);

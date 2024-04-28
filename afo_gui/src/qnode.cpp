@@ -92,6 +92,7 @@ namespace afo_gui {
         afo_gui_run_pf_mh_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_pf_mh", 100);
         afo_gui_run_df_mh_pub = nh->advertise<std_msgs::Bool>("/afo_gui/run_df_mh", 100);
         afo_gui_forced_trigger_pub = nh->advertise<std_msgs::Bool>("/afo_gui/forced_trigger", 100);
+        afo_gui_session_type_pub = nh->advertise<std_msgs::Int16MultiArray>("/afo_gui/session_type", 100);
 
         afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
         afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
@@ -492,6 +493,15 @@ namespace afo_gui {
         std_msgs::Bool m;
         m.data = true;
         afo_gui_forced_trigger_pub.publish(m);
+    }
+
+    void QNode::pubSessionType(unsigned int type_trial, unsigned int type_control, unsigned int type_cue){
+        std_msgs::Int16MultiArray m;
+        m.data.push_back(type_trial);
+        m.data.push_back(type_control);
+        m.data.push_back(type_cue);
+        afo_gui_session_type_pub.publish(m);
+
     }
 
     void QNode::imuZeroing(){

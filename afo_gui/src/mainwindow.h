@@ -132,7 +132,7 @@ private:
     int poly_force = 1;
 
     double cycle_time = 2.0;
-    double max_torque[2] = {0.5, 0.3};
+    double max_torque[2] = {0.5, 0.5};
     double rise_time[2] = {0.5, 0.5};
     double fall_time[2] = {0.5, 0.5};
     double trigger_time[2] = {0.5, 0.5};

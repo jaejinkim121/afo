@@ -263,7 +263,7 @@ void savePoly(){
     // poly fitting
     ofstream polyFile;
     std_msgs::Float32MultiArray msg;
-    polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv", ios::trunc);
+    polyFile.open("/home/afo/catkin_ws/src/afo/soleSensor_poly_fit.csv", ios::trunc);
 
     for (int i =0; i < 6; i++){
         a = referenceForceLow / (polyLeft[1][i] - polyLeft[0][i]);
@@ -306,7 +306,7 @@ void loadPoly(){
 
     std_msgs::Float32MultiArray msg;
     ifstream polyFile;
-    polyFile.open("/home/srbl/catkin_ws/src/afo/soleSensor_poly_fit.csv");
+    polyFile.open("/home/afo/catkin_ws/src/afo/soleSensor_poly_fit.csv");
 
     if(!polyFile){
         return;
