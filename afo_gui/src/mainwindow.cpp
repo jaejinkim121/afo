@@ -1092,9 +1092,10 @@ void MainWindow::plotPlantar(){
     float* data = qnode.getPlantarData();
 
     appendCropQVector(&t_m_p, data[0], motorPlotMaxNum);
-    appendCropQVector(&m_p[0], data[1], motorPlotMaxNum);
-    appendCropQVector(&m_p[1], data[2], motorPlotMaxNum);
+    appendCropQVector(&m_p[0], abs(data[1]), motorPlotMaxNum);
+    appendCropQVector(&m_p[1], abs(data[2]), motorPlotMaxNum);
     ui->plot_plantar_command->xAxis->setRange(t_m_p[0], t_m_p[0]+5.0);
+    ui->plot_plantar_command->yAxis->setRange(0, max_torque[0] + 0.1);
     this->updatePlot(MOTOR_PLANTAR);
 }
 
@@ -1103,11 +1104,12 @@ void MainWindow::plotDorsi(){
     float* data = qnode.getDorsiData();
 
     appendCropQVector(&t_m_d, data[0], motorPlotMaxNum);
-    appendCropQVector(&m_d[0], data[1], motorPlotMaxNum);
-    appendCropQVector(&m_d[1], data[2], motorPlotMaxNum);
+    appendCropQVector(&m_d[0], abs(data[1]), motorPlotMaxNum);
+    appendCropQVector(&m_d[1], abs(data[2]), motorPlotMaxNum);
     appendCropQVector(&m_d[2], data[3], motorPlotMaxNum);
     appendCropQVector(&m_d[3], data[4], motorPlotMaxNum);
     ui->plot_dorsi_command->xAxis->setRange(t_m_d[0], t_m_d[0]+5.0);
+    ui->plot_dorsi_command->yAxis->setRange(0, max_torque[1] + 0.1);
     this->updatePlot(MOTOR_DORSI);
 }
 
