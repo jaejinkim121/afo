@@ -141,10 +141,7 @@ double pathPlannerDorsiflexion(maxon::Reading reading){
     }
     else{
         dorsiPosition = 0;
-        dorsiTorque = 1 - cubic(
-            footOffPercentage + riseTimeDF, 
-            footOffPercentage + riseTimeDF + fallTimeDF, 
-            currentCyclePercentage);
+        dorsiTorque = 1;
         dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     
