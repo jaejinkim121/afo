@@ -131,8 +131,8 @@ private:
     int poly_num = 1;
     int poly_force = 1;
 
-    double cycle_time = 2.0;
-    double max_torque[2] = {0.5, 0.5};
+    double cycle_time = 3.2;
+    double max_torque[2] = {0.3, 0.2};
     double rise_time[2] = {0.5, 0.5};
     double fall_time[2] = {0.5, 0.5};
     double trigger_time[2] = {0.5, 0.5};

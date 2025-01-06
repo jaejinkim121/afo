@@ -273,6 +273,13 @@ void callbackCycleTime(const std_msgs::Float32ConstPtr& msg){
 
 }
 
+void callbackPlantarTriggerTime(const std_msgs::Float32ConstPtr& msg){
+	startTimePF = msg->data;
+	std_msgs::Float32 m;
+m.data = msg->data;
+afo_configuration_startTimePlantar.publish(m);
+}
+
 void callbackPlantarRun(const std_msgs::BoolConstPtr& msg){
     plantarRun = msg->data;
 }
@@ -623,6 +630,7 @@ int main(int argc, char**argv)
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
+ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_trigger_time", 1, callbackPlantarTriggerTime);
     afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
     afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
     afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
