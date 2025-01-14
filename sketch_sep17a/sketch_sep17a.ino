@@ -8,16 +8,12 @@
 ros::NodeHandle nh;
 int pinOut = 0;
 int pinIn = A0;
-int val = LOW;
 int valA = 0;
-int preval = LOW;
-int counthigh = 0;
-int countlow = 0;
 int valArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-double timeArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+float timeArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 ros::Time now;
-double now_pre = 0.0;
-double now_post = 0.0;
+float now_pre = 0.0;
+float now_post = 0.0;
 std_msgs::Int32MultiArray msg_val;
 std_msgs::Float32MultiArray msg_time;
 ros::Publisher pub_val("/afo_arduino/analog_val", &msg_val);
@@ -36,19 +32,20 @@ void receiveSync(){
   }
   valArray[9] = valA;;
   timeArray[9] = now_post;
-  
-
-  
 }
 
 void setup(){
   pinMode(pinIn, INPUT);
   pinMode(pinOut, OUTPUT);
   nh.initNode();
-  nh.advertise(pub);
+  nh.advertise(pub_val);
   nh.advertise(pub_time);
-  msg_val.data.clear();
-  msg_time.data.clear();
+
+  msg_val.layout.dim_length = 1;
+  msg_val.data_length = 10;
+  msg_time.layout.dim_length = 1;
+  msg_time.data_length = 10;
+  
   // Thread Setup
   analogThread.enabled = true;
   analogThread.onRun(receiveSync);
@@ -57,14 +54,11 @@ void setup(){
 }
 
 void loop(){
-  msg_val.data.clear();
-  msg_time.data.clear();
-
   for (int j = 0; j < 10; j++){
-    msg_val.data.push_back(valArray[j]);
-    msg_time.data.push_back(timeArray[j]);
+    msg_val.data[j] = valArray[j];
+    msg_time.data[j] = timeArray[j];
   }
-  pub_val.publish(msg_val);
-  pub_time.publish(msg_time);
+  pub_val.publish(&msg_val);
+  pub_time.publish(&msg_time);
   nh.spinOnce();
 }
