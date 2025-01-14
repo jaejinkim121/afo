@@ -1,7 +1,9 @@
 #define USE_USBCON
 #include <ros.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Float32.h>
+#include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/Int32MultiArray.h>
+#include <Thread.h>
+
 
 ros::NodeHandle nh;
 int pinOut = 0;
@@ -11,72 +13,58 @@ int valA = 0;
 int preval = LOW;
 int counthigh = 0;
 int countlow = 0;
+int valArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+double timeArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 ros::Time now;
 double now_pre = 0.0;
 double now_post = 0.0;
-//
-//void callBack(const std_msgs::Bool& msg){
-//  if (msg.data == true){
-//    digitalWrite(pinOut, HIGH);
-//  }
-//  else{
-//    digitalWrite(pinOut, LOW);
-//  }
-//  
-//}
+std_msgs::Int32MultiArray msg_val;
+std_msgs::Float32MultiArray msg_time;
+ros::Publisher pub_val("/afo_arduino/analog_val", &msg_val);
+ros::Publisher pub_time("/afo_arduino/analog_time", &msg_time);
 
-std_msgs::Bool msg;
-std_msgs::Float32 msg_time;
-//ros::Subscriber<std_msgs::Bool> sub("/afo_predictor/sync_pred", callBack);
-ros::Publisher pub("/afo_arduino/forced_trigger", &msg);
-ros::Publisher pub_time("/afo_arduino/sync_time", &msg_time);
+Thread analogThread = Thread();
+
+void receiveSync(){
+  valA = analogRead(pinIn);
+  now = nh.now();
+  now_post = now.toSec();
+
+  for (int i=1; i<10;i++){
+    valArray[i-1] = valArray[i] + 0;
+    timeArray[i-1] = timeArray[i] + 0.0;
+  }
+  valArray[9] = valA;;
+  timeArray[9] = now_post;
+  
+
+  
+}
+
 void setup(){
   pinMode(pinIn, INPUT);
   pinMode(pinOut, OUTPUT);
   nh.initNode();
   nh.advertise(pub);
   nh.advertise(pub_time);
+  msg_val.data.clear();
+  msg_time.data.clear();
+  // Thread Setup
+  analogThread.enabled = true;
+  analogThread.onRun(receiveSync);
+  analogThread.setInterval(1);
   
 }
 
 void loop(){
-  valA = analogRead(pinIn);
-  if (valA > 900){
-    val = HIGH;
-  }
-  else{
-    val = LOW;
-  }
-  if (val == HIGH){
-    if(preval == LOW){
-      if (counthigh <=1){
-        now = nh.now();
-        now_pre = now.toSec();
-      }
-     counthigh++;
-     if(counthigh >= 50){
-      now = nh.now();
-      now_post = now.toSec(); 
-      msg.data = true;
-      msg_time.data = now_post - now_pre;
-      pub.publish(&msg);
-      pub_time.publish(&msg_time);
+  msg_val.data.clear();
+  msg_time.data.clear();
 
-      counthigh = 0;
-      preval = HIGH;
-      }
-    }
-    
-    }
-  if (val == LOW){
-    counthigh = 0;
-    if(preval == HIGH){
-      countlow++;
-    }
-    if(countlow >= 5){
-      countlow = 0;
-      preval = LOW;
-      }
-    }
+  for (int j = 0; j < 10; j++){
+    msg_val.data.push_back(valArray[j]);
+    msg_time.data.push_back(timeArray[j]);
+  }
+  pub_val.publish(msg_val);
+  pub_time.publish(msg_time);
   nh.spinOnce();
 }
