@@ -1,7 +1,6 @@
 #define USE_USBCON
 #include <ros.h>
-#include <std_msgs/Float32MultiArray.h>
-#include <std_msgs/Int32MultiArray.h>
+#include <std_msgs/Int16MultiArray.h>
 #include <Thread.h>
 #include <ThreadController.h>
 
@@ -9,15 +8,9 @@ ros::NodeHandle nh;
 bool flagSwitch = true;
 int pinIn = A0;
 int valA = 0;
-int valArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-float timeArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-ros::Time now;
-float now_pre = 0.0;
-float now_post = 0.0;
-std_msgs::Int32MultiArray msg_val;
-std_msgs::Float32MultiArray msg_time;
+int valArray[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+std_msgs::Int16MultiArray msg_val;
 ros::Publisher pub_val("/afo_arduino/analog_val", &msg_val);
-ros::Publisher pub_time("/afo_arduino/analog_time", &msg_time);
 
 Thread receiveThread = Thread();
 Thread pubThread = Thread();
@@ -25,17 +18,13 @@ ThreadController threadControl = ThreadController();
 
 void receiveSync(){
   
-  valA = analogRead(pinIn);
-  now = nh.now();
-  now_post = now.toSec();
-
+  valA = analogRead(pinIn); 
+  
   flagSwitch = true;
-  for (int i=1; i<10;i++){
+  for (int i=1; i<20;i++){
     valArray[i-1] = valArray[i] + 0;
-    timeArray[i-1] = timeArray[i] + 0.0;
   }
-  valArray[9] = valA;;
-  timeArray[9] = now_post;
+  valArray[19] = valA;;
   flagSwitch = false;
 }
 
@@ -43,12 +32,10 @@ void pubMsg(){
   while(flagSwitch){
     continue;
   }
-  for (int j = 0; j < 10; j++){
-    msg_val.data[j] = valArray[j];
-    msg_time.data[j] = timeArray[j];
-  }
+//  for (int j = 0; j < 10; j++){
+  msg_val.data = valArray;
+  //}
   pub_val.publish(&msg_val);
-  pub_time.publish(&msg_time);
   nh.spinOnce();
 }
 
@@ -56,12 +43,9 @@ void setup(){
   pinMode(pinIn, INPUT);
   nh.initNode();
   nh.advertise(pub_val);
-  nh.advertise(pub_time);
-
-  msg_val.layout.dim_length = 1;
-  msg_val.data_length = 10;
-  msg_time.layout.dim_length = 1;
-  msg_time.data_length = 10;
+  
+  
+  msg_val.data_length = 20;
   
   // Thread Setup
   receiveThread.onRun(receiveSync);
@@ -73,5 +57,6 @@ void setup(){
 }
 
 void loop(){
+  //valA = analogRead(pinIn);
   threadControl.run();  
 }
