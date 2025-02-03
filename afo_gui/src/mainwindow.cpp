@@ -1189,8 +1189,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(-0.1, 0.7);
-    ui->plot_sole_right_voltage->yAxis->setRange(-0.1, 0.7);
+    ui->plot_sole_left_voltage->yAxis->setRange(-0.05, 0.3);
+    ui->plot_sole_right_voltage->yAxis->setRange(-0.05, 0.3);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();

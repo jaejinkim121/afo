@@ -337,7 +337,7 @@ int main(int argc, char**argv)
     is_imu = false;
     leftSwing = false;
     rightSwing = false;
-    affectedSide = LEFT;
+    affectedSide = RIGHT;
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");

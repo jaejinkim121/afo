@@ -126,7 +126,7 @@ private:
     double t_right_calib = 0;
     double *linkX, *linkY, *linkZ;
     int currentLink = -1;
-    int current_affected_side = 0;
+    int current_affected_side = 1;
     int poly_side = 1;
     int poly_num = 1;
     int poly_force = 1;
@@ -136,7 +136,8 @@ private:
     double rise_time[2] = {0.5, 0.5};
     double fall_time[2] = {0.5, 0.5};
     double trigger_time[2] = {0.5, 0.5};
-    float threshold[4] = {0.09, 0.12, 0.10, 0.13};
+//    float threshold[4] = {0.09, 0.12, 0.10, 0.13};
+    float threshold[4] = {0.01, 0.02, 0.01, 0.02};
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
     QVector<double> v_l[6];
