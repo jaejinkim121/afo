@@ -74,7 +74,9 @@ void setup(){
   nh.initNode();
   nh.advertise(pub_val);
   
-  
+  attachInterrupt(0, updateEncoder, CHANGE); 
+  attachInterrupt(1, updateEncoder, CHANGE);
+
   msg_val.data_length = 20;
   
   // Thread Setup
