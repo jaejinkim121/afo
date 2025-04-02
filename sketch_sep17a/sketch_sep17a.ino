@@ -7,19 +7,17 @@
 ros::NodeHandle nh;
 bool flagSwitch = true;
 int pinIn = A0;
+int pinOut = A1;
 int valA = 0;
 int valArray[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 std_msgs::Int16MultiArray msg_val;
 ros::Publisher pub_val("/afo_arduino/analog_val", &msg_val);
 
-
-bool flagSwitch = true;
-
 volatile int lastEncoded = 0;
 volatile long encoderValue = 0;
 
-int encoderPin1 = 2;
-int encoderPin2 = 3;
+int encoderPin1 = 0;
+int encoderPin2 = 1;
 
 int lastencoderValue = 0;
 
@@ -28,7 +26,9 @@ int lastLSB = 0;
 
 Thread receiveThread = Thread();
 Thread pubThread = Thread();
+Thread encoderThread = Thread();
 ThreadController threadControl = ThreadController();
+int sendVal;
 
 void receiveSync(){
   
@@ -38,7 +38,13 @@ void receiveSync(){
   for (int i=1; i<20;i++){
     valArray[i-1] = valArray[i] + 0;
   }
-  valArray[19] = valA;;
+  valArray[19] = valA;
+  if(valA > 900){
+    sendVal = HIGH;
+    }
+    else{
+      sendVal = LOW;
+      }
   flagSwitch = false;
 }
 
@@ -66,26 +72,30 @@ void updateEncoder(){
 
   lastEncoded = encoded; //store this value for next time
   valArray[20] = -encoderValue * 360 / 2048 + 90;
+  digitalWrite(pinOut, sendVal);
 }
 
 
 void setup(){
   pinMode(pinIn, INPUT);
+  pinMode(pinOut, OUTPUT);
+  pinMode(encoderPin1, INPUT);
+  pinMode(encoderPin2, INPUT);
   nh.initNode();
   nh.advertise(pub_val);
   
-  attachInterrupt(0, updateEncoder, CHANGE); 
-  attachInterrupt(1, updateEncoder, CHANGE);
-
-  msg_val.data_length = 20;
+  msg_val.data_length = 21;
   
   // Thread Setup
   receiveThread.onRun(receiveSync);
   receiveThread.setInterval(1);
   pubThread.onRun(pubMsg);
   pubThread.setInterval(10);
+  encoderThread.onRun(updateEncoder);
+  encoderThread.setInterval(1);
   threadControl.add(&receiveThread);
   threadControl.add(&pubThread);
+  threadControl.add(&encoderThread);
 }
 
 void loop(){
