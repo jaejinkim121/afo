@@ -31,6 +31,8 @@ float d_imu[64];
 bool is_soleLeft, is_soleRight, is_imu; // ???
 bool leftSwing, rightSwing;
 bool affectedSide;
+bool leftToeOff, rightToeOff;
+
 
 float thresholdGap[4];
 float thLeft[2][6];

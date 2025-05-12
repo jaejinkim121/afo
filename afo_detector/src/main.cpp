@@ -94,6 +94,7 @@ void gaitDetector(int* result){
     prevRight = rightSwing;
 
     // Left Detection
+    /*
     if(leftSwing){
         for (int i= 0; i<6; i++){
             if(d_soleLeft[i] > thLeft[IC][i]){
@@ -111,9 +112,33 @@ void gaitDetector(int* result){
         }
         leftSwing = leftTmp;        
     }
+*/
+    // Left Heel & Toe only detection
+    if(leftSwing){
+        if(d_soleLeft[5] > thLeft[IC][5]){
+            leftSwing = false;
+        }
+    }
+    else if (leftToeOff){
+        if (d_soleLeft[1] > thLeft[IC][1]){
+            leftToeOff = false;
+        }
+        if (d_soleLeft[3] > thLeft[IC][3]){
+            leftToeOff = false;
+        }
+    }
+    else{
+        if ((d_soleLeft[1] <  thLeft[FO][1]) & (d_soleLeft[3] < thLeft[FO][3])){
+            leftSwing = true;
+            leftToeOff = true;
+        }
+    }
+    
+
+
 
     // Right Detection
-    if(rightSwing){
+    /*if(rightSwing){
         for (int i= 0; i<6; i++){
             if(d_soleRight[i] > thRight[IC][i]){
                 rightSwing = false;
@@ -130,6 +155,31 @@ void gaitDetector(int* result){
         }
         rightSwing = rightTmp;        
     }
+*/
+
+    // Right Heel & Toe only detection
+    if(rightSwing){
+        if(d_soleright[5] > thright[IC][5]){
+            rightSwing = false;
+        }
+    }
+    else if (rightToeOff){
+        if (d_soleright[1] > thright[IC][1]){
+            rightToeOff = false;
+        }
+        if (d_soleright[3] > thright[IC][3]){
+            rightToeOff = false;
+        }
+    }
+    else{
+        if ((d_soleright[1] <  thright[FO][1]) & (d_soleright[3] < thright[FO][3])){
+            rightSwing = true;
+            rightToeOff = true;
+        }
+    }
+
+
+
     if (leftSwing != prevLeft){
         result[affectedSide == LEFT] = 1;
         result[2+(affectedSide==LEFT)] = (int)leftSwing + 1;  // 2 when foot-off, 1 when initial contact
