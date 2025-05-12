@@ -638,7 +638,7 @@ void MainWindow::updatePlotThreshold(){
 
 void MainWindow::toggleAffectedSide(){
     current_affected_side = 1 - current_affected_side;
-    ui->horSlider_polycalib_side->setSliderPosition(current_affected_side);
+    ui->horSlider_affected_side->setSliderPosition(current_affected_side);
     qnode.pubAffectedSide(current_affected_side);
 }
 
@@ -809,6 +809,7 @@ void MainWindow::updateTriggerTimeValue(bool is_plantar){
 
 void MainWindow::updateCycleTimeValue(){
     std::string s = std::to_string(cycle_time);
+    s = CutOnDecimalPt(s, 2);
     ui->button_set_cycle_time->setText(QString::fromStdString(s));
 }
 
@@ -998,9 +999,7 @@ void MainWindow::loadParameterFile(){
     threshold[2] = stof(str);
     getline(f, str);
     threshold[3] = stof(str);
-
     f.close();
-    
 }
 
 void MainWindow::set_emergency(bool on){
@@ -1045,7 +1044,7 @@ void MainWindow::plotSoleLeft(){
     if(is_left_calib_on){
         double t_now = ros::Time::now().toSec();
         if (t_now - t_left_calib > 2.0){
-            ui->button_sole_calibration_left->setText("Left Sole Calibration");
+            ui->button_sole_calibration_left->setText("Left Sole\nCalibration");
             ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(211, 211, 211)");
             is_left_calib_on = false;
             qnode.loadSoleZero(SOLE_LEFT);
@@ -1069,7 +1068,7 @@ void MainWindow::plotSoleRight(){
     if(is_right_calib_on){
         double t_now = ros::Time::now().toSec();
         if (t_now - t_right_calib > 2.0){
-            ui->button_sole_calibration_right->setText("Right Sole Calibration");
+            ui->button_sole_calibration_right->setText("Right Sole\nCalibration");
             ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(211, 211, 211)");
             is_right_calib_on = false;
             qnode.loadSoleZero(SOLE_RIGHT);

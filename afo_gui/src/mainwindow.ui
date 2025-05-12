@@ -33,7 +33,7 @@
      <string notr="true">QTabBar::tab { height: 50px; width: 100px;}</string>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Developer">
      <attribute name="title">
@@ -429,7 +429,7 @@ Calibration</string>
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="iconSize">
        <size>
