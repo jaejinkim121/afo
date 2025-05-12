@@ -1350,12 +1350,19 @@ void MainWindow::initSolePlot(){
 void MainWindow::updateSolePlot(int side, float* data){
     if (side == SOLE_LEFT){
         for (int i = 0; i < 6; i++){
+            if (i == 0){ break; }
+            if (i == 2){ break; }
+            if (i == 4){ break; }
             updateRGB(data[i+1] * 3);
             s_l[i]->redraw(rgb[0], rgb[1], rgb[2]);
         }
     }
     else{
         for (int i = 0; i < 6; i++){
+            if (i == 0){ break; }
+            if (i == 2){ break; }
+            if (i == 4){ break; }
+
             updateRGB(data[i+1] * 3);
             s_r[i]->redraw(rgb[0], rgb[1], rgb[2]);
         }
