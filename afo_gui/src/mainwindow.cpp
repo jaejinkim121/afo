@@ -1267,6 +1267,8 @@ void MainWindow::initPlot(){
     ui->plot_dorsi_command->legend->setVisible(true);
     ui->plot_gaitPhase->legend->setVisible(true);
     ui->plot_gaitPhase_2->legend->setVisible(true);
+    ui->plot_sole_left_voltage->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
+    ui->plot_sole_right_voltage->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
 
 }
 
