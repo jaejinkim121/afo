@@ -36,7 +36,7 @@ double plantarPosition, plantarTorque, plantarCurrentTorque, plantarStopTorque;
 double dorsiPosition, dorsiTorque, dorsiCurrentTorque, dorsiStopTorque;
 double plantarNeutralPosition, dorsiNeutralPosition;
 bool setGaitEventAffected = false;
-bool setGaitEventNonAffected = false;
+bool setGaitEventNonAffected = true;
 bool isDorsiZeroing = false;
 bool forced_trigger = false;
 maxon::ModeOfOperationEnum plantarMode, dorsiMode;
