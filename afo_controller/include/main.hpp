@@ -62,7 +62,7 @@ bool plantarRun, dorsiRun;
 int etherCatCommunicationRate = 5500; // us
 
 // Time Parameter
-double cycleTime = 1.6 * pow(10,6);
+double cycleTime = 1.4 * pow(10,6);
 double startTimePF = 0.2;
 double riseTimePF = 0.2;
 double fallTimePF = 0.2;
@@ -82,7 +82,7 @@ double maxPositionDorsi = 3000;
 double positionDiffLimit = 500;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
-double dorsiPreTension = 0.03;   // It's not normalized value.
+double dorsiPreTension = 0.015;   // It's not normalized value.
 double plantarPreTension = 0.015; // It's not normalized value.
 
 // To switch target direction easily. CW = -1, CCW = 1

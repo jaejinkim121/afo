@@ -131,11 +131,11 @@ private:
     int poly_num = 1;
     int poly_force = 1;
 
-    double cycle_time = 3.2;
+    double cycle_time = 1.4;
     double max_torque[2] = {0.3, 0.2};
-    double rise_time[2] = {0.5, 0.5};
-    double fall_time[2] = {0.5, 0.5};
-    double trigger_time[2] = {0.5, 0.5};
+    double rise_time[2] = {0.2, 0.2};
+    double fall_time[2] = {0.2, 0.05};
+    double trigger_time[2] = {0.2, 0.05};
     float threshold[4] = {0.05, 0.07, 0.07, 0.09};
 //    float threshold[4] = {0.01, 0.02, 0.01, 0.02};
 
