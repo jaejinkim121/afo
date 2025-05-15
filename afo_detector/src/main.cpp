@@ -81,6 +81,31 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
 
 // paretic side is left = 0
 // paretic side is right = 1
+
+void gaitDetector_curexo(const std_msgs::Int32MultiArray::ConstPtr& msg){
+    result[0] = 0;
+    result[1] = 0;
+    result[2] = 0;
+    result[3] = 0;
+
+   
+    bool prevSwing;
+    prevSwing = rightSwing;
+    for (int i = 0; i < 20 ; i++){
+        if (msg->data[i] <= 200){
+            rightSwing = false;
+            break;
+        }
+        rightSwing = true;
+    }
+    if (rightSwing!=prevSwing){
+        result[affectedSide == RIGHT] = 1;
+        result[2+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "Right Swing : " << rightSwing +1 << std::endl;
+    }
+
+}
+
 void gaitDetector(int* result){
     result[0] = 0;
     result[1] = 0;
@@ -93,90 +118,6 @@ void gaitDetector(int* result){
     prevLeft = leftSwing;
     prevRight = rightSwing;
 
-    // Left Detection
-    /*
-    if(leftSwing){
-        for (int i= 0; i<6; i++){
-            if(d_soleLeft[i] > thLeft[IC][i]){
-                leftSwing = false;
-            }
-        }
-    }
-    else{
-        leftTmp = true;
-        for (int i = 0; i< 6; i++){
-            if(d_soleLeft[i] > thLeft[FO][i]){
-                leftTmp = false;
-                break;
-            }
-        }
-        leftSwing = leftTmp;        
-    }
-*/
-    // Left Heel & Toe only detection
-    if(leftSwing){
-        if(d_soleLeft[5] > thLeft[IC][5]){
-            leftSwing = false;
-        }
-    }
-    else if (leftToeOff){
-        if (d_soleLeft[1] > thLeft[IC][1]){
-            leftToeOff = false;
-        }
-        if (d_soleLeft[3] > thLeft[IC][3]){
-            leftToeOff = false;
-        }
-    }
-    else{
-        if ((d_soleLeft[1] <  thLeft[FO][1]) & (d_soleLeft[3] < thLeft[FO][3])){
-            leftSwing = true;
-            leftToeOff = true;
-        }
-    }
-    
-
-
-
-    // Right Detection
-    /*if(rightSwing){
-        for (int i= 0; i<6; i++){
-            if(d_soleRight[i] > thRight[IC][i]){
-                rightSwing = false;
-            }
-        }
-    }
-    else{
-        rightTmp = true;
-        for (int i = 0; i< 6; i++){
-            if(d_soleRight[i] > thRight[FO][i]){
-                rightTmp = false;
-                break;
-            }
-        }
-        rightSwing = rightTmp;        
-    }
-*/
-
-    // Right Heel & Toe only detection
-    if(rightSwing){
-        if(d_soleRight[5] > thRight[IC][5]){
-            rightSwing = false;
-        }
-    }
-    else if (rightToeOff){
-        if (d_soleRight[1] > thRight[IC][1]){
-            rightToeOff = false;
-        }
-        if (d_soleRight[3] > thRight[IC][3]){
-            rightToeOff = false;
-        }
-    }
-    else{
-        if ((d_soleRight[1] <  thRight[FO][1]) & (d_soleRight[3] < thRight[FO][3])){
-            rightSwing = true;
-            rightToeOff = true;
-        }
-    }
 
 
 
@@ -406,6 +347,8 @@ int main(int argc, char**argv)
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     afo_poly_fitting_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/poly_fit", 100);
+    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector_curexo);
+
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
     thresholdSide = LEFT;
@@ -419,14 +362,14 @@ int main(int argc, char**argv)
 
 
     while(ros::ok()){
-        gaitDetector(r);
+//        gaitDetector(r);
 
-        if (r[0] == 1){
-            msg_gait_nonparetic.data = r[2];
+        if (result[0] == 1){
+            msg_gait_nonparetic.data = result[2];
             afo_gait_nonparetic_pub.publish(msg_gait_nonparetic);
         }
-        if (r[1] == 1){
-            msg_gait_paretic.data = r[3];
+        if (result[1] == 1){
+            msg_gait_paretic.data = result[3];
             afo_gait_paretic_pub.publish(msg_gait_paretic);
         } 
         

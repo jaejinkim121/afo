@@ -32,6 +32,7 @@ bool is_soleLeft, is_soleRight, is_imu; // ???
 bool leftSwing, rightSwing;
 bool affectedSide;
 bool leftToeOff, rightToeOff;
+bool prevRightSwing;
 
 
 float thresholdGap[4];
@@ -43,6 +44,7 @@ float polyCoeffLeft[2][6];
 float polyCoeffRight[2][6];
 float meanLeft[6];
 float meanRight[6];
+int result[4];
 int dataNum;
 int polySide, polySensor, polyForce;
 
