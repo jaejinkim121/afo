@@ -82,7 +82,7 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
 // paretic side is left = 0
 // paretic side is right = 1
 
-void gaitDetector_curexo(const std_msgs::Int32MultiArray::ConstPtr& msg){
+void gaitDetector_curexo(const std_msgs::Int16MultiArray::ConstPtr& msg){
     result[0] = 0;
     result[1] = 0;
     result[2] = 0;
