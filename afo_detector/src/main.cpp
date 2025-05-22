@@ -252,12 +252,10 @@ int main(int argc, char**argv)
         if (result[0] == 1){
             msg_gait_nonparetic.data = result[2];
             afo_gait_nonparetic_pub.publish(msg_gait_nonparetic);
-            result[0] = 0;
         }
         if (result[1] == 1){
             msg_gait_paretic.data = result[3];
             afo_gait_paretic_pub.publish(msg_gait_paretic);
-            result[1] = 0;
         } 
         
         if (runThreshold){
