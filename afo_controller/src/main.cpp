@@ -237,9 +237,6 @@ void callbackPlantarRun(const std_msgs::BoolConstPtr& msg){
 
 void callbackDorsiRun(const std_msgs::BoolConstPtr& msg){
     dorsiRun = msg->data;
-    std_msgs::Float32 m;
-    m.data = dorsiNeutralPosition;
-    afo_configuration_dorsiNeutralPosition.publish(m);
 }
 
 void worker()
@@ -432,67 +429,31 @@ void worker()
                     std::cout << slave->getName() << " is not our target device" << std::endl;
                 }
             }
-            else
-            {
-                MELO_WARN_STREAM("Maxon '" << maxon_slave_ptr->getName()
-                                                                        << "': " << maxon_slave_ptr->getReading().getDriveState());
-            }
-
-            // Constant update rate
-            // std::this_thread::sleep_until(start_time + std::chrono::milliseconds(1));
         }
-        maxonEnabledAfterStartup = true;
     
     next += microseconds(etherCatCommunicationRate);
     std::this_thread::sleep_until(next);
     }							
 }
 
-/*
-** Handle the interrupt signal.
-** This is the shutdown routine.
-** Note: This logic is executed in a thread separated from the communication update!
- */
 void terminateMotor(int sig)
 {
-    /*
-    ** Pre shutdown procedure.
-    ** The devices execute procedures (e.g. state changes) that are necessary for a
-    ** proper shutdown and that must be done with PDO communication.
-    ** The communication update loop (i.e. PDO loop) continues to run!
-    ** You might thus want to implement some logic that stages zero torque / velocity commands
-    ** or simliar safety measures at this point using e.g. atomic variables and checking them
-    ** in the communication update loop.
-     */
     for(const auto & master: configurator->getMasters())
     {
         master->preShutdown();
     }
-
-    // stop the PDO communication at the next update of the communication loop
-    abrt = true;
+abrt = true;
     worker_thread->join();
 
-    /*
-    ** Completely halt the EtherCAT communication.
-    ** No online communication is possible afterwards, including SDOs.
-     */
     for(const auto & master: configurator->getMasters())
     {
         master->shutdown();
     }
-
-    // Exit this executable
-    std::cout << "Motor Controller Shutdown" << std::endl;
+std::cout << "Motor Controller Shutdown" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     exit(0);
 }
 
-
-/*
-** Program entry.
-** Pass the path to the setup.yaml file as first command line argument.
- */
 int main(int argc, char**argv)
 {    
     // Define ROS
@@ -504,10 +465,6 @@ int main(int argc, char**argv)
     n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
 
-    // ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
-    // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);
-
-    afo_shutdown_sub = n.subscribe("/afo_sync/shutdown", 1, callbackShutdown);
     afo_gait_nonparetic = n.subscribe("/afo_detector/gait_nonparetic", 1, callbackGaitPhaseNonAffected);
     afo_gait_paretic = n.subscribe("/afo_detector/gait_paretic", 1, callbackGaitPhaseAffected);
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
@@ -515,9 +472,6 @@ int main(int argc, char**argv)
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
 ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_trigger_time", 1, callbackPlantarTriggerTime);
     afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
-    afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
-    afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
-    afo_gui_forced_trigger = n.subscribe("/afo_gui/forced_trigger", 1, callbackForcedTrigger);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);
@@ -534,9 +488,8 @@ ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_tri
     afo_configuration_dorsiPreTension = n.advertise<std_msgs::Float32>("/afo_controller/dorsi_pretension", 10);
     afo_configuration_plantarPreTension = n.advertise<std_msgs::Float32>("/afo_controller/plantar_pretension", 10);
     afo_configuration_dirPlantar = n.advertise<std_msgs::Float32>("/afo_controller/dirPlantar", 10);
-    afo_configuration_dorsiNeutralPosition = n.advertise<std_msgs::Float32>("/afo_controller/dorsiNeutralPosition", 10);
     afo_dorsi_zeroing_done = n.advertise<std_msgs::Bool>("/afo_controller/dorsi_zeroing_done", 10);
-    // 
+    
     std::signal(SIGINT, terminateMotor);
 
     configurator = std::make_shared<EthercatDeviceConfigurator>(configPath); 
@@ -554,14 +507,6 @@ ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_tri
     plantarRun = false;
     dorsiRun = false;
     
-    /*
-    ** Start all masters.
-    ** There is exactly one bus per master which is also started.
-    ** All online (i.e. SDO) configuration is done during this call.
-    ** The EtherCAT interface is active afterwards, all drives are in Operational
-    ** EtherCAT state and PDO communication may begin.
-     */
-
     for(auto & master: configurator->getMasters())
     {
         if(!master->startup())
@@ -571,18 +516,9 @@ ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_tri
         }
     }
 
-    // Start the PDO loop in a new thread.
     worker_thread = std::make_unique<std::thread>(&worker);
 
-    /*
-    ** Wait for a few PDO cycles to pass.
-    ** Set anydrives into to ControlOp state (internal state machine, not EtherCAT states)
-     */
-
-    std::cout << "Startup finished" << std::endl;
-    
     while(ros::ok()){
 	    ros::spinOnce();
     }
-    cout << "afo_controller Node - Terminate properly" << endl;    
 }
