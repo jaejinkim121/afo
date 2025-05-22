@@ -338,48 +338,7 @@ void worker()
     ** to create a constant rate.
      */
     auto next = steady_clock::now();
-    while(!maxonEnabledAfterStartup)
-    {
-	std::cout << "test" << std::endl;
-        for(const auto & master: configurator->getMasters() ){
-            master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
-        }               
-        for(const auto & slave:configurator->getSlaves())
-        {  
-            std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
-
-            if (!maxonEnabledAfterStartup)
-            {
-		std::cout << "testtest" << std::endl;
-                // Set maxons to operation enabled state, do not block the call!
-                maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
-            }
-            // set commands if we can
-            if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
-                    maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
-            {
-                maxon::Command command;
-
-                if (slave->getName() == "Paretic"){
-                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                    command.setTargetPosition(0);
-                    command.setTargetTorque(plantarPreTension * dirParetic);
-                    maxon_slave_ptr->stageCommand(command);
-                }
-                else if (slave->getName() == "NonParetic"){
-                    command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
-                    command.setTargetPosition(0);
-                    command.setTargetTorque(plantarPreTension * dirNonParetic);
-                    maxon_slave_ptr->stageCommand(command);
-                }
-            }
-            else
-            {
-                MELO_WARN_STREAM("Maxon '" << maxon_slave_ptr->getName()
-                                                                        << "': " << maxon_slave_ptr->getReading().getDriveState());
-            }
-        }
-    }
+    
     while (!abrt){
         // CONTROL MAIN LOOP        
         for(const auto & master: configurator->getMasters() )
@@ -389,8 +348,10 @@ void worker()
         for(const auto & slave:configurator->getSlaves())
         {  
             std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
-            maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
-            
+            if (!maxonEnabledAfterStartup){
+                maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
+                maxonEnabledAfterStartup = true;
+            }
             // set commands if we can
             if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
                     maxon_slave_ptr->getReading().getDriveState() == maxon::DriveState::OperationEnabled)
@@ -537,6 +498,8 @@ ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_tri
     dorsiTorque = 0;
     plantarPosition = 0;
     plantarTorque = 0;
+    pareticTorque = 0;
+    nonpareticTorque = 0;
     plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     dorsiMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
 
