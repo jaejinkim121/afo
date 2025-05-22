@@ -340,6 +340,7 @@ void worker()
     auto next = steady_clock::now();
     while(!maxonEnabledAfterStartup)
     {
+	std::cout << "test" << std::endl;
         for(const auto & master: configurator->getMasters() ){
             master->update(ecat_master::UpdateMode::StandaloneEnforceRate); // TODO fix the rate compensation (Elmo reliability problem)!!
         }               
@@ -349,6 +350,7 @@ void worker()
 
             if (!maxonEnabledAfterStartup)
             {
+		std::cout << "testtest" << std::endl;
                 // Set maxons to operation enabled state, do not block the call!
                 maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
             }
@@ -377,7 +379,6 @@ void worker()
                                                                         << "': " << maxon_slave_ptr->getReading().getDriveState());
             }
         }
-        maxonEnabledAfterStartup = true;
     }
     while (!abrt){
         // CONTROL MAIN LOOP        
