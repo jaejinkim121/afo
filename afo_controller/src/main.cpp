@@ -160,6 +160,43 @@ void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg){
     
 }
 
+
+void callbackGaitPhaseAffected(const std_msgs::Int16ConstPtr& msg){
+    if (msg->data == 1){
+        timeICP = high_resolution_clock::now();
+        
+  }
+    else if (msg->data == 2){ 
+        timeFOP = high_resolution_clock::now();
+        pareticStopTorque = pareticCurrentTorque / maxTorquePlantar;
+    }
+    else
+        std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
+
+    setGaitEventAffected = true;
+
+    return;
+}
+
+void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
+    if (msg->data == 1){
+        timeICN = high_resolution_clock::now();
+        
+  }
+    else if (msg->data == 2){ 
+        timeFON = high_resolution_clock::now();
+        nonpareticStopTorque = nonpareticCurrentTorque / maxTorquePlantar;
+    }
+    else
+        std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
+
+    setGaitEventNonAffected = true;
+
+    return;
+}
+
+
+
 void callbackForcedTrigger(const std_msgs::BoolConstPtr& msg){
     trigger_layback_ms = msg->data * 1000.0;
     if (!forced_trigger) timeFT = high_resolution_clock::now();

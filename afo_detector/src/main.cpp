@@ -83,12 +83,6 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
 // paretic side is right = 1
 
 void gaitDetector(const std_msgs::Int16MultiArray::ConstPtr& msg){
-	std::cout << "gaitDetector run" << std::endl;
-	std::cout << "gaitDetector run" << std::endl;
-	std::cout << "gaitDetector run" << std::endl;
-	std::cout << "gaitDetector run" << std::endl;
-	std::cout << "gaitDetector run" << std::endl;
-	std::cout << "gaitDetector run" << std::endl;
     result[0] = 0;
     result[1] = 0;
 
@@ -107,25 +101,35 @@ void gaitDetector(const std_msgs::Int16MultiArray::ConstPtr& msg){
         std::cout << "Right Swing : " << rightSwing +1 << std::endl;
         if (rightSwing){
             timeRightSwing = system_clock::now();
+	swingTurned = false;
+
         }
         else{
             timeRightStance = system_clock::now();
+	stanceTurned = false;
         }
     }
+    duration<double, micro> gapSwing = system_clock::now() - timeRightSwing;
+    duration<double, micro> gapStance = system_clock::now() - timeRightStance;
 
-    if (leftSwing == true){}
-    else if ((system_clock::now() - timeRightSwing).count() > oppositeTimeDiff * 10^6){
+std::cout << gapSwing.count() << ", " << gapStance.count() << ", " << oppositeTimeDiff * pow(10,6) << std::	endl; 	   
+    if (gapSwing.count() > oppositeTimeDiff * pow(10,6)){
+	if ((leftSwing == false) & (!swingTurned)) {
         leftSwing  = true;
+	swingTurned = true;
         result[affectedSide == LEFT] = 1;
         result[(affectedSide == LEFT) +2] = (int)leftSwing + 1;
         std::cout << "Left Swing : " << leftSwing + 1 << std::endl;
+	}
     }
-    if (leftSwing == false){}
-    else if ((system_clock::now() - timeRightStance).count() > oppositeTimeDiff * 10^6){
+    if (gapStance.count() > oppositeTimeDiff * pow(10,6)){
+	if ((leftSwing == true) & (!stanceTurned)) {
         leftSwing  = false;
+	stanceTurned = true;
         result[affectedSide == LEFT] = 1;
         result[(affectedSide == LEFT) +2] = (int)leftSwing + 1;
         std::cout << "Left Swing : " << leftSwing + 1 << std::endl;
+	}
     }
 
 
