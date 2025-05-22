@@ -21,6 +21,10 @@
 #define FO 2
 #define EST 3
 #define PRE 4
+#define PARETIC 1
+#define NONPARETIC 2
+
+
 
 using namespace std;
 using namespace std::chrono;
@@ -34,6 +38,8 @@ unsigned int counter = 0;
 
 double plantarPosition, plantarTorque, plantarCurrentTorque, plantarStopTorque;
 double dorsiPosition, dorsiTorque, dorsiCurrentTorque, dorsiStopTorque;
+double pareticPosition, pareticTorque, pareticCurrentTorque, pareticStopTorque;
+double nonpareticPosition, nonpareticTorque, nonpareticCurrentTorque, nonpareticStopTorque;
 double plantarNeutralPosition, dorsiNeutralPosition;
 bool setGaitEventAffected = false;
 bool setGaitEventNonAffected = true;
@@ -48,6 +54,7 @@ bool isPlantar, isDorsi;
 bool setDF_cue_MH, setPF_cue_MH;
 
 system_clock::time_point timeIC, timeOFO, timeFO, timeCuePF, timeCueDF;
+system_clock::time_point timeICP, timeICN;
 system_clock::time_point timeFT;
 
 int dorsiBufferFlushingIndex = 0;
@@ -88,6 +95,8 @@ double plantarPreTension = 0.015; // It's not normalized value.
 // To switch target direction easily. CW = -1, CCW = 1
 double dirPlantar = 1;
 double dirDorsi = -1;
+double dirParetic = 1;
+double dirNonParetic = -1;
 
 // Define ros publisher and subscriber
 ros::Subscriber afo_gait_paretic;
