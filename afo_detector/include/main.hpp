@@ -57,6 +57,8 @@ bool usePolyCalib = false;
 
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
 system_clock::time_point initialTimePolycalib, currentTimePolycalib;
+system_clock::time_point timeLeftSwing, timeRightSwing;
+float swinggap = 0.2;
 duration<double> currentTimeGap;
 
 ros::Subscriber afo_soleSensor_left_sub;
