@@ -236,6 +236,8 @@ int main(int argc, char**argv)
     afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
     afo_affected_side_sub = n.subscribe("/afo_gui/affected_side", 1, callbackAffectedSide);
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
+    afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
+    afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector);
 
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
