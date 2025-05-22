@@ -115,7 +115,8 @@ void gaitDetector(int* result){
 */
     // Left Heel & Toe only detection
     if(leftSwing){
-        if(d_soleLeft[5] > thLeft[IC][5]){
+        if ((system_clock::now() - timeLeftSwing).count() < swinggap * 10^6){}
+        else if(d_soleLeft[5] > thLeft[IC][5]){
             leftSwing = false;
         }
     }
@@ -131,12 +132,10 @@ void gaitDetector(int* result){
         if ((d_soleLeft[1] <  thLeft[FO][1]) & (d_soleLeft[3] < thLeft[FO][3])){
             leftSwing = true;
             leftToeOff = true;
+            timeLeftSwing = system_clock::now();
         }
     }
     
-
-
-
     // Right Detection
     /*if(rightSwing){
         for (int i= 0; i<6; i++){
@@ -159,7 +158,8 @@ void gaitDetector(int* result){
 
     // Right Heel & Toe only detection
     if(rightSwing){
-        if(d_soleRight[5] > thRight[IC][5]){
+        if ((system_clock::now() - timeRightSwing).count() < swinggap * 10^6){}
+        else if(d_soleRight[5] > thRight[IC][5]){
             rightSwing = false;
         }
     }
@@ -175,6 +175,7 @@ void gaitDetector(int* result){
         if ((d_soleRight[1] <  thRight[FO][1]) & (d_soleRight[3] < thRight[FO][3])){
             rightSwing = true;
             rightToeOff = true;
+            timeRightSwing = system_clock::now();
         }
     }
 
@@ -417,7 +418,8 @@ int main(int argc, char**argv)
     std::cout << "Startup finished" << std::endl;
     int r[4];
 
-
+    timeLeftSwing = system_clock::now();
+    timeRightSwing = system_clock::now();
     while(ros::ok()){
         gaitDetector(r);
 
