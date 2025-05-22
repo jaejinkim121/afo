@@ -294,8 +294,6 @@ void worker()
         rtSuccess &= master->setRealtimePriority(99);
     }
     bool maxonEnabledAfterStartup = false;
-    maxon::ModeOfOperationEnum dorsiInputMode;
-    double dorsiPositionInput, dorsiTorqueInput;
     /*
     ** The communication update loop.
     ** This loop is supposed to be executed at a constant rate.
@@ -326,13 +324,13 @@ void worker()
                 if (slave->getName() == "Paretic"){
                     command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                     command.setTargetPosition(0);
-                    command.setTargetTorque(pareticPreTension * dirParetic);
+                    command.setTargetTorque(plantarPreTension * dirParetic);
                     maxon_slave_ptr->stageCommand(command);
                 }
                 else if (slave->getName() == "NonParetic"){
                     command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                     command.setTargetPosition(0);
-                    command.setTargetTorque(nonpareticPreTension * dirNonParetic);
+                    command.setTargetTorque(plantarPreTension * dirNonParetic);
                     maxon_slave_ptr->stageCommand(command);
                 }
             }
@@ -414,7 +412,7 @@ void worker()
                     msg_motor_dorsi.data.push_back(currentTimePercentage);
                     msg_motor_dorsi.data.push_back(dorsiModeInt);
                     msg_motor_dorsi.data.push_back(dirNonParetic * (maxTorquePlantar * nonpareticTorque + plantarPreTension));
-                    msg_motor_dorsi.data.push_back(dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi);
+                    msg_motor_dorsi.data.push_back(0);
                     msg_motor_dorsi.data.push_back(reading.getActualCurrent());
                     msg_motor_dorsi.data.push_back(reading.getActualTorque());
                     msg_motor_dorsi.data.push_back(reading.getActualPosition());
@@ -465,8 +463,6 @@ int main(int argc, char**argv)
     n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
 
-    afo_gait_nonparetic = n.subscribe("/afo_detector/gait_nonparetic", 1, callbackGaitPhaseNonAffected);
-    afo_gait_paretic = n.subscribe("/afo_detector/gait_paretic", 1, callbackGaitPhaseAffected);
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);

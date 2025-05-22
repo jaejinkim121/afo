@@ -83,6 +83,12 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
 // paretic side is right = 1
 
 void gaitDetector(const std_msgs::Int16MultiArray::ConstPtr& msg){
+	std::cout << "gaitDetector run" << std::endl;
+	std::cout << "gaitDetector run" << std::endl;
+	std::cout << "gaitDetector run" << std::endl;
+	std::cout << "gaitDetector run" << std::endl;
+	std::cout << "gaitDetector run" << std::endl;
+	std::cout << "gaitDetector run" << std::endl;
     result[0] = 0;
     result[1] = 0;
 
@@ -107,7 +113,7 @@ void gaitDetector(const std_msgs::Int16MultiArray::ConstPtr& msg){
         }
     }
 
-    if (lefSwing == true){}
+    if (leftSwing == true){}
     else if ((system_clock::now() - timeRightSwing).count() > oppositeTimeDiff * 10^6){
         leftSwing  = true;
         result[affectedSide == LEFT] = 1;
@@ -228,12 +234,8 @@ int main(int argc, char**argv)
     afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
     afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
-    afo_poly_calib_sub = n.subscribe("/afo_gui/poly_calib", 1, callbackPolyCalib);
     afo_affected_side_sub = n.subscribe("/afo_gui/affected_side", 1, callbackAffectedSide);
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
-    afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
-    afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
-    afo_poly_fitting_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/poly_fit", 100);
     ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector);
 
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
@@ -242,8 +244,7 @@ int main(int argc, char**argv)
     loadThreshold();    
     thresholdSide = RIGHT;
     loadThreshold();    
-    loadPoly();
-
+ 
     std::cout << "Startup finished" << std::endl;
     int r[4];
 
@@ -268,15 +269,7 @@ int main(int argc, char**argv)
             else updateAverage();
         }
 
-        if (runPolycalib){
-            currentTimeGap = high_resolution_clock::now() - initialTimePolycalib;
-            if(currentTimeGap.count() > recordTimeThreshold){
-                runPolycalib = false;
-                updatePoly();
-            }
-            else updateAverage();
-        }
-
+        
 	    ros::spinOnce();
         loop_rate.sleep();
     }

@@ -54,7 +54,7 @@ bool isPlantar, isDorsi;
 bool setDF_cue_MH, setPF_cue_MH;
 
 system_clock::time_point timeIC, timeOFO, timeFO, timeCuePF, timeCueDF;
-system_clock::time_point timeICP, timeICN;
+system_clock::time_point timeICP, timeICN, timeFOP, timeFON;
 system_clock::time_point timeFT;
 
 int dorsiBufferFlushingIndex = 0;

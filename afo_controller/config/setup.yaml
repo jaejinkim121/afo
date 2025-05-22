@@ -4,13 +4,13 @@ ethercat_master:
 
 ethercat_devices:
   - type:               Maxon
-    name:               Plantar
+    name:               Paretic
     configuration_file: plantar.yaml
     ethercat_bus:       enp2s0
     ethercat_address:   2
 
   - type:               Maxon
-    name:               Dorsi
+    name:               NonParetic
     configuration_file: dorsi.yaml
     ethercat_bus:       enp2s0
     ethercat_address:   1
