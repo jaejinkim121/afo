@@ -350,7 +350,6 @@ void worker()
             std::shared_ptr<maxon::Maxon> maxon_slave_ptr = std::dynamic_pointer_cast<maxon::Maxon>(slave);
             if (!maxonEnabledAfterStartup){
                 maxon_slave_ptr->setDriveStateViaPdo(maxon::DriveState::OperationEnabled, false);
-                maxonEnabledAfterStartup = true;
             }
             // set commands if we can
             if (maxon_slave_ptr->lastPdoStateChangeSuccessful() &&
@@ -427,7 +426,8 @@ void worker()
                 }
             }
         }
-    
+    maxonEnabledAfterStartup = true;
+            
     next += microseconds(etherCatCommunicationRate);
     std::this_thread::sleep_until(next);
     }							
