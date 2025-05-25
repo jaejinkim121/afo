@@ -33,30 +33,21 @@ bool leftSwing, rightSwing;
 bool affectedSide;
 bool leftToeOff, rightToeOff;
 
-
 float thresholdGap[4];
 float thLeft[2][6];
 float thRight[2][6];
-float polyLeft[2][6];
-float polyRight[2][6];
-float polyCoeffLeft[2][6];
-float polyCoeffRight[2][6];
 float meanLeft[6];
 float meanRight[6];
 int dataNum;
-int polySide, polySensor, polyForce;
 
 float referenceForceLow = 5.0;
 float referenceForceHigh = 10.0;
 
 float recordTimeThreshold = 1.0;
 bool runThreshold = false;
-bool runPolycalib = false;
 bool thresholdSide;
-bool usePolyCalib = false;
 
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
-system_clock::time_point initialTimePolycalib, currentTimePolycalib;
 system_clock::time_point timeLeftSwing, timeRightSwing;
 float swinggap = 0.2;
 duration<double> currentTimeGap;
@@ -65,15 +56,7 @@ ros::Subscriber afo_soleSensor_left_sub;
 ros::Subscriber afo_soleSensor_right_sub;
 ros::Subscriber afo_imu_sub;
 ros::Subscriber afo_threshold_sub;
-ros::Subscriber afo_poly_calib_sub;
 ros::Subscriber afo_affected_side_sub;
 ros::Subscriber afo_threshold_gap_sub;
 ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
-ros::Publisher afo_poly_fitting_pub;
-
-
-// Function Define
-void updatePloy();
-void savePoly();
-void loadPoly();
