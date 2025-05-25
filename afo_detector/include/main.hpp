@@ -14,7 +14,7 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
 #include "rosbag/bag.h"
-
+#include "json.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -23,6 +23,7 @@ using namespace std::chrono;
 #define IC 1
 #define LEFT true
 #define RIGHT false
+
 
 float d_soleLeft[7];
 float d_soleRight[7];
@@ -38,6 +39,9 @@ float thLeft[2][6];
 float thRight[2][6];
 float meanLeft[6];
 float meanRight[6];
+float ipsCalibrationDataAlpha[2][6][4];
+float ipsCalibrationDataConstant[2][6];
+float ipsCalibrationDataBP[2][6][3];
 int dataNum;
 
 float referenceForceLow = 5.0;

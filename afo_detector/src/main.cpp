@@ -202,6 +202,58 @@ void gaitDetector(int* result){
     }
 }
 
+void loadForceCalibration(){
+    ifstream calibFile;
+    calibFile.open("/home/afo/catkin_ws/src/afo_detector/sensor_calibration_data.json");
+
+    Json::CharReaderBuilder builder;
+	builder["collectComments"] = false;
+	Json::Value value;
+
+	JSONCPP_STRING errs;
+	bool ok = parseFromStream(builder, json_dir, &value, &errs);
+
+	if (ok == true)
+	{
+        // LEFT Loading
+        for (int i=1; i<=6; i++){
+            for (int j=0; j<4; j++){
+                ipsCalibrationDataALPHA[LEFT][i-1][j] = value["Left"]["alpha"][(char)i][j];
+                cout << "LEFT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[LEFT][i-1][j] << end;
+            }
+            
+            for (int j=0; j<3;j++){
+                ipsCalibrationDataBP[LEFT][i][j] = value["Left"]["breakpoint"][(char)i][j];
+                cout << "LEFT b " << i << " " << j << " = " << ipsCalibrationDataBP[LEFT][i-1][j] << end;
+            }
+
+            ipsCalibrationDataConstant[LEFT][i]= value["Left"]["constant"][(char)i];
+            cout << "LEFT c = " << ipsCalibrationDataConstant[LEFT][i-1] << end;
+        }
+        
+        // RIGHT Loading
+        for (int i=1; i<=6; i++){
+            for (int j=0; j<4; j++){
+                ipsCalibrationDataALPHA[RIGHT][i-1][j] = value["Right"]["alpha"][(char)i][j];
+                cout << "RIGHT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[RIGHT][i-1][j] << end;
+            }
+            
+            for (int j=0; j<3;j++){
+                ipsCalibrationDataBP[RIGHT][i][j] = value["Right"]["breakpoint"][(char)i][j];
+                cout << "RIGHT b " << i << " " << j << " = " << ipsCalibrationDataBP[RIGHT][i-1][j] << end;
+            }
+
+            ipsCalibrationDataConstant[RIGHT][i]= value["Right"]["constant"][(char)i];
+            cout << "RIGHT c = " << ipsCalibrationDataConstant[RIGHT][i-1] << end;
+        }
+	}
+	else
+	{
+		cout << "Parse failed." << endl;
+	}
+}
+
+
 void loadThreshold(){
     ifstream thFile;
     bool side = thresholdSide;
