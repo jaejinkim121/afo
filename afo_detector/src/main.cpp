@@ -254,7 +254,7 @@ void loadForceCalibration(){
 	Json::Value value;
 
 	JSONCPP_STRING errs;
-	bool ok = parseFromStream(builder, json_dir, &value, &errs);
+	bool ok = parseFromStream(builder, calibFile, &value, &errs);
 
 	if (ok == true)
 	{
