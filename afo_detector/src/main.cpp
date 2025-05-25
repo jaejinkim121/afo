@@ -277,16 +277,16 @@ void loadForceCalibration(){
         // RIGHT Loading
         for (int i=0; i<=5; i++){
             for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[RIGHT][i][j] = value["Right"]["alpha"][to_string(i+1)][j].asDouble();
+                ipsCalibrationDataAlpha[RIGHT][i][j] = value["ight"]["alpha"][to_string(i+1)][j].asDouble();
                 cout << "RIGHT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[RIGHT][i][j] << endl;
             }
             
             for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[RIGHT][i][j] = value["Right"]["breakpoint"][to_string(i+1)][j].asDouble();
+                ipsCalibrationDataBP[RIGHT][i][j] = value["ight"]["breakpoint"][to_string(i+1)][j].asDouble();
                 cout << "RIGHT b " << i << " " << j << " = " << ipsCalibrationDataBP[RIGHT][i][j] << endl;
             }
 
-            ipsCalibrationDataConstant[RIGHT][i]= value["Right"]["constant"][(char)i].asDouble();
+            ipsCalibrationDataConstant[RIGHT][i]= value["ight"]["constant"][(char)i].asDouble();
             cout << "RIGHT c = " << ipsCalibrationDataConstant[RIGHT][i] << endl;
         }
 	}
