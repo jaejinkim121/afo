@@ -74,7 +74,6 @@ double pathPlannerPlantarflexion(){
     if (eventGap.count() > 0){
         plantarPosition = 0;
         duration<double, micro> time_span = time - timeFO;
-
         plantarTorque = plantarStopTorque * (1 - cubic(0, relaxTime, time_span.count()/cycleTime));
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
@@ -187,7 +186,7 @@ void callbackGaitPhaseAffected(const std_msgs::Int16ConstPtr& msg){
     }
     else if (msg->data == 2){ 
         timeFO = high_resolution_clock::now();
-        plantarStopTorque = plantarCurrentTorque / maxTorquePlantar;
+        plantarStopTorque = plantarTorque;
     }
     else
         std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;

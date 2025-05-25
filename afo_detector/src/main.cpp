@@ -184,7 +184,6 @@ void gaitDetector(int* result){
 
     /////// Left Heel & Toe only detection //////
     duration<double> leftDuration, rightDuration;
-
     // Left detection
     if(leftSwing){
         leftDuration = system_clock::now() - timeLeftSwing;
