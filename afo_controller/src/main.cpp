@@ -92,8 +92,12 @@ double pathPlannerPlantarflexion(){
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;     
     }
     // Still Plantarflexion, torque decreasing
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF){
+        plantarTorque = 1;
+        plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode; 
+    }
     else if (currentCyclePercentage < endTimePF){
-        t = currentCyclePercentage - startTimePF - riseTimePF;
+        t = currentCyclePercentage - startTimePF - riseTimePF - flatTimePF;
 
         plantarPosition = 0;
         plantarTorque = 1 - cubic(0, fallTimePF, t);

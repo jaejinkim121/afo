@@ -63,10 +63,11 @@ int etherCatCommunicationRate = 5500; // us
 
 // Time Parameter
 double cycleTime = 1.4 * pow(10,6);
-double startTimePF = 0.2;
-double riseTimePF = 0.2;
+double startTimePF = 0.1;
+double riseTimePF = 0.3;
 double fallTimePF = 0.2;
-double endTimePF = startTimePF + riseTimePF + fallTimePF;
+double flatTimePF = 0.1;
+double endTimePF = startTimePF + riseTimePF + fallTimePF + flatTimePF;
 double relaxTime = 0.3 * pow(10,6);
 double startTimeDF = 0.0;
 double riseTimeDF = 0.05;
