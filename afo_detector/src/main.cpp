@@ -85,6 +85,49 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
     }
 }
 
+float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
+    #ifdef VOLT
+        return voltage;
+    #endif
+    float r;
+    float bp[4];
+    float a[4];
+
+    r = ipsCalibrationDataConstant[side][sensorNum];
+    
+    for (int i = 0; i<4; i++){
+        a[i] = ipsCalibrationDataAlpha[side][sensorNum][i];
+    }
+    for (int i =0 ; i<3; i++){
+        bp[i] = ipsCalibrationDataBP[side][sensorNum][i];
+    }
+
+    r += a[0] * voltage;
+    r += a[1] * max(voltage - bp[0], 0);
+    r += a[2] * max(voltage - bp[1], 0);
+    r += a[3] * max(voltage - bp[2], 0);
+
+    if (r<0) return 0;
+    
+    return r;
+}
+
+bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int isIC){
+    float th, f;
+    if (side == LEFT){
+        f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
+        th = thLEFT[isIC][sensorNum];
+        if (isIC) return f >= th;
+        else return f < th;
+    }
+    else {
+        f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
+        th = thRIGHT[isIC][sensorNum];
+        if (isIC) return f >= th;
+        else return f < th;
+    }
+}
+
 // paretic side is left = 0
 // paretic side is right = 1
 void gaitDetector(int* result){
@@ -145,21 +188,22 @@ void gaitDetector(int* result){
     // Left detection
     if(leftSwing){
         leftDuration = system_clock::now() - timeLeftSwing;
-        if (leftDuration.count() < swinggap){}
-        else if(d_soleLeft[5] > thLeft[IC][5]){
-            leftSwing = false;
+        if (leftDuration.count() >= swinggap){
+            if (checkForceThreshold(LEFT, 5, IC)){
+                leftSwing = false;
+            }
         }
     }
     else if (leftToeOff){
-        if (d_soleLeft[1] > thLeft[IC][1]){
+        if (checkForceThreshold(LEFT, 1, IC)){
             leftToeOff = false;
         }
-        if (d_soleLeft[3] > thLeft[IC][3]){
+        if (checkForceThreshold(LEFT, 3, IC)){
             leftToeOff = false;
         }
     }
     else{
-        if ((d_soleLeft[1] <  thLeft[FO][1]) & (d_soleLeft[3] < thLeft[FO][3])){
+        if (checkForceThreshold(LEFT, 1, FO) & checkForceThreshold(LEFT, 3, FO)){
             leftSwing = true;
             leftToeOff = true;
             timeLeftSwing = system_clock::now();
@@ -169,21 +213,20 @@ void gaitDetector(int* result){
     // Right Detection    
     if(rightSwing){
         rightDuration = system_clock::now() - timeRightSwing;
-        if (rightDuration.count() < swinggap){}
-        else if(d_soleRight[5] > thRight[IC][5]){
-            rightSwing = false;
+        if (rightDuration.count() >= swinggap){
+            if (checkForceThreshold(RIGHT, 5, IC)) rightSwing = false;            
         }
     }
     else if (rightToeOff){
-        if (d_soleRight[1] > thRight[IC][1]){
+        if (checkForceThreshold(RIGHT, 1, IC)){
             rightToeOff = false;
         }
-        if (d_soleRight[3] > thRight[IC][3]){
+        if (checkForceThreshold(RIGHT, 3, IC)){
             rightToeOff = false;
         }
     }
     else{
-        if ((d_soleRight[1] <  thRight[FO][1]) & (d_soleRight[3] < thRight[FO][3])){
+        if (checkForceThreshold(RIGHT, 1, FO) & checkForceThreshold(RIGHT, 3, FO)){
             rightSwing = true;
             rightToeOff = true;
             timeRightSwing = system_clock::now();
@@ -370,6 +413,7 @@ int main(int argc, char**argv)
     loadThreshold();    
     thresholdSide = RIGHT;
     loadThreshold();
+    loadForceCalibration();
 
     int r[4];
 

@@ -24,6 +24,8 @@ using namespace std::chrono;
 #define LEFT true
 #define RIGHT false
 
+// #define VOLTAGE // Uncomment when you want to use voltage-based thresholding.
+
 
 float d_soleLeft[7];
 float d_soleRight[7];
