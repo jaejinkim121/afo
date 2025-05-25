@@ -103,9 +103,9 @@ float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
     }
 
     r += a[0] * voltage;
-    r += a[1] * max(voltage - bp[0], 0);
-    r += a[2] * max(voltage - bp[1], 0);
-    r += a[3] * max(voltage - bp[2], 0);
+    r += a[1] * max(voltage - bp[0], 0.0);
+    r += a[2] * max(voltage - bp[1], 0.0);
+    r += a[3] * max(voltage - bp[2], 0.0);
 
     if (r<0) return 0;
     
