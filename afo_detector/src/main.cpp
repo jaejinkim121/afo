@@ -247,7 +247,7 @@ void gaitDetector(int* result){
 
 void loadForceCalibration(){
     ifstream calibFile;
-    calibFile.open("/home/afo/catkin_ws/src/afo_detector/sensor_calibration_data.json");
+    calibFile.open("/home/afo/catkin_ws/src/afo/afo_detector/sensor_calibration_data.json");
 
     Json::CharReaderBuilder builder;
 	builder["collectComments"] = false;
@@ -255,22 +255,21 @@ void loadForceCalibration(){
 
 	JSONCPP_STRING errs;
 	bool ok = parseFromStream(builder, calibFile, &value, &errs);
-
 	if (ok == true)
 	{
         // LEFT Loading
         for (int i=1; i<=6; i++){
             for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[LEFT][i-1][j] = value["Left"]["alpha"][(char)i][j].get("Double", -999).asDouble();
+                ipsCalibrationDataAlpha[LEFT][i-1][j] = value["Left"]["alpha"][to_string(i)][j].get("Double", -999).asDouble();
                 cout << "LEFT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[LEFT][i-1][j] << endl;
             }
             
             for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[LEFT][i][j] = value["Left"]["breakpoint"][(char)i][j].get("Double", -999).asDouble();
+                ipsCalibrationDataBP[LEFT][i][j] = value["Left"]["breakpoint"][to_string(i)][j].get("Double", -999).asDouble();
                 cout << "LEFT b " << i << " " << j << " = " << ipsCalibrationDataBP[LEFT][i-1][j] << endl;
             }
 
-            ipsCalibrationDataConstant[LEFT][i]= value["Left"]["constant"][(char)i].get("Double", -999).asDouble();
+            ipsCalibrationDataConstant[LEFT][i]= value["Left"]["constant"][to_string(i)].get("Double", -999).asDouble();
             cout << "LEFT c = " << ipsCalibrationDataConstant[LEFT][i-1] << endl;
         }
         
