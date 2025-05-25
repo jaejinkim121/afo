@@ -73,8 +73,9 @@ double pathPlannerPlantarflexion(){
     // Relax after Foot-off
     if (eventGap.count() > 0){
         plantarPosition = 0;
-        duration<double> time_span = time - timeFO;
-        plantarTorque = plantarStopTorque * (1 - cubic(0, relaxTime / cycleTime, time_span.count()));
+        duration<double, micro> time_span = time - timeFO;
+
+        plantarTorque = plantarStopTorque * (1 - cubic(0, relaxTime, time_span.count()/cycleTime));
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // Before actuation
