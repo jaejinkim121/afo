@@ -93,6 +93,7 @@ void gaitDetector(int* result){
     prevLeft = leftSwing;
     prevRight = rightSwing;
 
+    ////// ALL SENSOR DETECTION //////
     // Left Detection
     /*
     if(leftSwing){
@@ -112,10 +113,33 @@ void gaitDetector(int* result){
         }
         leftSwing = leftTmp;        
     }
+    // Right Detection
+    if(rightSwing){
+        for (int i= 0; i<6; i++){
+            if(d_soleRight[i] > thRight[IC][i]){
+                rightSwing = false;
+            }
+        }
+    }
+    else{
+        rightTmp = true;
+        for (int i = 0; i< 6; i++){
+            if(d_soleRight[i] > thRight[FO][i]){
+                rightTmp = false;
+                break;
+            }
+        }
+        rightSwing = rightTmp;        
+    }
 */
-    // Left Heel & Toe only detection
+
+    /////// Left Heel & Toe only detection //////
+    duration<double> leftDuration, rightDuration;
+
+    // Left detection
     if(leftSwing){
-        if ((system_clock::now() - timeLeftSwing).count() < swinggap * 10^6){}
+        leftDuration = system_clock::now() - timeLeftSwing;
+        if (leftDuration.count() < swinggap){}
         else if(d_soleLeft[5] > thLeft[IC][5]){
             leftSwing = false;
         }
@@ -136,29 +160,10 @@ void gaitDetector(int* result){
         }
     }
     
-    // Right Detection
-    /*if(rightSwing){
-        for (int i= 0; i<6; i++){
-            if(d_soleRight[i] > thRight[IC][i]){
-                rightSwing = false;
-            }
-        }
-    }
-    else{
-        rightTmp = true;
-        for (int i = 0; i< 6; i++){
-            if(d_soleRight[i] > thRight[FO][i]){
-                rightTmp = false;
-                break;
-            }
-        }
-        rightSwing = rightTmp;        
-    }
-*/
-
-    // Right Heel & Toe only detection
+    // Right Detection    
     if(rightSwing){
-        if ((system_clock::now() - timeRightSwing).count() < swinggap * 10^6){}
+        rightDuration = system_clock::now() - timeRightSwing;
+        if (rightDuration.count() < swinggap){}
         else if(d_soleRight[5] > thRight[IC][5]){
             rightSwing = false;
         }
