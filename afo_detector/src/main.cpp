@@ -261,7 +261,7 @@ void loadForceCalibration(){
         // LEFT Loading
         for (int i=1; i<=6; i++){
             for (int j=0; j<4; j++){
-                ipsCalibrationDataALPHA[LEFT][i-1][j] = value["Left"]["alpha"][(char)i][j];
+                ipsCalibrationDataALPHA[LEFT][i-1][j] = value["Left"]["alpha"][(char)i][j].get("Double", -999);
                 cout << "LEFT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[LEFT][i-1][j] << endl;
             }
             
