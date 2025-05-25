@@ -259,35 +259,35 @@ void loadForceCalibration(){
 	{
         
         // LEFT Loading
-        for (int i=1; i<=6; i++){
+        for (int i=0; i<6; i++){
             for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[LEFT][i-1][j] = value["Left"]["alpha"][to_string(i)][j].asDouble();
-                cout << "LEFT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[LEFT][i-1][j] << endl;
+                ipsCalibrationDataAlpha[LEFT][i][j] = value["Left"]["alpha"][to_string(i+1)][j].asDouble();
+                cout << "LEFT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[LEFT][i][j] << endl;
             }
             
             for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[LEFT][i][j] = value["Left"]["breakpoint"][to_string(i)][j].asDouble();
-                cout << "LEFT b " << i << " " << j << " = " << ipsCalibrationDataBP[LEFT][i-1][j] << endl;
+                ipsCalibrationDataBP[LEFT][i][j] = value["Left"]["breakpoint"][to_string(i+1)][j].asDouble();
+                cout << "LEFT b " << i << " " << j << " = " << ipsCalibrationDataBP[LEFT][i][j] << endl;
             }
 
-            ipsCalibrationDataConstant[LEFT][i]= value["Left"]["constant"][to_string(i)].asDouble();
-            cout << "LEFT c = " << ipsCalibrationDataConstant[LEFT][i-1] << endl;
+            ipsCalibrationDataConstant[LEFT][i]= value["Left"]["constant"][to_string(i+1)].asDouble();
+            cout << "LEFT c = " << ipsCalibrationDataConstant[LEFT][i] << endl;
         }
         
         // RIGHT Loading
-        for (int i=1; i<=6; i++){
+        for (int i=0; i<=5; i++){
             for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[RIGHT][i-1][j] = value["Right"]["alpha"][(char)i][j].get("Double", -999).asDouble();
-                cout << "RIGHT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[RIGHT][i-1][j] << endl;
+                ipsCalibrationDataAlpha[RIGHT][i][j] = value["Right"]["alpha"][to_string(i+1)][j].asDouble();
+                cout << "RIGHT a " << i << " " << j << " = " << ipsCalibrationDataAlpha[RIGHT][i][j] << endl;
             }
             
             for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[RIGHT][i][j] = value["Right"]["breakpoint"][(char)i][j].get("Double", -999).asDouble();
-                cout << "RIGHT b " << i << " " << j << " = " << ipsCalibrationDataBP[RIGHT][i-1][j] << endl;
+                ipsCalibrationDataBP[RIGHT][i][j] = value["Right"]["breakpoint"][to_string(i+1)][j].asDouble();
+                cout << "RIGHT b " << i << " " << j << " = " << ipsCalibrationDataBP[RIGHT][i][j] << endl;
             }
 
-            ipsCalibrationDataConstant[RIGHT][i]= value["Right"]["constant"][(char)i].get("Double", -999).asDouble();
-            cout << "RIGHT c = " << ipsCalibrationDataConstant[RIGHT][i-1] << endl;
+            ipsCalibrationDataConstant[RIGHT][i]= value["Right"]["constant"][(char)i].asDouble();
+            cout << "RIGHT c = " << ipsCalibrationDataConstant[RIGHT][i] << endl;
         }
 	}
 	else
