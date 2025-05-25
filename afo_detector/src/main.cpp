@@ -73,6 +73,12 @@ void callbackAffectedSide(const std_msgs::BoolConstPtr& msg){
     affectedSide = msg->data;
 }
 
+void callbackThresholdUpdate(const std_msgs::BoolConstPtr& msg){
+    return;
+}
+
+
+
 void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
     for (int i = 0; i < 4; i++){
         thresholdGap[i] = msg->data[i];
@@ -299,11 +305,14 @@ int main(int argc, char**argv)
     afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
     afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
+    afo_threshold_update_sub = n.subscribe("/afo_gui/update_threshold", 1, callbackUpdateThreshold);
     afo_affected_side_sub = n.subscribe("/afo_gui/affected_side", 1, callbackAffectedSide);
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
+
+
 
     thresholdSide = LEFT;
     loadThreshold();    

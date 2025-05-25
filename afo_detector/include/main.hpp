@@ -56,6 +56,7 @@ ros::Subscriber afo_soleSensor_left_sub;
 ros::Subscriber afo_soleSensor_right_sub;
 ros::Subscriber afo_imu_sub;
 ros::Subscriber afo_threshold_sub;
+ros::Subscriber afo_threshold_update_sub;
 ros::Subscriber afo_affected_side_sub;
 ros::Subscriber afo_threshold_gap_sub;
 ros::Publisher afo_gait_nonparetic_pub;
