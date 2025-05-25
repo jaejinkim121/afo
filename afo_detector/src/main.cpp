@@ -2,36 +2,47 @@
 
 
 void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    
+    std_msgs::Float32MultiArray msg_force;
+    msg_force.data.clear();
     #ifdef DEBUG
     cout << "Debug - Sole Left data  - ";
     #endif
 
     for (int i = 0; i< 6; i++){
         d_soleLeft[i] = msg->data[i];
-
+        f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i], i);
+        msg_force.data.push_back(f_soleLeft[i]);
         #ifdef DEBUG
         cout << d_soleLeft[i];
         if (i != 6) cout << ", ";
         #endif
 
     }
+
+    afo_ips_force_left_pub.publish(msg_force);
     return;
 }
 
 void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    
+    std_msgs::Float32MultiArray msg_force;
+    msg_force.data.clear();
     #ifdef DEBUG
     cout << "Debug - Sole Right data  - ";
     #endif
 
     for (int i = 0; i< 6; i++){
         d_soleRight[i] = msg->data[i];
-
+        f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i], i);
+        msg_force.data.push_back(f_soleRight[i]);
         #ifdef DEBUG
         cout << d_soleRight[i];
         if (i != 6) cout << ", ";
         #endif
         
     }
+    afo_ips_force_right_pub.publish(msg_force);
     return;
 }
 
@@ -398,6 +409,9 @@ int main(int argc, char**argv)
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
+    afo_ips_force_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_left", 100);
+    afo_ips_force_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_right", 100);
+    
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
 

@@ -29,7 +29,9 @@ using namespace std::chrono;
 
 
 float d_soleLeft[7];
+float f_soleLeft[7];
 float d_soleRight[7];
+float f_soleRight[7];
 float d_imu[64];
 
 bool is_soleLeft, is_soleRight, is_imu; // ???
@@ -68,3 +70,5 @@ ros::Subscriber afo_affected_side_sub;
 ros::Subscriber afo_threshold_gap_sub;
 ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
+ros::Publisher afo_ips_force_left_pub;
+ros::Publisher afo_ips_force_right_pub;

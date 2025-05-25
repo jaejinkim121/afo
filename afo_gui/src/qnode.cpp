@@ -94,8 +94,8 @@ namespace afo_gui {
         afo_gui_forced_trigger_pub = nh->advertise<std_msgs::Bool>("/afo_gui/forced_trigger", 100);
         afo_gui_session_type_pub = nh->advertise<std_msgs::Int16MultiArray>("/afo_gui/session_type", 100);
 
-        afo_soleSensor_left_sub = nh->subscribe("/afo_sensor/soleSensor_left", 1, &QNode::callbackSoleLeft, this);
-        afo_soleSensor_right_sub = nh->subscribe("/afo_sensor/soleSensor_right", 1, &QNode::callbackSoleRight, this);
+        afo_soleSensor_left_sub = nh->subscribe("/afo_detector/soleForce_left", 1, &QNode::callbackSoleLeft, this);
+        afo_soleSensor_right_sub = nh->subscribe("/afo_detector/soleForce_right", 1, &QNode::callbackSoleRight, this);
         afo_imu_sub = nh->subscribe("/afo_sensor/imu", 1, &QNode::callbackIMU, this);
         afo_plantar_command_sub = nh->subscribe("/afo_controller/motor_data_plantar", 1, &QNode::callbackPlantar, this);
         afo_dorsi_command_sub = nh->subscribe("/afo_controller/motor_data_dorsi", 1, &QNode::callbackDorsi, this);
