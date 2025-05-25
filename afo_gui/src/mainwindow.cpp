@@ -1032,11 +1032,8 @@ void MainWindow::plotSoleLeft(){
 
     appendCropQVector(&t_v_l, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        if(i==0) continue;
-        if(i==2) continue;
-        if(i==4) continue;
-
-        appendCropQVector(&v_l[i], data[i+1], voltPlotMaxNum);
+        if((i==0) || (i==2) || (i==4))  appendCropQVector(&v_l[i], -1.0, voltPlotMaxNum);
+        else   appendCropQVector(&v_l[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_left_voltage->xAxis->setRange(t_v_l[0], t_v_l[0]+5.0);
 
@@ -1060,10 +1057,8 @@ void MainWindow::plotSoleRight(){
     float* data = qnode.getSoleRightData();
     appendCropQVector(&t_v_r, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        if (i==0) continue;
-        if (i==2) continue;
-        if (i==4) continue;
-        appendCropQVector(&v_r[i], data[i+1], voltPlotMaxNum);
+        if((i==0) || (i==2) || (i==4))  appendCropQVector(&v_r[i], -1, voltPlotMaxNum);
+        else   appendCropQVector(&v_r[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_right_voltage->xAxis->setRange(t_v_r[0], t_v_r[0]+5.0);
 
