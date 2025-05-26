@@ -632,6 +632,8 @@ void MainWindow::updatePlotThreshold(){
     infLineThreshold[2]->point2->setCoords(2, threshold[2 * current_affected_side]);
     infLineThreshold[3]->point1->setCoords(1, threshold[1 + 2 * current_affected_side]);
     infLineThreshold[3]->point2->setCoords(2, threshold[1 + 2 * current_affected_side]);
+ui->plot_sole_left_voltage->yAxis->setRange(0, threshold[3-current_affected_side]+5.0);
+ui->plot_sole_right_voltage->yAxis->setRange(0, threshold[1 + 2 * current_affected_side]+5.0);
     ui->plot_sole_left_voltage->replot();
     ui->plot_sole_right_voltage->replot();
 }

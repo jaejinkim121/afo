@@ -136,7 +136,7 @@ private:
     double rise_time[2] = {0.2, 0.2};
     double fall_time[2] = {0.2, 0.05};
     double trigger_time[2] = {0.2, 0.05};
-    float threshold[4] = {0.05, 0.07, 0.07, 0.09};
+    float threshold[4] = {3, 6, 3, 6};
 //    float threshold[4] = {0.01, 0.02, 0.01, 0.02};
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
