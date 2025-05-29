@@ -50,7 +50,7 @@ int polySide, polySensor, polyForce;
 
 float referenceForceLow = 5.0;
 float referenceForceHigh = 10.0;
-
+float swinggap = 0.2;
 float recordTimeThreshold = 1.0;
 bool runThreshold = false;
 bool runPolycalib = false;
@@ -60,6 +60,7 @@ bool usePolyCalib = false;
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
 system_clock::time_point initialTimePolycalib, currentTimePolycalib;
 system_clock::time_point timeRightStance, timeRightSwing;
+system_clock::time_point timeLeftStance, timeLeftSwing;
 duration<double> currentTimeGap;
 float oppositeTimeDiff = 2.0;
 bool swingTurned = true;

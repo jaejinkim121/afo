@@ -300,7 +300,8 @@ int main(int argc, char**argv)
     leftSwing = false;
     rightSwing = false;
     affectedSide = RIGHT;
-
+    timeLeftSwing = system_clock::now();
+    timeRightSwing = system_clock::now();
     // Define ROS
     ros::init(argc, argv, "afo_detector");
     ros::NodeHandle n;
