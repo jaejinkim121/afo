@@ -135,6 +135,82 @@ std::cout << gapSwing.count() << ", " << gapStance.count() << ", " << oppositeTi
 
 }
 
+void gaitDetector(){
+    result[0] = 0;
+    result[1] = 0;
+    result[2] = 0;
+    result[3] = 0;
+
+    bool leftTmp, rightTmp;
+    bool prevLeft, prevRight;
+    
+    prevLeft = leftSwing;
+    prevRight = rightSwing;
+
+    /////// Left Heel & Toe only detection //////
+    duration<double> leftDuration, rightDuration;
+    // Left detection
+    if(leftSwing){
+        leftDuration = system_clock::now() - timeLeftSwing;
+        if (leftDuration.count() >= swinggap){
+            if (d_soleLeft[5] > thLeft[IC][5]){
+                leftSwing = false;
+            }
+        }
+    }
+    else if (leftToeOff){
+        if (d_soleLeft[1] > thLeft[IC][1]){
+            leftToeOff = false;
+        }
+        if (d_soleLeft[3] > thLeft[IC][3]){
+            leftToeOff = false;
+        }
+    }
+    else{
+        if ((d_soleLeft[1] < thLeft[FO][1]) & (d_soleLeft[3] < thLeft[FO][3])){
+            leftSwing = true;
+            leftToeOff = true;
+            timeLeftSwing = system_clock::now();
+        }
+    }
+    
+    // Right Detection    
+    if(rightSwing){
+        rightDuration = system_clock::now() - timeRightSwing;
+        if (rightDuration.count() >= swinggap){
+            if (d_soleRight > thRight[IC][5]) rightSwing = false;            
+        }
+    }
+    else if (rightToeOff){
+        if (d_soleRight > thRight[IC][1]){
+            rightToeOff = false;
+        }
+        if (d_soleRight > thRight[IC][3]){
+            rightToeOff = false;
+        }
+    }
+    else{
+        if ((d_soleRight < thRight[FO][1]) & (d_soleRight < thRight[FO][3])){
+            rightSwing = true;
+            rightToeOff = true;
+            timeRightSwing = system_clock::now();
+        }
+    }
+
+    if (leftSwing != prevLeft){
+        result[affectedSide == LEFT] = 1;
+        result[2+(affectedSide==LEFT)] = (int)leftSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "LEFT Swing : " << leftSwing +1 << std::endl;
+    }
+    if (rightSwing != prevRight){
+        result[affectedSide == RIGHT] = 1;
+        result[2+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "Right Swing : " << rightSwing +1 << std::endl;
+    }
+}
+
+
+
 void loadThreshold(){
     ifstream thFile;
     bool side = thresholdSide;
@@ -242,7 +318,7 @@ int main(int argc, char**argv)
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
-    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector);
+//    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector);
 
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
@@ -252,10 +328,11 @@ int main(int argc, char**argv)
     loadThreshold();    
  
     std::cout << "Startup finished" << std::endl;
-    int r[4];
+    //int r[4];
 
 
     while(ros::ok()){
+        gaitDetector();
         if (result[0] == 1){
             msg_gait_nonparetic.data = result[2];
             afo_gait_nonparetic_pub.publish(msg_gait_nonparetic);
