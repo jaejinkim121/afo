@@ -176,19 +176,19 @@ void gaitDetector(){
     if(rightSwing){
         rightDuration = system_clock::now() - timeRightSwing;
         if (rightDuration.count() >= swinggap){
-            if (d_soleRight > thRight[IC][5]) rightSwing = false;            
+            if (d_soleRight[5] > thRight[IC][5]) rightSwing = false;            
         }
     }
     else if (rightToeOff){
-        if (d_soleRight > thRight[IC][1]){
+        if (d_soleRight[1] > thRight[IC][1]){
             rightToeOff = false;
         }
-        if (d_soleRight > thRight[IC][3]){
+        if (d_soleRight[3] > thRight[IC][3]){
             rightToeOff = false;
         }
     }
     else{
-        if ((d_soleRight < thRight[FO][1]) & (d_soleRight < thRight[FO][3])){
+        if ((d_soleRight[1] < thRight[FO][1]) & (d_soleRight[3] < thRight[FO][3])){
             rightSwing = true;
             rightToeOff = true;
             timeRightSwing = system_clock::now();
