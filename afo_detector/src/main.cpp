@@ -1,6 +1,32 @@
 #include "../include/main.hpp"
 
 
+float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
+    #ifdef VOLT
+        return voltage;
+    #endif
+    float r;
+    float bp[4];
+    float a[4];
+
+    r = ipsCalibrationDataConstant[side][sensorNum];
+    
+    for (int i = 0; i<4; i++){
+        a[i] = ipsCalibrationDataAlpha[side][sensorNum][i];
+    }
+    for (int i =0 ; i<3; i++){
+        bp[i] = ipsCalibrationDataBP[side][sensorNum][i];
+    }
+
+    r += a[0] * voltage;
+    r += a[1] * std::max(voltage - bp[0], (float)0.0);
+    r += a[2] * std::max(voltage - bp[1], (float)0.0);
+    r += a[3] * std::max(voltage - bp[2], (float)0.0);
+
+    if (r<0) return 0;
+    
+    return r;
+}
 void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
     
     std_msgs::Float32MultiArray msg_force;
@@ -96,32 +122,6 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
     }
 }
 
-float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
-    #ifdef VOLT
-        return voltage;
-    #endif
-    float r;
-    float bp[4];
-    float a[4];
-
-    r = ipsCalibrationDataConstant[side][sensorNum];
-    
-    for (int i = 0; i<4; i++){
-        a[i] = ipsCalibrationDataAlpha[side][sensorNum][i];
-    }
-    for (int i =0 ; i<3; i++){
-        bp[i] = ipsCalibrationDataBP[side][sensorNum][i];
-    }
-
-    r += a[0] * voltage;
-    r += a[1] * std::max(voltage - bp[0], (float)0.0);
-    r += a[2] * std::max(voltage - bp[1], (float)0.0);
-    r += a[3] * std::max(voltage - bp[2], (float)0.0);
-
-    if (r<0) return 0;
-    
-    return r;
-}
 
 bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int isIC){
     float th, f;
