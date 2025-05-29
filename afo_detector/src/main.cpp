@@ -111,8 +111,6 @@ void gaitDetector_curexo(const std_msgs::Int16MultiArray::ConstPtr& msg){
     }
     duration<double, micro> gapSwing = system_clock::now() - timeRightSwing;
     duration<double, micro> gapStance = system_clock::now() - timeRightStance;
-
-std::cout << gapSwing.count() << ", " << gapStance.count() << ", " << oppositeTimeDiff * pow(10,6) << std::	endl; 	   
     if (gapSwing.count() > oppositeTimeDiff * pow(10,6)){
 	if ((leftSwing == false) & (!swingTurned)) {
         leftSwing  = true;
