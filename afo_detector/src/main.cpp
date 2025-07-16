@@ -257,23 +257,23 @@ void saveThreshold(){
         thFile.open("/home/afo/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] / polyCoeffLeft[1][i] << endl;
+            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] << endl;
             zeroFile << meanLeft[i] << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] / polyCoeffLeft[1][i] << endl;
+            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] << endl;
         }
     }
     else {
         thFile.open("/home/afo/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] / polyCoeffRight[1][i] << endl;
+            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] << endl;
             zeroFile << meanRight[i] << endl;
 
         }
         for (int i = 0; i < 6 ; i++){
-            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] / polyCoeffRight[1][i] << endl;
+            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] << endl;
         }
     }
     
@@ -317,7 +317,7 @@ int main(int argc, char**argv)
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
-//    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector);
+    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector_curexo);
 
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
@@ -331,7 +331,7 @@ int main(int argc, char**argv)
 
 
     while(ros::ok()){
-        gaitDetector();
+//        gaitDetector();
         if (result[0] == 1){
             msg_gait_nonparetic.data = result[2];
             afo_gait_nonparetic_pub.publish(msg_gait_nonparetic);
