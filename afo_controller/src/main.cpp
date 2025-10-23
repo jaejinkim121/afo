@@ -73,8 +73,8 @@ double pathPlannerPlantarflexion(){
     // Relax after Foot-off
     if (eventGap.count() > 0){
         plantarPosition = 0;
-        duration<double> time_span = time - timeFO;
-        plantarTorque = plantarStopTorque * (1 - cubic(0, relaxTime, time_span.count()));
+        duration<double, micro> time_span = time - timeFO;
+        plantarTorque = plantarStopTorque * (1 - cubic(0, relaxTime, time_span.count()/cycleTime));
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
     }
     // Before actuation
@@ -92,8 +92,12 @@ double pathPlannerPlantarflexion(){
         plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;     
     }
     // Still Plantarflexion, torque decreasing
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF){
+        plantarTorque = 1;
+        plantarMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode; 
+    }
     else if (currentCyclePercentage < endTimePF){
-        t = currentCyclePercentage - startTimePF - riseTimePF;
+        t = currentCyclePercentage - startTimePF - riseTimePF - flatTimePF;
 
         plantarPosition = 0;
         plantarTorque = 1 - cubic(0, fallTimePF, t);
@@ -182,7 +186,7 @@ void callbackGaitPhaseAffected(const std_msgs::Int16ConstPtr& msg){
     }
     else if (msg->data == 2){ 
         timeFO = high_resolution_clock::now();
-        plantarStopTorque = plantarCurrentTorque / maxTorquePlantar;
+        plantarStopTorque = plantarTorque;
     }
     else
         std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
@@ -296,6 +300,33 @@ void callbackMHPF_run(const std_msgs::BoolConstPtr& msg){
 void callbackMHDF_run(const std_msgs::BoolConstPtr& msg){
     timeCueDF = high_resolution_clock::now();
     setDF_cue_MH = true;
+}
+
+void loadParameters(){
+    ifstream thFile;
+    thFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
+    float params[13];
+    for (int i = 0; i<13; i++){
+        string str;
+        getline(thFile, str);
+        params[i] = stof(str);
+    }
+    thFile.close();
+    maxTorquePlantar = params[0];
+    maxTorqueDorsi = params[1];
+    startTimePF = params[2];
+    riseTimePF = params[3];
+    fallTimePF = params[4];
+    flatTimePF = params[5];
+    startTimeDF = params[6];
+    riseTimeDF = params[7];
+    fallTimeDF = params[8];
+    stance_time = params[9];
+    plantarPreTension = params[10];
+    dorsiPreTension = params[11];
+    cycleTime = params[12] * 1000000.0;
+
+    return;
 }
 
 void worker()

@@ -131,13 +131,14 @@ private:
     int poly_num = 1;
     int poly_force = 1;
 
-    double cycle_time = 3.2;
+    double cycle_time = 1.4;
+    double stance_time = 0.65;
     double max_torque[2] = {0.3, 0.2};
-    double rise_time[2] = {0.5, 0.5};
-    double fall_time[2] = {0.5, 0.5};
-    double trigger_time[2] = {0.5, 0.5};
-//    float threshold[4] = {0.09, 0.12, 0.10, 0.13};
-    float threshold[4] = {0.01, 0.02, 0.01, 0.02};
+    double rise_time[2] = {0.2, 0.2};
+    double fall_time[2] = {0.2, 0.05};
+    double trigger_time[2] = {0.2, 0.05};
+    float threshold[4] = {3, 6, 3, 6};
+//    float threshold[4] = {0.01, 0.02, 0.01, 0.02};
 
     QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
     QVector<double> v_l[6];

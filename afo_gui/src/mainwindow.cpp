@@ -98,6 +98,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     ui->RightBox->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
 
+    loadParameterFile();
+
     initPlot();
     initSolePlot();
     toggleTrial();
@@ -149,62 +151,79 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_set_max_torque_plantar"){
         this->setMaxTorque(true);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_max_torque_dorsi"){
         this->setMaxTorque(false);
+        this->updateParameterFile();
+
     }
 
     else if (state == "button_set_rise_time_plantar"){
         this->setRiseTime(true);
+        this->updateParameterFile();
+
     }
 
     else if (state == "button_set_rise_time_dorsi"){
         this->setRiseTime(false);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_fall_time_plantar"){
         this->setFallTime(true);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_fall_time_dorsi"){
         this->setFallTime(false);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_trigger_time_plantar"){
         this->setTriggerTime(true);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_trigger_time_dorsi"){
         this->setTriggerTime(false);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_cycle_time"){
         this->setCycleTime();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_pfo"){
         this->setPFO();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_pic"){
         this->setPIC();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_nfo"){
         this->setNFO();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_nic"){
         this->setNIC();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_threshold"){
         this->setThreshold();
+        this->updateParameterFile();
     }
 
     else if (state == "button_affected_side"){
         this->toggleAffectedSide();
+        this->updateParameterFile();
     }
 
     else if (state == "button_clear_parameter"){
@@ -632,13 +651,15 @@ void MainWindow::updatePlotThreshold(){
     infLineThreshold[2]->point2->setCoords(2, threshold[2 * current_affected_side]);
     infLineThreshold[3]->point1->setCoords(1, threshold[1 + 2 * current_affected_side]);
     infLineThreshold[3]->point2->setCoords(2, threshold[1 + 2 * current_affected_side]);
+ui->plot_sole_left_voltage->yAxis->setRange(0, threshold[3-current_affected_side]+5.0);
+ui->plot_sole_right_voltage->yAxis->setRange(0, threshold[1 + 2 * current_affected_side]+5.0);
     ui->plot_sole_left_voltage->replot();
     ui->plot_sole_right_voltage->replot();
 }
 
 void MainWindow::toggleAffectedSide(){
     current_affected_side = 1 - current_affected_side;
-    ui->horSlider_polycalib_side->setSliderPosition(current_affected_side);
+    ui->horSlider_affected_side->setSliderPosition(current_affected_side);
     qnode.pubAffectedSide(current_affected_side);
 }
 
@@ -809,6 +830,7 @@ void MainWindow::updateTriggerTimeValue(bool is_plantar){
 
 void MainWindow::updateCycleTimeValue(){
     std::string s = std::to_string(cycle_time);
+    s = CutOnDecimalPt(s, 2);
     ui->button_set_cycle_time->setText(QString::fromStdString(s));
 }
 
@@ -956,15 +978,24 @@ void MainWindow::updateLog(QString s){
 
 void MainWindow::updateParameterFile(){
     std::ofstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-    f << max_torque[0] << "\n " << max_torque[1] << '\n';
-    f << rise_time[0] << "\n " << rise_time[1] << '\n';
-    f << fall_time[0] << "\n " << fall_time[1] << '\n';
-    f << trigger_time[0] << "\n " << trigger_time[1] << '\n';
-    f << cycle_time << '\n';
-    f << threshold[0] << "\n " 
-      << threshold[1] << "\n " 
-      << threshold[2] << "\n " 
-      << threshold[3] << "\n";
+    f << max_torque[0] << "\n" 
+    << max_torque[1] << "\n"
+    << trigger_time[0] << "\n"
+    << rise_time[0] << "\n" 
+    << fall_time[0] << "\n"
+    << flat_time[0] << "\n"
+    << trigger_time[1] << "\n"
+    << rise_time[1] << "\n"
+    << fall_time[1] << "\n"
+    << stance_time << "\n"
+    << pre_tension[0] << "\n"
+    << pre_tension[1] << "\n"
+    << cycle_time << "\n"
+    << current_affected_side << "\n"
+    << threshold[0] << "\n"
+    << threshold[1] << "\n"
+    << threshold[2] << "\n"
+    << threshold[3] << "\n";
     f.close();
 }
 
@@ -972,35 +1003,31 @@ void MainWindow::loadParameterFile(){
     std::ifstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
 
     std::string str;
-    getline(f, str);
-    max_torque[0] = stof(str);
-    getline(f, str);
-    max_torque[1] = stof(str);
-    getline(f, str);
-    rise_time[0] = stof(str);
-    getline(f, str);
-    rise_time[1] = stof(str);
-    getline(f, str);
-    fall_time[0] = stof(str);
-    getline(f, str);
-    fall_time[1] = stof(str);
-    getline(f, str);
-    trigger_time[0] = stof(str);
-    getline(f, str);
-    trigger_time[1] = stof(str);
-    getline(f, str);
-    cycle_time = stof(str);
-    getline(f, str);
-    threshold[0] = stof(str);
-    getline(f, str);
-    threshold[1] = stof(str);
-    getline(f, str);
-    threshold[2] = stof(str);
-    getline(f, str);
-    threshold[3] = stof(str);
+    float params[18];
+    for (int i = 0; i<18;i++){
+        getline(f, str);
+        params[i] = str;
+    }
+    max_torque[0] = params[0];
+    max_torque[1] params[1];
+    trigger_time[0] params[2];
+    rise_time[0] params[3];
+    fall_time[0] params[4];
+    flat_time[0]= params[5];
+    trigger_time[1] = params[6];
+    rise_time[1] = params[7];
+    fall_time[1] = params[8];
+    stance_time = params[9];
+    pre_tension[0] = params[10];
+    pre_tension[1] = params[11];
+    cycle_time = params[12];
+    current_affected_side = params[13];
+    threshold[0] = params[14];
+    threshold[1] = params[15];
+    threshold[2] = params[16];
+    threshold[3] = params[17];
 
     f.close();
-    
 }
 
 void MainWindow::set_emergency(bool on){
@@ -1033,7 +1060,8 @@ void MainWindow::plotSoleLeft(){
 
     appendCropQVector(&t_v_l, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_l[i], data[i+1], voltPlotMaxNum);
+        if((i==0) || (i==2) || (i==4))  appendCropQVector(&v_l[i], -1.0, voltPlotMaxNum);
+        else   appendCropQVector(&v_l[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_left_voltage->xAxis->setRange(t_v_l[0], t_v_l[0]+5.0);
 
@@ -1045,7 +1073,7 @@ void MainWindow::plotSoleLeft(){
     if(is_left_calib_on){
         double t_now = ros::Time::now().toSec();
         if (t_now - t_left_calib > 2.0){
-            ui->button_sole_calibration_left->setText("Left Sole Calibration");
+            ui->button_sole_calibration_left->setText("Left Sole\nCalibration");
             ui->button_sole_calibration_left->setStyleSheet("background-color: rgb(211, 211, 211)");
             is_left_calib_on = false;
             qnode.loadSoleZero(SOLE_LEFT);
@@ -1057,7 +1085,8 @@ void MainWindow::plotSoleRight(){
     float* data = qnode.getSoleRightData();
     appendCropQVector(&t_v_r, data[0], voltPlotMaxNum);
     for (int i = 0; i < 6; i++){
-        appendCropQVector(&v_r[i], data[i+1], voltPlotMaxNum);
+        if((i==0) || (i==2) || (i==4))  appendCropQVector(&v_r[i], -1, voltPlotMaxNum);
+        else   appendCropQVector(&v_r[i], data[i+1], voltPlotMaxNum);
     }
     ui->plot_sole_right_voltage->xAxis->setRange(t_v_r[0], t_v_r[0]+5.0);
 
@@ -1069,7 +1098,7 @@ void MainWindow::plotSoleRight(){
     if(is_right_calib_on){
         double t_now = ros::Time::now().toSec();
         if (t_now - t_right_calib > 2.0){
-            ui->button_sole_calibration_right->setText("Right Sole Calibration");
+            ui->button_sole_calibration_right->setText("Right Sole\nCalibration");
             ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(211, 211, 211)");
             is_right_calib_on = false;
             qnode.loadSoleZero(SOLE_RIGHT);
@@ -1189,8 +1218,8 @@ void MainWindow::initPlot(){
         ui->plot_sole_right_voltage->graph(i)->setName(QString(char(i)+'1'));
         
     }
-    ui->plot_sole_left_voltage->yAxis->setRange(-0.05, 0.3);
-    ui->plot_sole_right_voltage->yAxis->setRange(-0.05, 0.3);
+    ui->plot_sole_left_voltage->yAxis->setRange(-0.05, 25);
+    ui->plot_sole_right_voltage->yAxis->setRange(-0.05, 25);
 
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();
@@ -1261,6 +1290,8 @@ void MainWindow::initPlot(){
     ui->plot_dorsi_command->legend->setVisible(true);
     ui->plot_gaitPhase->legend->setVisible(true);
     ui->plot_gaitPhase_2->legend->setVisible(true);
+    ui->plot_sole_left_voltage->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
+    ui->plot_sole_right_voltage->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
 
 }
 

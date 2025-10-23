@@ -1,37 +1,74 @@
 #include "../include/main.hpp"
 
 
+float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
+    #ifdef VOLT
+        return voltage;
+    #endif
+    float r;
+    float bp[4];
+    float a[4];
+
+    r = ipsCalibrationDataConstant[side][sensorNum];
+    
+    for (int i = 0; i<4; i++){
+        a[i] = ipsCalibrationDataAlpha[side][sensorNum][i];
+    }
+    for (int i =0 ; i<3; i++){
+        bp[i] = ipsCalibrationDataBP[side][sensorNum][i];
+    }
+
+    r += a[0] * voltage;
+    r += a[1] * std::max(voltage - bp[0], (float)0.0);
+    r += a[2] * std::max(voltage - bp[1], (float)0.0);
+    r += a[3] * std::max(voltage - bp[2], (float)0.0);
+
+    if (r<0) return 0;
+    
+    return r;
+}
 void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    
+    std_msgs::Float32MultiArray msg_force;
+    msg_force.data.clear();
     #ifdef DEBUG
     cout << "Debug - Sole Left data  - ";
     #endif
 
     for (int i = 0; i< 6; i++){
         d_soleLeft[i] = msg->data[i];
-
+        f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i], i);
+        msg_force.data.push_back(f_soleLeft[i]);
         #ifdef DEBUG
         cout << d_soleLeft[i];
         if (i != 6) cout << ", ";
         #endif
 
     }
+
+    afo_ips_force_left_pub.publish(msg_force);
     return;
 }
 
 void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    
+    std_msgs::Float32MultiArray msg_force;
+    msg_force.data.clear();
     #ifdef DEBUG
     cout << "Debug - Sole Right data  - ";
     #endif
 
     for (int i = 0; i< 6; i++){
         d_soleRight[i] = msg->data[i];
-
+        f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i], i);
+        msg_force.data.push_back(f_soleRight[i]);
         #ifdef DEBUG
         cout << d_soleRight[i];
         if (i != 6) cout << ", ";
         #endif
         
     }
+    afo_ips_force_right_pub.publish(msg_force);
     return;
 }
 
@@ -73,9 +110,52 @@ void callbackAffectedSide(const std_msgs::BoolConstPtr& msg){
     affectedSide = msg->data;
 }
 
+void callbackUpdateThreshold(const std_msgs::BoolConstPtr& msg){
+    return;
+}
+
+
+
 void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
     for (int i = 0; i < 4; i++){
         thresholdGap[i] = msg->data[i];
+    }
+
+    ifstream iFile;
+    ofstream oFile;
+    float params[18];
+    iFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
+    for (int i = 0; i<14; i++){
+        string str;
+        getline(iFile, str);
+        params[i] = stof(str);
+    }
+    iFile.close();
+    for (int i = 0; i < 4; i++){
+        params[14+i] = thresholdGap[i];
+    }
+    oFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
+    for (int i = 0; i<18;i++){
+        oFile << params[i] << endl;
+    }
+    oFile.close();
+
+}
+
+
+bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int isIC){
+    float th, f;
+    if (side == LEFT){
+        f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
+        th = thLeft[isIC][sensorNum];
+        if (isIC) return f >= th;
+        else return f < th;
+    }
+    else {
+        f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
+        th = thRight[isIC][sensorNum];
+        if (isIC) return f >= th;
+        else return f < th;
     }
 }
 
@@ -93,7 +173,9 @@ void gaitDetector(int* result){
     prevLeft = leftSwing;
     prevRight = rightSwing;
 
+    ////// ALL SENSOR DETECTION //////
     // Left Detection
+    /*
     if(leftSwing){
         for (int i= 0; i<6; i++){
             if(d_soleLeft[i] > thLeft[IC][i]){
@@ -111,7 +193,6 @@ void gaitDetector(int* result){
         }
         leftSwing = leftTmp;        
     }
-
     // Right Detection
     if(rightSwing){
         for (int i= 0; i<6; i++){
@@ -130,6 +211,58 @@ void gaitDetector(int* result){
         }
         rightSwing = rightTmp;        
     }
+*/
+
+    /////// Left Heel & Toe only detection //////
+    duration<double> leftDuration, rightDuration;
+    // Left detection
+    if(leftSwing){
+        leftDuration = system_clock::now() - timeLeftSwing;
+        if (leftDuration.count() >= swinggap){
+            if (checkForceThreshold(LEFT, 5, IC)){
+                leftSwing = false;
+            }
+        }
+    }
+    else if (leftToeOff){
+        if (checkForceThreshold(LEFT, 1, IC)){
+            leftToeOff = false;
+        }
+        if (checkForceThreshold(LEFT, 3, IC)){
+            leftToeOff = false;
+        }
+    }
+    else{
+        if (checkForceThreshold(LEFT, 1, FO) & checkForceThreshold(LEFT, 3, FO)){
+            leftSwing = true;
+            leftToeOff = true;
+            timeLeftSwing = system_clock::now();
+        }
+    }
+    
+    // Right Detection    
+    if(rightSwing){
+        rightDuration = system_clock::now() - timeRightSwing;
+        if (rightDuration.count() >= swinggap){
+            if (checkForceThreshold(RIGHT, 5, IC)) rightSwing = false;            
+        }
+    }
+    else if (rightToeOff){
+        if (checkForceThreshold(RIGHT, 1, IC)){
+            rightToeOff = false;
+        }
+        if (checkForceThreshold(RIGHT, 3, IC)){
+            rightToeOff = false;
+        }
+    }
+    else{
+        if (checkForceThreshold(RIGHT, 1, FO) & checkForceThreshold(RIGHT, 3, FO)){
+            rightSwing = true;
+            rightToeOff = true;
+            timeRightSwing = system_clock::now();
+        }
+    }
+
     if (leftSwing != prevLeft){
         result[affectedSide == LEFT] = 1;
         result[2+(affectedSide==LEFT)] = (int)leftSwing + 1;  // 2 when foot-off, 1 when initial contact
@@ -142,33 +275,60 @@ void gaitDetector(int* result){
     }
 }
 
-void callbackPolyCalib(const std_msgs::Int16MultiArray::ConstPtr& msg){
-    initialTimePolycalib = high_resolution_clock::now();
-    polySide = msg->data[0];
-    polySensor = msg->data[1];
-    polyForce = msg->data[2];
-    if (polySide == 0){
-        savePoly();
-        loadPoly();
-        runPolycalib = false;
-        return;
-    }
-    runPolycalib = true;
-    dataNum = 0;
-    for (int i = 0 ;i<6; i++){
-        meanLeft[i] = 0;
-        meanRight[i] = 0;
-    }
+void loadForceCalibration(){
+    ifstream calibFile;
+    calibFile.open("/home/afo/catkin_ws/src/afo/afo_detector/sensor_calibration_data.json");
+
+    Json::CharReaderBuilder builder;
+	builder["collectComments"] = false;
+	Json::Value value;
+
+	JSONCPP_STRING errs;
+	bool ok = parseFromStream(builder, calibFile, &value, &errs);
+	if (ok == true)
+	{
+        
+        // LEFT Loading
+        for (int i=0; i<6; i++){
+            for (int j=0; j<4; j++){
+                ipsCalibrationDataAlpha[LEFT][i][j] = value["Left"]["alpha"][to_string(i+1)][j].asDouble();
+            }
+            
+            for (int j=0; j<3;j++){
+                ipsCalibrationDataBP[LEFT][i][j] = value["Left"]["breakpoint"][to_string(i+1)][j].asDouble();
+            }
+
+            ipsCalibrationDataConstant[LEFT][i]= value["Left"]["constant"][to_string(i+1)].asDouble();
+        }
+        
+        // RIGHT Loading
+        for (int i=0; i<=5; i++){
+            for (int j=0; j<4; j++){
+                ipsCalibrationDataAlpha[RIGHT][i][j] = value["ight"]["alpha"][to_string(i+1)][j].asDouble();
+            }
+            
+            for (int j=0; j<3;j++){
+                ipsCalibrationDataBP[RIGHT][i][j] = value["ight"]["breakpoint"][to_string(i+1)][j].asDouble();
+            }
+
+            ipsCalibrationDataConstant[RIGHT][i]= value["ight"]["constant"][to_string(i+1)].asDouble();
+        }
+	}
+	else
+	{
+		cout << "Parse failed." << endl;
+	}
 }
+
 
 void loadThreshold(){
     ifstream thFile;
     bool side = thresholdSide;
     if (side == LEFT){
-        thFile.open("/home/afo/catkin_ws/src/afo/threshold_left.csv");
+        thFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv");
     }
     else{
-        thFile.open("/home/afo/catkin_ws/src/afo/threshold_right.csv");
+        thFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv");
     }
 
     if(!thFile){
@@ -186,16 +346,16 @@ void loadThreshold(){
         return;
     }
 
-    for (int i = 0; i<12; i++){
+    for (int i = 0; i<6; i++){
         string str;
         getline(thFile, str);
         if (side == LEFT){
-            if (i<6) thLeft[IC][i] = stof(str);
-            else thLeft[FO][i-6] = stof(str);
+            thLeft[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==LEFT)];
+            thLeft[FO][i] = stof(str) + thresholdGap[2*(affectedSide==LEFT)];
         }
         else{
-            if (i<6) thRight[IC][i] = stof(str);
-            else thRight[FO][i-6] = stof(str);
+            thRight[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==RIGHT)];
+            thRight[FO][i] = stof(str) + thresholdGap[2*(affectedSide==RIGHT)];
         }
     }
 
@@ -204,32 +364,29 @@ void loadThreshold(){
 
 void saveThreshold(){
     bool side = thresholdSide;
-    ofstream thFile, zeroFile;
+    ofstream zeroFile;
     if (side == LEFT){
-        thFile.open("/home/afo/catkin_ws/src/afo/threshold_left.csv", ios::trunc);
         zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] / polyCoeffLeft[1][i] << endl;
+//            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] << endl;
             zeroFile << meanLeft[i] << endl;
         }
         for (int i = 0; i < 6; i++){
-            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] / polyCoeffLeft[1][i] << endl;
+//            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] << endl;
         }
     }
     else {
-        thFile.open("/home/afo/catkin_ws/src/afo/threshold_right.csv", ios::trunc);
         zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] / polyCoeffRight[1][i] << endl;
+//            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] << endl;
             zeroFile << meanRight[i] << endl;
 
         }
         for (int i = 0; i < 6 ; i++){
-            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] / polyCoeffRight[1][i] << endl;
+//            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] << endl;
         }
     }
     
-    thFile.close();
     zeroFile.close();
 }
 
@@ -243,92 +400,6 @@ void updateAverage(){
     return;
 }
 
-void updatePoly(){
-    if(polySide == 1){
-        polyLeft[polyForce][polySensor] = meanLeft[polySensor];
-    }
-    else if (polySide == 2){
-        polyRight[polyForce][polySensor] = meanRight[polySensor];
-    }
-    else if (polySide == 3){
-        for (int i = 0; i<6; i++){
-            polyLeft[0][i] = meanLeft[i];
-            polyRight[0][i] = meanRight[i];
-        }
-    }
-}
-
-void savePoly(){
-    float a, b;
-    // poly fitting
-    ofstream polyFile;
-    std_msgs::Float32MultiArray msg;
-    polyFile.open("/home/afo/catkin_ws/src/afo/soleSensor_poly_fit.csv", ios::trunc);
-
-    for (int i =0; i < 6; i++){
-        a = referenceForceLow / (polyLeft[1][i] - polyLeft[0][i]);
-        b = -polyLeft[0][i] * a;
-        polyFile << a << endl << b << endl;
-    }
-    for (int i = 0; i < 6; i++){
-        a = referenceForceLow / (polyRight[1][i] - polyRight[0][i]);
-        b = -polyRight[0][i] * a;
-        polyFile << a << endl << b << endl;
-    }
-
-    /*
-    for (int i = 0; i < 6; i++){
-        msg.data.clear();
-        c = polyLeft[0][i];
-        a = (f2 * (polyLeft[1][i] - c) - f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2));
-        b = (-f2 * f2 * (polyLeft[1][i] - c) + f1 * f1 * (polyLeft[2][i] - c)) / (f1 * f2 * (f1 - f2));
-        polyFile << c << endl << b << endl << a << endl;
-    }
-
-    for (int i = 0; i < 6; i++){
-        msg.data.clear();
-        c = polyRight[0][i];
-        a = (f2 * (polyRight[1][i] - c) - f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2));
-        b = (-f2 * f2 * (polyRight[1][i] - c) + f1 * f1 * (polyRight[2][i] - c)) / (f1 * f2 * (f1 - f2));
-        polyFile << c << endl << b << endl << a << endl;
-    }
-    */
-}
-
-void loadPoly(){
-    if (!usePolyCalib){
-        for (int i = 0; i < 6; i++){
-            polyCoeffLeft[1][i] = 1.0;
-            polyCoeffRight[1][i] = 1.0;
-        }
-        return;
-    }
-
-    std_msgs::Float32MultiArray msg;
-    ifstream polyFile;
-    polyFile.open("/home/afo/catkin_ws/src/afo/soleSensor_poly_fit.csv");
-
-    if(!polyFile){
-        return;
-    }
-    string str;
-    for (int i = 0; i < 6; i++){
-        for (int j = 0; j < 2; j++){
-            getline(polyFile, str);
-            polyCoeffLeft[j][i] = stof(str);
-            msg.data.push_back(polyCoeffLeft[j][i]);
-        }
-    }
-    for (int i = 0; i < 6; i++){
-        for (int j = 0; j < 2; j++){
-            getline(polyFile, str);
-            polyCoeffRight[j][i] = stof(str);
-            msg.data.push_back(polyCoeffRight[j][i]);
-        }
-    }
-    afo_poly_fitting_pub.publish(msg);
-}
-
 int main(int argc, char**argv)
 {    
     // Initialize values.
@@ -337,7 +408,23 @@ int main(int argc, char**argv)
     is_imu = false;
     leftSwing = false;
     rightSwing = false;
-    affectedSide = RIGHT;
+
+    // Load affected side & thresholdGap
+    ifstream paramFile;
+    paramFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
+    float params[5];
+
+    for (int i = 0; i<18; i++){
+        string str;
+        getline(thFile, str);
+        if (i != 13) continue;
+        params[i-13] = stof(str);
+    }
+
+    if (params[0] == 1.0) affectedSide = LEFT;
+    else affectedSide = RIGHT;
+    for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
+    
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");
@@ -350,24 +437,28 @@ int main(int argc, char**argv)
     afo_soleSensor_right_sub = n.subscribe("/afo_sensor/soleSensor_right", 1, callbackSoleRight);
     afo_imu_sub = n.subscribe("/afo_sensor/imu", 1, callbackIMU);
     afo_threshold_sub = n.subscribe("/afo_gui/run_threshold", 1, callbackThreshold);
-    afo_poly_calib_sub = n.subscribe("/afo_gui/poly_calib", 1, callbackPolyCalib);
+    afo_threshold_update_sub = n.subscribe("/afo_gui/update_threshold", 1, callbackUpdateThreshold);
     afo_affected_side_sub = n.subscribe("/afo_gui/affected_side", 1, callbackAffectedSide);
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
-    afo_poly_fitting_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/poly_fit", 100);
+    afo_ips_force_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_left", 100);
+    afo_ips_force_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_right", 100);
+    
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
+
+
 
     thresholdSide = LEFT;
     loadThreshold();    
     thresholdSide = RIGHT;
-    loadThreshold();    
-    loadPoly();
+    loadThreshold();
+    loadForceCalibration();
 
-    std::cout << "Startup finished" << std::endl;
     int r[4];
 
-
+    timeLeftSwing = system_clock::now();
+    timeRightSwing = system_clock::now();
     while(ros::ok()){
         gaitDetector(r);
 
@@ -387,15 +478,6 @@ int main(int argc, char**argv)
                 saveThreshold();
                 loadThreshold();
             } 
-            else updateAverage();
-        }
-
-        if (runPolycalib){
-            currentTimeGap = high_resolution_clock::now() - initialTimePolycalib;
-            if(currentTimeGap.count() > recordTimeThreshold){
-                runPolycalib = false;
-                updatePoly();
-            }
             else updateAverage();
         }
 
