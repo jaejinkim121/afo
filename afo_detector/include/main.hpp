@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <string.h>
 #include <string>
@@ -26,8 +28,6 @@ using namespace std::chrono;
 #define RIGHT false
 
 // #define VOLTAGE // Uncomment when you want to use voltage-based thresholding.
-
-
 float d_soleLeft[7];
 float f_soleLeft[7];
 float d_soleRight[7];
