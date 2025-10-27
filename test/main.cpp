@@ -29,22 +29,18 @@ class Optimizer{
             /// Optimization problem define.
             col_cost.reserve(num_col);
             col_cost.insert(col_cost.end(), 50, -1.0);
-            col_cost.insert(col_cost.end(), 50, 1.0);
+            col_cost.insert(col_cost.end(), 49, 1.0);
             col_lower.reserve(num_col);
             col_lower.insert(col_lower.end(), num_col, 0.0);
             col_upper.reserve(num_col);
-            // Last state must be zero. To make it cyclic.
-            col_upper.insert(col_upper.end(), num_col-1, torque_upper_limit);
-            col_upper.push_back(0.0);
+            col_upper.insert(col_upper.end(), num_col, torque_upper_limit);
 
             row_lower.reserve(num_row);
-            row_lower.insert(row_lower.end(), N_t, -jerk_absolute_upper_limit);
-            row_lower.push_back(-jerk_absolute_upper_limit);
+            row_lower.insert(row_lower.end(), N_t + 1, -jerk_absolute_upper_limit);
             row_lower.push_back(torque_impulse_value);
             
             row_upper.reserve(num_row);
-            row_upper.insert(row_upper.end(), N_t, jerk_absolute_upper_limit);
-            row_upper.push_back(jerk_absolute_upper_limit);
+            row_upper.insert(row_upper.end(), N_t + 1, jerk_absolute_upper_limit);
             row_upper.push_back(torque_impulse_value);
 
             for (int i = 0; i <= num_col; i++){
@@ -53,7 +49,7 @@ class Optimizer{
             for (int i = 0; i < num_col; i++){
                 Aindex.push_back(i);
                 Aindex.push_back(i+1);
-                Aindex.push_back(num_col + 1);
+                Aindex.push_back(N_t + 1);
 
                 Avalue.push_back(1.0);
                 Avalue.push_back(-1.0);
@@ -67,6 +63,7 @@ class Optimizer{
         }
 
         void run_optimize(){
+            lp_.sense_ = ObjSense::kMaximize;
             lp_.num_col_ = num_col;
             lp_.num_row_ = num_row;
             lp_.col_cost_  = col_cost;
@@ -91,7 +88,7 @@ class Optimizer{
 
     private:
         // Define Optimization problem parameters.
-        static const unsigned int N_t = 100; // dt = 1 / N. For this case, dt=10ms.
+        static const unsigned int N_t = 99; // dt = 1 / (N_t+1). For this case, dt=10ms.
         double torque_upper_limit = 1.0; // Can be kHighSInf
         double jerk_absolute_upper_limit = 0.005;
         double torque_impulse_value = 0.3 * N_t;
