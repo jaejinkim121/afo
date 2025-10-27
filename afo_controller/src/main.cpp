@@ -34,6 +34,10 @@ double pathPlannerPlantarParetic(){
         t = currentCyclePercentage - startTimePF;
         pareticTorque = cubic(0, riseTimePF, t);
     }
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF){
+	pareticTorque = 1.0;
+	}
+
     // Still Plantarflexion, torque decreasing
     else if (currentCyclePercentage < endTimePF){
         t = currentCyclePercentage - startTimePF - riseTimePF;
@@ -73,6 +77,9 @@ double pathPlannerPlantarNonParetic(){
         t = currentCyclePercentage - startTimePF;
         nonpareticTorque = cubic(0, riseTimePF, t);
     }
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF){
+	nonpareticTorque = 1.0;
+	}
     // Still Plantarflexion, torque decreasing
     else if (currentCyclePercentage < endTimePF){
         t = currentCyclePercentage - startTimePF - riseTimePF;
@@ -97,13 +104,18 @@ double pathPlannerDorsiParetic(){
     footOffPercentage = (footOffTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;
 
     if(footOffPercentage < 0){
-        pareticTorque = pareticStopTorque * (1 - cubic(0, relaxTime / cycleTime, currentCyclePercentage));
+        pareticTorque = 0.0 * (1 - cubic(0, relaxTime / cycleTime, currentCyclePercentage));
     }
     else if (currentCyclePercentage < footOffPercentage + riseTimeDF){
         pareticTorque = cubic(footOffPercentage, footOffPercentage + riseTimeDF, currentCyclePercentage);
     }
+    else if (currentCyclePercentage < footOffPercentage + riseTimeDF + fallTimeDF){
+	pareticTorque = 1 - cubic(footOffPercentage + riseTimeDF, footOffPercentage + riseTimeDF + fallTimeDF, currentCyclePercentage);
+	//pareticTorque = 1.0;
+
+}
     else{
-        pareticTorque = 1;
+        pareticTorque = 0.0;
     }
 
     pareticTorque = min(max(pareticTorque, 0.0), 1.0);
@@ -122,13 +134,17 @@ double pathPlannerDorsiNonParetic(){
     footOffPercentage = (footOffTimeGap.count() + trigger_layback_ms * 1000.0) / cycleTime;
 
     if(footOffPercentage < 0){
-        nonpareticTorque = nonpareticStopTorque * (1 - cubic(0, relaxTime / cycleTime, currentCyclePercentage));
+        nonpareticTorque = 0.0 * (1 - cubic(0, relaxTime / cycleTime, currentCyclePercentage));
     }
     else if (currentCyclePercentage < footOffPercentage + riseTimeDF){
         nonpareticTorque = cubic(footOffPercentage, footOffPercentage + riseTimeDF, currentCyclePercentage);
     }
+    else if (currentCyclePercentage < footOffPercentage + riseTimeDF + fallTimeDF){
+	nonpareticTorque = 1 - cubic(footOffPercentage + riseTimeDF, footOffPercentage + riseTimeDF + fallTimeDF, currentCyclePercentage);
+//	nonpareticTorque = 1.0;
+}
     else{
-        nonpareticTorque = 1;
+        nonpareticTorque = 0.0;
     }
 
     nonpareticTorque = min(max(nonpareticTorque, 0.0), 1.0);

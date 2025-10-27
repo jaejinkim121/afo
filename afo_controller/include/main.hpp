@@ -69,15 +69,16 @@ bool plantarRun, dorsiRun;
 int etherCatCommunicationRate = 5500; // us
 
 // Time Parameter
-double cycleTime = 4.0 * pow(10,6);
+double cycleTime = 1.2 * pow(10,6);
 double startTimePF = 0.2;
 double riseTimePF = 0.2;
-double fallTimePF = 0.2;
+double flatTimePF = 0.2;
+double fallTimePF = 0.1;
 double endTimePF = startTimePF + riseTimePF + fallTimePF;
 double relaxTime = 0.3 * pow(10,6);
 double startTimeDF = 0.0;
 double riseTimeDF = 0.05;
-double fallTimeDF = 3.0;
+double fallTimeDF = 0.2;
 double stance_time = 0.65;
 double trigger_layback_ms = 0.0;
 duration<double, micro> eventTimeGap;
@@ -89,8 +90,8 @@ double maxPositionDorsi = 3000;
 double positionDiffLimit = 500;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
-double dorsiPreTension = 0.02;   // It's not normalized value.
-double plantarPreTension = 0.02; // It's not normalized value.
+double dorsiPreTension = 0.03;   // It's not normalized value.
+double plantarPreTension = 0.03; // It's not normalized value.
 
 // To switch target direction easily. CW = -1, CCW = 1
 double dirPlantar = 1;
