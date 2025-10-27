@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
-#include "HiGHS.h"
+#include <highs/Highs.h>
 
 const size_t N = 10;
 
