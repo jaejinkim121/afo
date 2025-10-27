@@ -94,7 +94,7 @@ class Optimizer{
         static const unsigned int N_t = 100; // dt = 1 / N. For this case, dt=10ms.
         double torque_upper_limit = 1.0; // Can be kHighSInf
         double jerk_absolute_upper_limit = 0.005;
-        double torque_impulse_value = 1.0;
+        double torque_impulse_value = 0.3 * N_t;
 
         // Define HiGHS Instances.
         HighsLp lp_;
