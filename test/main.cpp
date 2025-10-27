@@ -28,7 +28,7 @@ class Optimizer{
 
             /// Optimization problem define.
             col_cost.reserve(num_col);
-            col_cost.insert(col_cost.end(), 50, 0.0);
+            col_cost.insert(col_cost.end(), 50, -1.0);
             col_cost.insert(col_cost.end(), 50, 1.0);
             col_lower.reserve(num_col);
             col_lower.insert(col_lower.end(), num_col, 0.0);
