@@ -98,6 +98,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     ui->RightBox->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
 
+    loadParameterFile();
+
     initPlot();
     initSolePlot();
     toggleTrial();
@@ -149,62 +151,79 @@ void MainWindow::buttonClicked(){
 
     else if (state == "button_set_max_torque_plantar"){
         this->setMaxTorque(true);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_max_torque_dorsi"){
         this->setMaxTorque(false);
+        this->updateParameterFile();
+
     }
 
     else if (state == "button_set_rise_time_plantar"){
         this->setRiseTime(true);
+        this->updateParameterFile();
+
     }
 
     else if (state == "button_set_rise_time_dorsi"){
         this->setRiseTime(false);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_fall_time_plantar"){
         this->setFallTime(true);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_fall_time_dorsi"){
         this->setFallTime(false);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_trigger_time_plantar"){
         this->setTriggerTime(true);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_trigger_time_dorsi"){
         this->setTriggerTime(false);
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_cycle_time"){
         this->setCycleTime();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_pfo"){
         this->setPFO();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_pic"){
         this->setPIC();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_nfo"){
         this->setNFO();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_nic"){
         this->setNIC();
+        this->updateParameterFile();
     }
 
     else if (state == "button_set_threshold"){
         this->setThreshold();
+        this->updateParameterFile();
     }
 
     else if (state == "button_affected_side"){
         this->toggleAffectedSide();
+        this->updateParameterFile();
     }
 
     else if (state == "button_clear_parameter"){
@@ -959,15 +978,24 @@ void MainWindow::updateLog(QString s){
 
 void MainWindow::updateParameterFile(){
     std::ofstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-    f << max_torque[0] << "\n " << max_torque[1] << '\n';
-    f << rise_time[0] << "\n " << rise_time[1] << '\n';
-    f << fall_time[0] << "\n " << fall_time[1] << '\n';
-    f << trigger_time[0] << "\n " << trigger_time[1] << '\n';
-    f << cycle_time << '\n';
-    f << threshold[0] << "\n " 
-      << threshold[1] << "\n " 
-      << threshold[2] << "\n " 
-      << threshold[3] << "\n";
+    f << max_torque[0] << "\n" 
+    << max_torque[1] << "\n"
+    << trigger_time[0] << "\n"
+    << rise_time[0] << "\n" 
+    << fall_time[0] << "\n"
+    << flat_time[0] << "\n"
+    << trigger_time[1] << "\n"
+    << rise_time[1] << "\n"
+    << fall_time[1] << "\n"
+    << stance_time << "\n"
+    << pre_tension[0] << "\n"
+    << pre_tension[1] << "\n"
+    << cycle_time << "\n"
+    << current_affected_side << "\n"
+    << threshold[0] << "\n"
+    << threshold[1] << "\n"
+    << threshold[2] << "\n"
+    << threshold[3] << "\n";
     f.close();
 }
 
@@ -975,32 +1003,30 @@ void MainWindow::loadParameterFile(){
     std::ifstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
 
     std::string str;
-    getline(f, str);
-    max_torque[0] = stof(str);
-    getline(f, str);
-    max_torque[1] = stof(str);
-    getline(f, str);
-    rise_time[0] = stof(str);
-    getline(f, str);
-    rise_time[1] = stof(str);
-    getline(f, str);
-    fall_time[0] = stof(str);
-    getline(f, str);
-    fall_time[1] = stof(str);
-    getline(f, str);
-    trigger_time[0] = stof(str);
-    getline(f, str);
-    trigger_time[1] = stof(str);
-    getline(f, str);
-    cycle_time = stof(str);
-    getline(f, str);
-    threshold[0] = stof(str);
-    getline(f, str);
-    threshold[1] = stof(str);
-    getline(f, str);
-    threshold[2] = stof(str);
-    getline(f, str);
-    threshold[3] = stof(str);
+    float params[18];
+    for (int i = 0; i<18;i++){
+        getline(f, str);
+        params[i] = str;
+    }
+    max_torque[0] = params[0];
+    max_torque[1] params[1];
+    trigger_time[0] params[2];
+    rise_time[0] params[3];
+    fall_time[0] params[4];
+    flat_time[0]= params[5];
+    trigger_time[1] = params[6];
+    rise_time[1] = params[7];
+    fall_time[1] = params[8];
+    stance_time = params[9];
+    pre_tension[0] = params[10];
+    pre_tension[1] = params[11];
+    cycle_time = params[12];
+    current_affected_side = params[13];
+    threshold[0] = params[14];
+    threshold[1] = params[15];
+    threshold[2] = params[16];
+    threshold[3] = params[17];
+
     f.close();
 }
 
