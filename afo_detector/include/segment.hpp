@@ -12,6 +12,8 @@
 
 using namespace Eigen;
 
+const size_t N = 10;
+
 struct SampleIMU{
     float t;
     std::array<float, 21> value;

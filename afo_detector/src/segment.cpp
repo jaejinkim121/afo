@@ -1,8 +1,5 @@
 #include "../include/segment.hpp"
 
-const size_t N = 10;
-
-
 Optimizer::Optimizer(){
     /// Optimization problem define.
     col_cost.reserve(num_col);
