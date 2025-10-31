@@ -18,6 +18,7 @@
 #include "std_msgs/Bool.h"
 #include "rosbag/bag.h"
 #include "json.h"
+#include "segment.hpp"
 
 using namespace std;
 using namespace std::chrono;

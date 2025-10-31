@@ -9,11 +9,11 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
 )
-
+set(HIGHS_INC "/usr/local/include/highs/")
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-
+  "${HIGHS_INC}"
 )
 
 add_executable(afo_detector src/main.cpp src/jsoncpp.cpp src/segment.cpp)
