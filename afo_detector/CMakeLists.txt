@@ -4,7 +4,7 @@ project(afo_detector)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  HiGHS REQUIRED
+  highs REQUIRED
 )
 
 catkin_package(
@@ -17,4 +17,4 @@ include_directories(
 )
 
 add_executable(afo_detector src/main.cpp src/jsoncpp.cpp src/segment.cpp)
-target_link_libraries(afo_detector ${catkin_LIBRARIES})
+target_link_libraries(afo_detector ${catkin_LIBRARIES} highs)
