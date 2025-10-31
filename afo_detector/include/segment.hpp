@@ -13,7 +13,7 @@
 using namespace std;
 using namespace Eigen;
 
-const size_t N = 10;
+const size_t N = 100;
 
 struct SampleIMU{
     float t;
@@ -34,7 +34,7 @@ class Optimizer{
     public:
         Optimizer();
         ~Optimizer() = default;
-        void set_efficacy(const std::vector<double>& efficacy);
+        void set_efficacy(const std::array<double, 101>& efficacy);
         void run_optimize(std::vector<double>& r);
 
     private:

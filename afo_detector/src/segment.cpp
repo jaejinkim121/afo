@@ -32,14 +32,10 @@ Optimizer::Optimizer(){
     }
 }
 
-void Optimizer::set_efficacy(const std::vector<double>& efficacy){
-    if (efficacy.size() != N_t){
-        std::cout << "Optimizer - set_efficacy - Wrong size of input efficacy" << std::endl;
-        return;
-    }
-    
+void Optimizer::set_efficacy(const std::array<double, 101>& efficacy){
     col_cost.clear();
-    for (int i = 0; i < efficacy.size(); i++){
+
+    for (int i = 1; i < efficacy.size() - 1; i++){
         col_cost.push_back(efficacy[i]);
     }
     return;
