@@ -5,12 +5,12 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   highs REQUIRED
-  Eigen REQUIRED
 )
 
-include_directories(
-  ${Eigen_INCLUDE_DIRS}
-)
+find_package(cmake_modules REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
 
 catkin_package(
   DEPENDS Eigen
