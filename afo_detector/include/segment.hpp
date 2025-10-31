@@ -10,6 +10,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
+using namespace Eigen;
 
 struct SampleIMU{
     float t;
@@ -74,7 +75,7 @@ class ImuOptimizer{
         void optimize();
         void save();
         void getResult(std::vector<double>& target);
-        
+
     private:
         Optimizer opt_;
         SampleIMU zero_;
