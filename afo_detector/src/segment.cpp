@@ -80,7 +80,7 @@ ImuOptimizer::ImuOptimizer(bool isLeft){
     isLeft_ = isLeft;
     isSetZero_ = false;
     seg_.reserve(1024);
-    opt_();
+    opt_ = Optimizer();
     tla_.reserve(101);
     tla_.insert(tla_.end(), 101, 0.0);
     result_opt_.reserve(101);
