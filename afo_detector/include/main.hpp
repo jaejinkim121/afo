@@ -68,6 +68,7 @@ ros::Subscriber afo_threshold_sub;
 ros::Subscriber afo_threshold_update_sub;
 ros::Subscriber afo_affected_side_sub;
 ros::Subscriber afo_threshold_gap_sub;
+ros::Subscriber imu_zero_sub;
 ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
 ros::Publisher afo_ips_force_left_pub;
