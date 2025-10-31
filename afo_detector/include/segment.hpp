@@ -63,7 +63,7 @@ class Optimizer{
         std::vector<HighsInt> Astart;     // size = num_col + 1
         std::vector<HighsInt> Aindex;  // row indices
         std::vector<double> Avalue;  // values
-}
+};
 
 class ImuOptimizer{
     public:
