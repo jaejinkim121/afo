@@ -10,7 +10,7 @@ struct SampleIMU{
 struct SampleTLA{
     double t;
     double value;
-}
+};
 
 struct NormTLA{
 float cycle_time;
@@ -108,8 +108,8 @@ class Optimizer{
         Highs highs_;
         HighsStatus return_status_;
 
-        const HighsInt num_col = N_t;
-        const HighsInt num_row = N_t + 2;
+        const int num_col = N_t;
+        const int num_row = N_t + 2;
 
         // Define state-relevant variables.
         std::vector<double> col_cost;
@@ -201,8 +201,7 @@ class ImuOptimizer {
 
                 sum.cycle_time += static_cast<float>(seg.cycle_time);
                 for (int k = 0; k < K; k++){
-                    for (int ch = 0; ch < C; ch++){
-                        sum.d[k][ch] += static_cast<float>(seg.d[k][ch]);
+                        sum.d[k] += static_cast<float>(seg.d[k]);
                     }
                 }
             }

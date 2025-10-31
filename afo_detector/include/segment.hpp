@@ -12,4 +12,4 @@
 
 class Optimizer;
 
-class IMUOptimizer;
+class ImuOptimizer;
