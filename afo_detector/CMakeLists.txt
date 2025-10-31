@@ -5,16 +5,19 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   highs REQUIRED
+  Eigen REQUIRED
 )
 
 catkin_package(
+  DEPENDS Eigen
 )
 set(HIGHS_INC "/usr/local/include/highs/")
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
   "${HIGHS_INC}"
 )
 
 add_executable(afo_detector src/main.cpp src/jsoncpp.cpp src/segment.cpp)
-target_link_libraries(afo_detector ${catkin_LIBRARIES} highs)
+target_link_libraries(afo_detector ${catkin_LIBRARIES} ${Eigen_LIBRARIES} highs)
