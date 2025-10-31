@@ -71,7 +71,6 @@ class ImuOptimizer{
         void setZero(std::array<float, 21>& d);
         double getTLA(std::array<float, 21>& d);
         void optimize();
-        void save();
         void getResult(std::vector<double>& target);
 
     private:

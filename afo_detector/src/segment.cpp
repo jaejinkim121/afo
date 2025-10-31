@@ -204,36 +204,6 @@ void ImuOptimizer::optimize(){
     opt_.run_optimize(result_opt_);
 }
 
-void ImuOptimizer::save(){
-    std::size_t idx_ = 0;
-    while(idx_++ < 1){
-        NormSampleIMU seg = mean_;
-        
-        std::ostringstream path;
-        path << "./data/" << (++idx_) <<".csv";
-        std::cout << path.str() << std::endl;
-        std::ofstream ofs(path.str());
-        if (!ofs){
-            std::cout << "file open error" << std::endl;
-            return;
-        }
-
-        ofs << std::fixed << std::setprecision(4);
-        ofs << "duration," << seg.cycle_time << "\n";
-        ofs << "s";
-        ofs << ",ch" << 1;
-        ofs << "\n";
-
-        for (int k = 0; k <= N; k++){
-            float s = static_cast<float>(k) / static_cast<float>(N);
-            ofs << s;
-            ofs << "," << seg.d[k];
-            ofs <<"\n";
-        }
-        ofs.close();
-    }
-}
-
 void ImuOptimizer::getResult(std::vector<double>& target){
     target = std::copy(result_opt_);
     return;
