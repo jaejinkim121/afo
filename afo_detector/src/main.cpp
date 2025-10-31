@@ -473,7 +473,7 @@ int main(int argc, char**argv)
 
     for (int i = 0; i<18; i++){
         string str;
-        getline(thFile, str);
+        getline(paramFile, str);
         if (i != 13) continue;
         params[i-13] = stof(str);
     }

@@ -1006,14 +1006,14 @@ void MainWindow::loadParameterFile(){
     float params[18];
     for (int i = 0; i<18;i++){
         getline(f, str);
-        params[i] = str;
+        params[i] = stof(str);
     }
     max_torque[0] = params[0];
-    max_torque[1] params[1];
-    trigger_time[0] params[2];
-    rise_time[0] params[3];
-    fall_time[0] params[4];
-    flat_time[0]= params[5];
+    max_torque[1] = params[1];
+    trigger_time[0] = params[2];
+    rise_time[0] = params[3];
+    fall_time[0] = params[4];
+    flat_time[0] = params[5];
     trigger_time[1] = params[6];
     rise_time[1] = params[7];
     fall_time[1] = params[8];
