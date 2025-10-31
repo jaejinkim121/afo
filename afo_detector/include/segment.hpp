@@ -68,7 +68,7 @@ class ImuOptimizer{
         float push(float t, std::array<float, 21>& d);
         bool cut();
         bool mean();
-        void setZeros(std::array<float, 21>& d);
+        void setZero(std::array<float, 21>& d);
         double getTLA(std::array<float, 21>& d);
         void optimize();
         void save();
