@@ -38,13 +38,13 @@ class Optimizer{
 
     private:
         // Define Optimization problem parameters.
-        static const unsigned int N_t = 99; // dt = 1 / (N_t+1). For this case, dt=10ms.
+        static unsigned int N_t = 99; // dt = 1 / (N_t+1). For this case, dt=10ms.
         double torque_upper_limit = 1.0; // Can be kHighSInf
         double jerk_absolute_upper_limit = 0.05;
         double torque_impulse_value = 0.1 * N_t;
 
-        const int num_col = N_t;
-        const int num_row = N_t + 2;
+        static int num_col = N_t;
+        static int num_row = N_t + 2;
 
         // Define state-relevant variables.
         std::vector<double> col_cost;
