@@ -174,7 +174,7 @@ void ImuOptimizer::setZero(std::array<float, 21>& d){
 double ImuOptimizer::getTLA(std::array<float, 21>& d){
     if (!isSetZero_) return 0.0;
     float angle[3];
-    Matrix3d R_fromData = AngleAxisd();
+    Matrix3d R_fromData;
     std::array<Matrix3d, 7> R_;
     for (int i = 0 ; i < 7; i++){
         R_fromData = AngleAxisd(d[3*i], Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1], Vector3d::UnitY()) * AngleAxisd(d[3 * i + 2], Vector3d::UnitX());
@@ -187,8 +187,8 @@ double ImuOptimizer::getTLA(std::array<float, 21>& d){
     }
     p[0] = R_[0] * Vector3d::UnitX();
     
-    double x,z;
-    x = 0;
+    double y,z;
+    y = 0;
     z = 0;
     if (isLeft_){
         y = p[0].y() * linkLength_[0] * 0.5 + p[1].y() * linkLength_[1] + p[2].y() * linkLength_[2] - p[3].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
