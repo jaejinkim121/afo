@@ -8,6 +8,10 @@ find_package(catkin REQUIRED COMPONENTS
   Eigen REQUIRED
 )
 
+include_directories(
+  ${Eigen_INCLUDE_DIRS}
+)
+
 catkin_package(
   DEPENDS Eigen
 )
@@ -15,7 +19,6 @@ set(HIGHS_INC "/usr/local/include/highs/")
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
   "${HIGHS_INC}"
 )
 
