@@ -27,6 +27,12 @@ std::array<double, N+1> d;
 };
 
 class Optimizer{
+    public:
+        Optimizer();
+        ~Optimizer() = default;
+        void set_efficacy(const std::vector<double>& efficacy);
+        void run_optimize(std::vector<double>& r);
+
     private:
         // Define Optimization problem parameters.
         static const unsigned int N_t = 99; // dt = 1 / (N_t+1). For this case, dt=10ms.
@@ -57,7 +63,18 @@ class Optimizer{
 }
 
 class ImuOptimizer{
-    
+    public:
+        ImuOptimizer(bool isLeft);
+        ~ImuOptimizer() = default;
+        float push(float t, std::array<float, 21>& d);
+        bool cut();
+        bool mean();
+        void setZeros(std::array<float, 21>& d);
+        double getTLA(std::array<float, 21>& d);
+        void optimize();
+        void save();
+        void getResult(std::vector<double>& target);
+        
     private:
         Optimizer opt_;
         SampleIMU zero_;
