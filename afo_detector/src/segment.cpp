@@ -30,9 +30,6 @@ Optimizer::Optimizer(){
         Avalue.push_back(-1.0);
         Avalue.push_back(1.0);
     }
-
-    highs_.setOptionValue("output_flag", false);
-
 }
 
 void Optimizer::set_efficacy(const std::vector<double>& efficacy){
@@ -52,6 +49,11 @@ void Optimizer::run_optimize(std::vector<double>& r){
     if (r.size() != N_t+2){
         std::cout << "Optimizer - run_optimize - input result vector has wrong size" << std::endl;
     }
+    HighsLp lp_;
+    Highs highs_;
+    HighsStatus return_status_;
+
+    highs_.setOptionValue("output_flag", false);
     lp_.sense_ = ObjSense::kMaximize;
     lp_.num_col_ = num_col;
     lp_.num_row_ = num_row;
@@ -78,14 +80,13 @@ ImuOptimizer::ImuOptimizer(bool isLeft){
     isLeft_ = isLeft;
     isSetZero_ = false;
     seg_.reserve(1024);
-    opt_ = Optimizer();
+    opt_();
     tla_.reserve(101);
     tla_.insert(tla_.end(), 101, 0.0);
     result_opt_.reserve(101);
     result_opt_.insert(result_opt_.end(), 101, 0.0);
 
 }
-ImuOptimizer::~ImuOptimizer() = default;
 
 float ImuOptimizer::push(float t, std::array<float, 21>& d){
     SampleTLA d_ = SampleTLA();

@@ -43,11 +43,6 @@ class Optimizer{
         double jerk_absolute_upper_limit = 0.05;
         double torque_impulse_value = 0.1 * N_t;
 
-        // Define HiGHS Instances.
-        HighsLp lp_;
-        Highs highs_;
-        HighsStatus return_status_;
-
         const int num_col = N_t;
         const int num_row = N_t + 2;
 
