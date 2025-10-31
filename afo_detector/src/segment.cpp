@@ -205,6 +205,6 @@ void ImuOptimizer::optimize(){
 }
 
 void ImuOptimizer::getResult(std::vector<double>& target){
-    target = std::copy(result_opt_);
+    target = result_opt_;
     return;
 }
