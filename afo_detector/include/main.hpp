@@ -78,7 +78,7 @@ ros::Publisher left_optimized_control_pub;
 ros::Publisher right_optimized_control_pub;
 
 // Optimizer
-ImuOptimizer imuOpt_left;
-ImuOptimizer imuOpt_right;
+ImuOptimizer imuOpt_left(true);
+ImuOptimizer imuOpt_right(false);
 unsigned int cutCntLeft = 0;
 unsigned int cutCntRight = 0;

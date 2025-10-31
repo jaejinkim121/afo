@@ -465,8 +465,6 @@ int main(int argc, char**argv)
     is_imu = false;
     leftSwing = false;
     rightSwing = false;
-    imuOpt_left = ImuOptimizer(true);
-    imuOpt_right = ImuOptimizer(false);
 
     // Load affected side & thresholdGap
     ifstream paramFile;
