@@ -86,6 +86,31 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
         #endif
         
     }
+    std::array<float, 21> d_imu_angle;
+    for (int i = 0; i < 7; i++){
+        d_imu_angle[3*i] = d_imu[9*i];
+        d_imu_angle[3*i+1] = d_imu[9*i+1];
+        d_imu_angle[3*i+2] = d_imu[9*i+2];
+    }
+
+    float t;
+    t = (chrono::system_clock::now() - timeLeftSwing).count();
+    
+    if (!leftSwing) imuOpt_left.push(t, d_imu_angle);
+    if (!rightSwing) imuOpt_right.push(t, d_imu_angle);
+
+    return;
+}
+
+void callbackIMUZero(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    std::array<float, 21> d;
+    for (int i = 0; i < 21; i++){
+        d[i] = msg->data[i];
+    }
+
+    imuOpt_left.setZero(d);
+    imuOpt_right.setZero(d);
+
     return;
 }
 
@@ -237,6 +262,22 @@ void gaitDetector(int* result){
             leftSwing = true;
             leftToeOff = true;
             timeLeftSwing = system_clock::now();
+            imuOpt_left.cut();
+            cutCntLeft++;
+            if (cutCntLeft == 5){
+                imuOpt_left.mean();
+                imuOpt_left.optimize();
+                std::vector<double> control;
+                imuOpt_left.getResult(control);
+                cutCntLeft = 0;
+
+                std_msgs::Float32MultiArray msg_left;
+                int length_control = control.size();
+                for (int i = 0; i < length_control; i++){
+                    msg_left.data.push_back(control.at(i));
+                }
+                left_optimized_control_pub.publish(msg_left);
+            }
         }
     }
     
@@ -260,6 +301,22 @@ void gaitDetector(int* result){
             rightSwing = true;
             rightToeOff = true;
             timeRightSwing = system_clock::now();
+            imuOpt_right.cut();
+            cutCntRight++;
+            if (cutCntRight == 5){
+                imuOpt_right.mean();
+                imuOpt_right.optimize();
+                std::vector<double> control;
+                imuOpt_left.getResult(control);
+                cutCntRight = 0;
+
+                std_msgs::Float32MultiArray msg_right;
+                int length_control = control.size();
+                for (int i = 0; i < length_control; i++){
+                    msg_right.data.push_back(control.at(i));
+                }
+                right_optimized_control_pub.publish(msg_right);
+            }
         }
     }
 
@@ -408,6 +465,8 @@ int main(int argc, char**argv)
     is_imu = false;
     leftSwing = false;
     rightSwing = false;
+    imuOpt_left = IMUOptimizer(true);
+    imuOpt_right = IMUOptimizer(false);
 
     // Load affected side & thresholdGap
     ifstream paramFile;
@@ -440,10 +499,13 @@ int main(int argc, char**argv)
     afo_threshold_update_sub = n.subscribe("/afo_gui/update_threshold", 1, callbackUpdateThreshold);
     afo_affected_side_sub = n.subscribe("/afo_gui/affected_side", 1, callbackAffectedSide);
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
+    imu_zero_sub = n.subscribe("/afo_gui/kinematics_zero", 1, callbackIMUZero);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     afo_ips_force_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_left", 100);
     afo_ips_force_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_right", 100);
+    left_optimized_control_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/left_optimized_control", 100);
+    right_optimized_control_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/right_optimized_control", 100);
     
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 

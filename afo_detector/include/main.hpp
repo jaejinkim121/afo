@@ -72,3 +72,11 @@ ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
 ros::Publisher afo_ips_force_left_pub;
 ros::Publisher afo_ips_force_right_pub;
+ros::Publisher left_optimized_control_pub;
+ros::Publisher right_optimized_control_pub;
+
+// Optimizer
+IMUOptimizer imuOpt_left;
+IMUOptimizer imuOpt_right;
+unsigned int cutCntLeft = 0;
+unsigned int cutCntRight = 0;
