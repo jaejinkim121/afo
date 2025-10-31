@@ -1,15 +1,4 @@
-#pragma once
-#include <vector>
-#include <queue>
-#include <mutex>
-#include <array>
-#include <fstream>
-#include <iomanip>
-#include <sstream>
-#include <iostream>
-#include <highs/Highs.h>
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
+#include "../include/segment.hpp"
 
 const size_t N = 10;
 
