@@ -1187,6 +1187,7 @@ void MainWindow::initPlot(){
     pen[4].setColor(QColor(255, 165, 0));
     pen[5].setColor(QColor(198, 115, 255));
 
+    // Initialize kinematics plot
     for (int i = 0; i < 7; i++){
         link[i] = new QCPItemLine(ui->plot_kinematics);
         if (i > 4) link[i]->setPen(pen[1]);
@@ -1209,6 +1210,7 @@ void MainWindow::initPlot(){
     state_gp[0] = 0.0;
     state_gp[1] = 0.0;
 
+    // Initialize sole sensor plot
     for(int i = 0; i< 6; i++){
         ui->plot_sole_left_voltage->addGraph();
         ui->plot_sole_right_voltage->addGraph();
@@ -1221,6 +1223,7 @@ void MainWindow::initPlot(){
     ui->plot_sole_left_voltage->yAxis->setRange(-0.05, 25);
     ui->plot_sole_right_voltage->yAxis->setRange(-0.05, 25);
 
+    // Initialize controller plot
     for (int i = 0; i< 4; i++){
         ui->plot_dorsi_command->addGraph();
         ui->plot_dorsi_command->graph(i)->setPen(pen[i]);   
@@ -1240,6 +1243,7 @@ void MainWindow::initPlot(){
 
     ui->plot_plantar_command->yAxis->setRange(-1.2, 1.2);
 
+    // Initialize gait phase plot
     ui->plot_gaitPhase->addGraph();
     ui->plot_gaitPhase->addGraph();
     ui->plot_gaitPhase->graph(0)->setPen(pen[0]);
@@ -1256,6 +1260,28 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase_2->graph(1)->setName("P");
     ui->plot_gaitPhase_2->yAxis->setRange(-0.1, 1.2);
 
+    // Initialize woc plot
+    ui->plot_TLA->addGraph();
+    ui->plot_TLA->addGraph();
+    ui->plot_TLA->graph(0)->setPen(pen[0]);
+    ui->plot_TLA->graph(1)->setPen(pen[1]);
+    ui->plot_TLA->graph(0)->setName("Left");
+    ui->plot_TLA->graph(1)->setName("Right");
+
+    ui->plot_optimized_control_left->addGraph();
+    ui->plot_optimized_control_left->addGraph();
+    ui->plot_optimized_control_left->graph(0)->setPen(pen[0]);
+    ui->plot_optimized_control_left->graph(1)->setPen(pen[1]);
+    ui->plot_optimized_control_left->graph(0)->setName("TLA");
+    ui->plot_optimized_control_left->graph(1)->setPen("WOC");
+
+    ui->plot_optimized_control_right->addGraph();
+    ui->plot_optimized_control_right->addGraph();
+    ui->plot_optimized_control_right->graph(0)->setPen(pen[0]);
+    ui->plot_optimized_control_right->graph(1)->setPen(pen[1]);
+    ui->plot_optimized_control_right->graph(0)->setName("TLA");
+    ui->plot_optimized_control_right->graph(1)->setPen("WOC");
+
     // Set plot title
     ui->plot_sole_left_voltage->plotLayout()->insertRow(0);
     ui->plot_sole_right_voltage->plotLayout()->insertRow(0);
@@ -1263,6 +1289,9 @@ void MainWindow::initPlot(){
     ui->plot_dorsi_command->plotLayout()->insertRow(0);
     ui->plot_gaitPhase->plotLayout()->insertRow(0);
     ui->plot_gaitPhase_2->plotLayout()->insertRow(0);
+    ui->plot_TLA->plotLayout()->insertRow(0);
+    ui->plot_optimized_control_left->plotLayout()->insertRow(0);
+    ui->plot_optimized_control_right->plotLayout()->insertRow(0);
     
     QCPTextElement *title_sole_left_voltage = new QCPTextElement(ui->plot_sole_left_voltage, "L Sole", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_sole_right_voltage = new QCPTextElement(ui->plot_sole_right_voltage, "R Sole", QFont("sans", 16, QFont::Bold));
@@ -1270,6 +1299,9 @@ void MainWindow::initPlot(){
     QCPTextElement *title_dorsi_command = new QCPTextElement(ui->plot_dorsi_command, "Dorsi", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_gaitPhase = new QCPTextElement(ui->plot_gaitPhase, "Gait Phase", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_gaitPhase2 = new QCPTextElement(ui->plot_gaitPhase_2, "Gait Phase", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_TLA = new QCPTextElement(ui->plot_TLA, "Gait Phase", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_optimized_control_left = new QCPTextElement(ui->plot_optimized_control_left, "Gait Phase", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_optimized_control_right = new QCPTextElement(ui->plot_optimized_control_right, "Gait Phase", QFont("sans", 16, QFont::Bold));
     
     for (int i = 0 ; i < 2; i++){
         infLineThreshold[i] = new QCPItemStraightLine(ui->plot_sole_left_voltage);
@@ -1283,6 +1315,9 @@ void MainWindow::initPlot(){
     ui->plot_dorsi_command->plotLayout()->addElement(0, 0, title_dorsi_command);
     ui->plot_gaitPhase->plotLayout()->addElement(0, 0, title_gaitPhase);
     ui->plot_gaitPhase_2->plotLayout()->addElement(0, 0, title_gaitPhase2);
+    ui->plot_TLA->plotLayout()->addElement(0, 0, title_TLA);
+    ui->plot_optimized_control_left->plotLayout()->addElement(0, 0, title_optimized_control_left);
+    ui->plot_optimized_control_right->plotLayout()->addElement(0, 0, title_optimized_control_right);
 
     ui->plot_sole_left_voltage->legend->setVisible(true);
     ui->plot_sole_right_voltage->legend->setVisible(true);
@@ -1292,6 +1327,9 @@ void MainWindow::initPlot(){
     ui->plot_gaitPhase_2->legend->setVisible(true);
     ui->plot_sole_left_voltage->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
     ui->plot_sole_right_voltage->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
+    ui->plot_TLA->setVisible(true);
+    ui->plot_optimized_control_left->setVisible(true);
+    ui->plot_optimized_control_right->setVisible(true);
 
 }
 
@@ -1331,6 +1369,22 @@ void MainWindow::updatePlot(int dataType){
         ui->plot_gaitPhase->replot();
         ui->plot_gaitPhase_2->replot();
     }
+
+    else if (dataType == TLA){
+        ui->plot_TLA->graph(0)->setData(t_TLA, tla[0]);
+        ui->plot_TLA->graph(1)->setData(t_TLA, tla[1]);
+        ui->plot_TLA->replot();
+    }
+
+    else if (dataType == WOC_CYCLE){
+        ui->plot_optimized_control_left->graph(0)->setData(t_woc, woc_left[0]);
+        ui->plot_optimized_control_left->graph(1)->setData(t_woc, woc_left[1]);
+        ui->plot_optimized_control_right->graph(0)->setData(t_woc, woc_right[0]);
+        ui->plot_optimized_control_right->graph(1)->setData(t_woc, woc_right[1]);
+        ui->plot_optimized_control_left->replot();
+        ui->plot_optimized_control_right->replot();
+    }
+
 }
 
 void MainWindow::initSolePlot(){

@@ -22,6 +22,8 @@
 #define MOTOR_PLANTAR 3
 #define MOTOR_DORSI 4
 #define GAIT_PHASE 5
+#define TLA 6
+#define WOC_CYCLE 7
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -121,6 +123,7 @@ private:
     bool is_trial_on = false;
     bool is_left_calib_on = false;
     bool is_right_calib_on = false;
+    bool is_plot_woc = false;
     bool sync = false;
     double t_left_calib = 0;
     double t_right_calib = 0;
@@ -143,18 +146,20 @@ private:
     
 //    float threshold[4] = {0.01, 0.02, 0.01, 0.02};
 
-    QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2;
+    QVector<double> t_v_l, t_v_r, t_m_p, t_m_d, t_gp, t_gp2, t_TLA, t_woc;
     QVector<double> v_l[6];
     QVector<double> v_r[6];
     QVector<double> m_p[2];
     QVector<double> m_d[4];
     QVector<double> gp[2], gp2[2];
+    QVector<double> tla[2], woc_left[2], woc_right[2];
 
     double state_gp[2];
     Draw *s_l[6], *s_r[6];
     QVBoxLayout *n_l[6], *n_r[6];
     QCPItemLine *link[7];
     QCPItemStraightLine *infLineThreshold[4];
+
     int *rgb;
 
 };
