@@ -33,7 +33,7 @@
      <string notr="true">QTabBar::tab { height: 50px; width: 100px;}</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Developer">
      <attribute name="title">
@@ -1869,6 +1869,70 @@ Side</string>
       <zorder>label_sole_image_left_6</zorder>
       <zorder>label_sole_image_right_2</zorder>
       <zorder>label_sole_image_right_4</zorder>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="WOC">
+     <attribute name="title">
+      <string>WOC</string>
+     </attribute>
+     <widget class="QCustomPlot" name="plot_TLA" native="true">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>441</width>
+        <height>191</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="plot_optimized_control" native="true">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>10</y>
+        <width>441</width>
+        <height>191</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_plot_on_woc">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>240</y>
+        <width>141</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>WOC Plot 
+ON/OFF</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_flush">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>240</y>
+        <width>141</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Flush Cycle</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab">
