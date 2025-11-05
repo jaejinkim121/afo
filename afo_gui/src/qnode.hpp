@@ -46,12 +46,12 @@ public:
     void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg);
-    void callbackTLALeft(const std_msgs::FloatConstPtr& msg);
-    void callbackTLARight(const std_msgs::FloatConstPtr& msg);
-    void callbackWOCLeft(const std_msgs::Float32MultiArray::Constptr& msg);
-    void callbackWOCRight(const std_msgs::Float32MultiArray::Constptr& msg);
-    void callbackTLACycleLeft(const std_msgs::Float32MultiArray::Constptr& msg);
-    void callbackTLACycleRight(const std_msgs::Float32MultiArray::Constptr& msg);
+    void callbackTLALeft(const std_msgs::Float32ConstPtr& msg);
+    void callbackTLARight(const std_msgs::Float32ConstPtr& msg);
+    void callbackWOCLeft(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void callbackWOCRight(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void callbackTLACycleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void callbackTLACycleRight(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
     void pubRunPFMH();
     void pubRunDFMH();

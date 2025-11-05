@@ -95,14 +95,14 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
 
     float t;
     t = (chrono::system_clock::now() - timeLeftSwing).count();
-    std_msgs::Float32 msg;
+    std_msgs::Float32 msg_;
     if (!leftSwing) {
-        msg.data = imuOpt_left.push(t, d_imu_angle);
-        tla_left_pub.publish(msg);
+        msg_.data = imuOpt_left.push(t, d_imu_angle);
+        tla_left_pub.publish(msg_);
     }
     if (!rightSwing) {
-        msg.data = imuOpt_right.push(t, d_imu_angle);
-        tla_right_pub.publish(msg);
+        msg_.data = imuOpt_right.push(t, d_imu_angle);
+        tla_right_pub.publish(msg_);
     }
     return;
 }
