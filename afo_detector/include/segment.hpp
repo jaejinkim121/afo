@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
+#include <cmath>
 #include <highs/Highs.h>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -72,6 +73,7 @@ class ImuOptimizer{
         double getTLA(std::array<float, 21>& d);
         void optimize();
         void getResult(std::vector<double>& target);
+        void getTLACycle(std::vector<double>& target);
 
     private:
         Optimizer opt_;

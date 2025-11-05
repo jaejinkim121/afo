@@ -97,11 +97,11 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     t = (chrono::system_clock::now() - timeLeftSwing).count();
     std_msgs::Float32 msg;
     if (!leftSwing) {
-        msg = imuOpt_left.push(t, d_imu_angle);
+        msg.data = imuOpt_left.push(t, d_imu_angle);
         tla_left_pub.publish(msg);
     }
     if (!rightSwing) {
-        msg = imuOpt_right.push(t, d_imu_angle);
+        msg.data = imuOpt_right.push(t, d_imu_angle);
         tla_right_pub.publish(msg);
     }
     return;
@@ -275,7 +275,7 @@ void gaitDetector(int* result){
                 std::vector<double> control_left;
                 std:vector<double> tla_left;
                 imuOpt_left.getResult(control_left);
-                imuOpt_left.getTLA(tla_left);
+                imuOpt_left.getTLACycle(tla_left);
                 cutCntLeft = 0;
 
                 std_msgs::Float32MultiArray msg_left, msg_left_tla;
@@ -318,7 +318,7 @@ void gaitDetector(int* result){
                 std::vector<double> control_right;
                 std::vector<double> tla_right;
                 imuOpt_right.getResult(control_right);
-                imuOpt_right.getResult(tla_right);
+                imuOpt_right.getTLACycle(tla_right);
                 cutCntRight = 0;
 
                 std_msgs::Float32MultiArray msg_right, msg_right_tla;

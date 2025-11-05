@@ -36,7 +36,7 @@ void Optimizer::set_efficacy(const std::array<double, 101>& efficacy){
     col_cost.clear();
 
     for (int i = 1; i < efficacy.size() - 1; i++){
-        col_cost.push_back(math::cos(efficacy[i]));
+        col_cost.push_back(cos(efficacy[i]));
     }
     return;
 }
@@ -209,7 +209,7 @@ void ImuOptimizer::getResult(std::vector<double>& target){
     return;
 }
 
-void ImuOptimizer::getTLA(std::vector<double>& target){
+void ImuOptimizer::getTLACycle(std::vector<double>& target){
     std::vector<double> t;
     for (int i = 0; i < N+1; i++){
         t.push_back(mean_.d[i]);
