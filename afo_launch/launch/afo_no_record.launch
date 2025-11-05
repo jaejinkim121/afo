@@ -2,7 +2,7 @@
 	<arg name="rr" default="100" />
 	<param name="rr" value="$(arg rr)" />
 	
-	<node name="afo_gui" pkg="afo_gui" type="afo_gui" launch-prefix="gdb -ex run args --" output="screen">
+	<node name="afo_gui" pkg="afo_gui" type="afo_gui" output="screen">
 	</node>
 	
 	<node name="afo_sensor" pkg="afo_sensor" type="afo_sensor" output="screen">
