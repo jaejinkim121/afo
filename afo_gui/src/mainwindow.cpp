@@ -1165,7 +1165,7 @@ void MainWindow::plotWOC(){
     qnode.getWOCData(data);
 
     woc_left[0].clear();
-    woc_left[1]-.lear();
+    woc_left[1].clear();
     woc_right[0].clear();
     woc_right[1].clear();
     for (int i = 0; i < 101; i++){
@@ -1308,14 +1308,14 @@ void MainWindow::initPlot(){
     ui->plot_optimized_control_left->graph(0)->setPen(pen[0]);
     ui->plot_optimized_control_left->graph(1)->setPen(pen[1]);
     ui->plot_optimized_control_left->graph(0)->setName("TLA");
-    ui->plot_optimized_control_left->graph(1)->setPen("WOC");
+    ui->plot_optimized_control_left->graph(1)->setName("WOC");
 
     ui->plot_optimized_control_right->addGraph();
     ui->plot_optimized_control_right->addGraph();
     ui->plot_optimized_control_right->graph(0)->setPen(pen[0]);
     ui->plot_optimized_control_right->graph(1)->setPen(pen[1]);
     ui->plot_optimized_control_right->graph(0)->setName("TLA");
-    ui->plot_optimized_control_right->graph(1)->setPen("WOC");
+    ui->plot_optimized_control_right->graph(1)->setName("WOC");
 
     // Set plot title
     ui->plot_sole_left_voltage->plotLayout()->insertRow(0);
