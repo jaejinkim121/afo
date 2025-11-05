@@ -1010,7 +1010,7 @@ void MainWindow::updateParameterFile(){
 
 void MainWindow::loadParameterFile(){
     std::ifstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-
+    std::cout << "Loading Params" << std::endl;
     std::string str;
     float params[18];
     for (int i = 0; i<18;i++){
@@ -1037,6 +1037,7 @@ void MainWindow::loadParameterFile(){
     threshold[3] = params[17];
 
     f.close();
+    std::cout << "Loading Params ENDDDDD" << std::endl;
 }
 
 void MainWindow::set_emergency(bool on){
@@ -1157,7 +1158,7 @@ void MainWindow::plotTLA(){
 
     appendCropQVector(&t_TLA, data[0], tlaPlotMaxNum);
     appendCropQVector(&tla[0], data[1], tlaPlotMaxNum);
-    appendCropQVector(&tla[1], data[2], tlaPlotMaxNum);
+//    appendCropQVector(&tla[1], data[2], tlaPlotMaxNum);
     ui->plot_TLA->xAxis->setRange(t_TLA[0], t_TLA[0] + 5.0);
     ui->plot_TLA->yAxis->setRange(-2, 2);
     this->updatePlot(TLA);
