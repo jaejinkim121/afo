@@ -1885,7 +1885,7 @@ Side</string>
        </rect>
       </property>
      </widget>
-     <widget class="QCustomPlot" name="plot_optimized_control" native="true">
+     <widget class="QCustomPlot" name="plot_optimized_control_left" native="true">
       <property name="geometry">
        <rect>
         <x>470</x>
@@ -1932,6 +1932,16 @@ ON/OFF</string>
       </property>
       <property name="text">
        <string>Flush Cycle</string>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="plot_optimized_control_right" native="true">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>200</y>
+        <width>441</width>
+        <height>191</height>
+       </rect>
       </property>
      </widget>
     </widget>

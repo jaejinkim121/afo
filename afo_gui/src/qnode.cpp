@@ -365,7 +365,7 @@ namespace afo_gui {
 
         updateTLA();
     }
-    void QNode::callbackTLARight(const std_msgs:Float32ConstPtr& msg){
+    void QNode::callbackTLARight(const std_msgs::Float32ConstPtr& msg){
         return;
     }
     void QNode::callbackTLACycleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){

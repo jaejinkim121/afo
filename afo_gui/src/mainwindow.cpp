@@ -1161,17 +1161,18 @@ void MainWindow::plotTLA(){
 
 void MainWindow::plotWOC(){
     if (!is_plot_woc) return;
-    std::array<float, 101>* data = qnode.getWOCData();
+    std::array<float, 101>* data;
+    qnode.getWOCData(data);
 
-    woc_left[0]->clear();
-    woc_left[1]->clear();
-    woc_right[0]->clear();
-    woc_right[1]->clear();
+    woc_left[0].clear();
+    woc_left[1]-.lear();
+    woc_right[0].clear();
+    woc_right[1].clear();
     for (int i = 0; i < 101; i++){
-        woc_left[0]->append(data[0][i]);
-        woc_left[1]->append(data[1][i]);
-        woc_right[0]->append(data[2][i]);
-        woc_right[1]->append(data[3][i]);
+        woc_left[0].append(data[0][i]);
+        woc_left[1].append(data[1][i]);
+        woc_right[0].append(data[2][i]);
+        woc_right[1].append(data[3][i]);
     }
     this->updatePlot(WOCD);
 }
