@@ -34,6 +34,7 @@ namespace afo_gui {
         rz = new double[7];
         pz = new double[7];
         yz = new double[7];
+        tlaData = new float[2];
 
         leftToe = 0;
         leftToeMax = 0.0;
