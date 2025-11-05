@@ -197,7 +197,7 @@ double ImuOptimizer::getTLA(std::array<float, 21>& d){
         z = -p[0].z() * linkLength_[0] * 0.5 + p[4].z() * linkLength_[1] + p[5].z() * linkLength_[2] - p[6].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
     }
     
-    return std::atan2(z,y) * 180 / 3.141592; // Unit: [rad]
+    return std::atan2(z,y) * 180 / 3.141592; // Unit: [degree]
 
 }
 

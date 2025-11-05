@@ -1159,7 +1159,7 @@ void MainWindow::plotTLA(){
     appendCropQVector(&tla[0], data[1], tlaPlotMaxNum);
 //    appendCropQVector(&tla[1], data[2], tlaPlotMaxNum);
     ui->plot_TLA->xAxis->setRange(t_TLA[0], t_TLA[0] + 5.0);
-    ui->plot_TLA->yAxis->setRange(-7, 7);
+    ui->plot_TLA->yAxis->setRange(-180, 180);
     this->updatePlot(TLA);
 }
 
