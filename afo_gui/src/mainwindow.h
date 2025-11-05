@@ -23,7 +23,7 @@
 #define MOTOR_DORSI 4
 #define GAIT_PHASE 5
 #define TLA 6
-#define WOC 7
+#define WOCD 7
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -79,7 +79,7 @@ public:
         unsigned int type_control, 
         unsigned int type_cue
         );
-    
+
     // MH
     void runPFMH();
     void runDFMH();

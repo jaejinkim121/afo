@@ -1173,7 +1173,7 @@ void MainWindow::plotWOC(){
         woc_right[0]->append(data[2][i]);
         woc_right[1]->append(data[3][i]);
     }
-    this->updatePlot(WOC);
+    this->updatePlot(WOCD);
 }
 
 void MainWindow::updateGaitPhaseState(){
@@ -1415,7 +1415,7 @@ void MainWindow::updatePlot(int dataType){
         ui->plot_TLA->replot();
     }
 
-    else if (dataType == WOC){
+    else if (dataType == WOCD){
         ui->plot_optimized_control_left->graph(0)->setData(t_woc, woc_left[0]);
         ui->plot_optimized_control_left->graph(1)->setData(t_woc, woc_left[1]);
         ui->plot_optimized_control_right->graph(0)->setData(t_woc, woc_right[0]);
