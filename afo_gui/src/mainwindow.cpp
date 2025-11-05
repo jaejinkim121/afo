@@ -85,6 +85,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_run_df_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_both_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_plot_on_woc, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_flush, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     
     
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
@@ -406,6 +407,9 @@ void MainWindow::buttonClicked(){
     }
     else if (state == "button_plot_on_woc"){
         this->is_plot_woc = !(this->is_plot_woc);
+    }
+    else if (state == "button_flush"){
+        qnode.pubFlush();
     }
 
 }

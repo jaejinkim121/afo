@@ -38,7 +38,7 @@ void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
     for (int i = 0; i< 6; i++){
         d_soleLeft[i] = msg->data[i];
         f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i], i);
-        msg_force.data.push_back(f_soleLeft[i]);
+        msg_force.data.push_back(d_soleLeft[i]);
         #ifdef DEBUG
         cout << d_soleLeft[i];
         if (i != 6) cout << ", ";
@@ -61,7 +61,7 @@ void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
     for (int i = 0; i< 6; i++){
         d_soleRight[i] = msg->data[i];
         f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i], i);
-        msg_force.data.push_back(f_soleRight[i]);
+        msg_force.data.push_back(d_soleRight[i]);
         #ifdef DEBUG
         cout << d_soleRight[i];
         if (i != 6) cout << ", ";
@@ -96,11 +96,11 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     float t;
     t = (chrono::system_clock::now() - timeLeftSwing).count();
     std_msgs::Float32 msg_;
-    if (!leftSwing) {
+    if (true) {
         msg_.data = imuOpt_left.push(t, d_imu_angle);
         tla_left_pub.publish(msg_);
     }
-    if (!rightSwing) {
+    if (true) {
         msg_.data = imuOpt_right.push(t, d_imu_angle);
         tla_right_pub.publish(msg_);
     }
@@ -144,7 +144,11 @@ void callbackUpdateThreshold(const std_msgs::BoolConstPtr& msg){
     return;
 }
 
-
+void callbackFlush(const std_msgs::BoolConstPtr& msg){
+    imuOpt_left.flush();
+    imuOpt_right.flush();
+    isFlush = true;
+}
 
 void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
     for (int i = 0; i < 4; i++){
@@ -176,13 +180,15 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
 bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int isIC){
     float th, f;
     if (side == LEFT){
-        f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
+        //f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
+        f = d_soleLeft[sensorNum]
         th = thLeft[isIC][sensorNum];
         if (isIC) return f >= th;
         else return f < th;
     }
     else {
-        f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
+        //f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
+        f = d_soleRight[sensorNum];
         th = thRight[isIC][sensorNum];
         if (isIC) return f >= th;
         else return f < th;
@@ -269,7 +275,7 @@ void gaitDetector(int* result){
             timeLeftSwing = system_clock::now();
             imuOpt_left.cut();
             cutCntLeft++;
-            if (cutCntLeft == 5){
+            if ((cutCntLeft == 5) && isFlush){
                 imuOpt_left.mean();
                 imuOpt_left.optimize();
                 std::vector<double> control_left;
@@ -312,7 +318,7 @@ void gaitDetector(int* result){
             timeRightSwing = system_clock::now();
             imuOpt_right.cut();
             cutCntRight++;
-            if (cutCntRight == 5){
+            if ((cutCntRight == 5) && isFlush){
                 imuOpt_right.mean();
                 imuOpt_right.optimize();
                 std::vector<double> control_right;
@@ -511,6 +517,7 @@ int main(int argc, char**argv)
     afo_affected_side_sub = n.subscribe("/afo_gui/affected_side", 1, callbackAffectedSide);
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     imu_zero_sub = n.subscribe("/afo_gui/kinematics_zero", 1, callbackIMUZero);
+    flush_sub = n.subscribe("/afo_gui/flush", 1, callbackFlush);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     afo_ips_force_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_left", 100);

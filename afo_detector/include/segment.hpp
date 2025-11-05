@@ -74,6 +74,7 @@ class ImuOptimizer{
         void optimize();
         void getResult(std::vector<double>& target);
         void getTLACycle(std::vector<double>& target);
+        void flush();
 
     private:
         Optimizer opt_;

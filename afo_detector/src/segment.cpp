@@ -83,7 +83,9 @@ ImuOptimizer::ImuOptimizer(bool isLeft){
     result_opt_.insert(result_opt_.end(), 101, 0.0);
 
 }
-
+void ImuOptimizer::flush(){
+    q_.clear();
+}
 float ImuOptimizer::push(float t, std::array<float, 21>& d){
     SampleTLA d_ = SampleTLA();
     double angle = getTLA(d);

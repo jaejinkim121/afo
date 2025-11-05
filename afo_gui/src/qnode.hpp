@@ -70,6 +70,7 @@ public:
     void pubSync(bool sync);
     void pubForcedTrigger();
     void pubSessionType(unsigned int type_trial, unsigned int type_control, unsigned int type_cue);
+    void pubFlush();
     void imuZeroing();
     void updateLinkLength(int id, double data);
     void loadLinkLength();
@@ -149,7 +150,7 @@ private:
     ros::Publisher afo_gui_run_df_mh_pub;
     ros::Publisher afo_gui_forced_trigger_pub;
     ros::Publisher afo_gui_session_type_pub;
-
+    ros::Publisher afo_flush;
     ros::Subscriber afo_soleSensor_left_sub;
     ros::Subscriber afo_soleSensor_right_sub;
     ros::Subscriber afo_imu_sub;

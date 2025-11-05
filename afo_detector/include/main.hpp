@@ -40,6 +40,7 @@ bool is_soleLeft, is_soleRight, is_imu; // ???
 bool leftSwing, rightSwing;
 bool affectedSide;
 bool leftToeOff, rightToeOff;
+bool isFlush = false;
 
 float thresholdGap[4];
 float thLeft[2][6];
@@ -71,6 +72,8 @@ ros::Subscriber afo_threshold_update_sub;
 ros::Subscriber afo_affected_side_sub;
 ros::Subscriber afo_threshold_gap_sub;
 ros::Subscriber imu_zero_sub;
+ros::Subscriber flush_sub;
+
 ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
 ros::Publisher afo_ips_force_left_pub;
