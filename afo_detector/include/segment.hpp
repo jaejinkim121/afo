@@ -14,6 +14,8 @@
 using namespace std;
 using namespace Eigen;
 
+#define PIC M_PI/180
+
 const size_t N = 100;
 
 struct SampleIMU{

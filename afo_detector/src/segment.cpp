@@ -168,7 +168,7 @@ void ImuOptimizer::setZero(std::array<float, 21>& d){
         zero_.value[i] = d[i];
     }
     for (int i = 0; i < 7; i++){
-        R_fromZero_[i] = AngleAxisd(d[3*i+2], Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1], Vector3d::UnitY()) * AngleAxisd(d[3 * i], Vector3d::UnitX());
+        R_fromZero_[i] = AngleAxisd(d[3*i+2]*PIC, Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1]*PIC, Vector3d::UnitY()) * AngleAxisd(d[3 * i]*PIC, Vector3d::UnitX());
     }
     isSetZero_ = true;
     return;
@@ -180,8 +180,8 @@ double ImuOptimizer::getTLA(std::array<float, 21>& d){
     Matrix3d R_fromData;
     std::array<Matrix3d, 7> R_;
     for (int i = 0 ; i < 7; i++){
-        R_fromData = AngleAxisd(d[3*i + 2], Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1], Vector3d::UnitY()) * AngleAxisd(d[3 * i], Vector3d::UnitX());
-        R_[i] = R_fromZero_[i] * R_fromData;
+        R_fromData = AngleAxisd(d[3*i + 2]*PIC, Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1]*PIC, Vector3d::UnitY()) * AngleAxisd(d[3 * i]*PIC, Vector3d::UnitX());
+        R_[i] = R_fromZero_[i].transpose() * R_fromData;
     }
     std::array<Vector3d, 7> p;
 
