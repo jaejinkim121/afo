@@ -84,6 +84,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_run_pf_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_df_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_run_both_mh, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_plot_on_woc, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     
     
     QObject::connect(&qnode, SIGNAL(updateSoleLeft()), this, SLOT(plotSoleLeft()));
@@ -94,7 +95,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
     QObject::connect(&qnode, SIGNAL(updatePolyFitPlot()), this, SLOT(updatePolyFit()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
-    
+    QObject::connect(&qnode, SIGNAL(updateTLA()), this, SLOT(plotTLA()));
+    QObject::connect(&qnode, SIGNAL(updateWOC()), this, SLOT(plotWOC()));
     ui->RightBox->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
 
@@ -401,6 +403,9 @@ void MainWindow::buttonClicked(){
     }
     else if (state == "button_forced_trigger"){
         qnode.pubForcedTrigger();
+    }
+    else if (state == "button_plot_on_woc"){
+        this->is_plot_woc = !(this->is_plot_woc);
     }
 
 }
@@ -1142,6 +1147,35 @@ void MainWindow::plotDorsi(){
     this->updatePlot(MOTOR_DORSI);
 }
 
+void MainWindow::plotTLA(){
+    if (!is_plot_woc) return;
+    float* data = qnode.getTLAData();
+
+    appendCropQVector(&t_TLA, data[0], tlaPlotMaxNum);
+    appendCropQVector(&tla[0], data[1], tlaPlotMaxNum);
+    appendCropQVector(&tla[1], data[2], tlaPlotMaxNum);
+    ui->plot_TLA->xAxis->setRange(t_TLA[0], t_TLA[0] + 5.0);
+    ui->plot_TLA->yAxis->setRange(-2, 2);
+    this->updatePlot(TLA);
+}
+
+void MainWindow::plotWOC(){
+    if (!is_plot_woc) return;
+    std::array<float, 101>* data = qnode.getWOCData();
+
+    woc_left[0]->clear();
+    woc_left[1]->clear();
+    woc_right[0]->clear();
+    woc_right[1]->clear();
+    for (int i = 0; i < 101; i++){
+        woc_left[0]->append(data[0][i]);
+        woc_left[1]->append(data[1][i]);
+        woc_right[0]->append(data[2][i]);
+        woc_right[1]->append(data[3][i]);
+    }
+    this->updatePlot(WOC);
+}
+
 void MainWindow::updateGaitPhaseState(){
     if(!is_plot_data) return;
     float* data = qnode.getGaitPhase();
@@ -1331,6 +1365,11 @@ void MainWindow::initPlot(){
     ui->plot_optimized_control_left->setVisible(true);
     ui->plot_optimized_control_right->setVisible(true);
 
+    ui->plot_optimized_control_left->xAxis->setRange(0, 1);
+    ui->plot_optimized_control_left->yAxis->setRange(-1.1, 1.1);
+    ui->plot_optimized_control_right->xAxis->setRange(0, 1);
+    ui->plot_optimized_control_right->yAxis->setRange(-1.1, 1.1);
+
 }
 
 void MainWindow::updatePlot(int dataType){
@@ -1376,7 +1415,7 @@ void MainWindow::updatePlot(int dataType){
         ui->plot_TLA->replot();
     }
 
-    else if (dataType == WOC_CYCLE){
+    else if (dataType == WOC){
         ui->plot_optimized_control_left->graph(0)->setData(t_woc, woc_left[0]);
         ui->plot_optimized_control_left->graph(1)->setData(t_woc, woc_left[1]);
         ui->plot_optimized_control_right->graph(0)->setData(t_woc, woc_right[0]);

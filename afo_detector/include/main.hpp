@@ -76,6 +76,10 @@ ros::Publisher afo_ips_force_left_pub;
 ros::Publisher afo_ips_force_right_pub;
 ros::Publisher left_optimized_control_pub;
 ros::Publisher right_optimized_control_pub;
+ros::Publisher left_optimized_tla_pub;
+ros::Publisher right_optimized_tla_Pub;
+ros::Publisher tla_left_pub;
+ros::Publisher tla_right_pub;
 
 // Optimizer
 ImuOptimizer imuOpt_left(true);

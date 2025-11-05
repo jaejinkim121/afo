@@ -103,6 +103,12 @@ namespace afo_gui {
         afo_gait_paretic_sub = nh->subscribe("/afo_detector/gait_paretic", 1, &QNode::callbackGaitParetic, this);
         afo_gait_nonparetic_sub = nh->subscribe("/afo_detector/gait_nonparetic", 1, &QNode::callbackGaitNonparetic, this);
         afo_poly_fit_sub = nh->subscribe("/afo_detector/poly_fit", 1, &QNode::callbackPolyFit, this);
+        woc_left_sub = nh->subscribe("/afo_detector/left_optimized_control", 1, &QNode::callbackWOCLeft, this);
+        woc_right_sub = nh->subscribe("/afo_detector/right_optimized_control", 1, &QNode::callbackWOCRight, this);
+        tla_left_sub = nh->subscribe("/afo_detector/tla_left", 1, &QNode::callbackTLALeft, this);
+        tla_right_sub = nh->subscribe("/afo_detector/tla_right", 1, &QNode::callbackTLARight, this);
+        tla_cycle_left_sub = nh->subscribe("/afo_detector/tla_cycle_left", 1, &QNode::callbackTLACycleLeft, this);
+        tla_cycle_right_sub = nh->subscribe("/afo_detector/tla_cycle_right", 1, &QNode::callbackTLACycleRight, this);
     }
 
     void QNode::run() {
@@ -136,6 +142,14 @@ namespace afo_gui {
 
     float* QNode::getGaitPhase(){
         return this->gaitPhase;
+    }
+
+    float* QNode::getTLAData(){
+        return this->tlaData;
+    }
+
+    void QNode::getWOCData(std::array<float, 101>* data){
+        data = wocData;
     }
 
     double QNode::getMaxToeClearance(bool isLeft){
@@ -343,6 +357,42 @@ namespace afo_gui {
 
         updateDorsi();
     }
+
+    void QNode::callbackTLALeft(const std_msgs::Float32ConstPtr& msg){
+        float t = ros::Time::now().toSec() - this->t_begin;
+        tlaData[0] = t;
+        tlaData[1] = msg->data;
+
+        updateTLA();
+    }
+    void QNode::callbackTLARight(const std_msgs:Float32ConstPtr& msg){
+        return;
+    }
+    void QNode::callbackTLACycleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        for (int i = 1; i < 102; i++){
+            wocData[1][i] = msg->data[i];
+        }
+        updateWOC();
+    }
+    void QNode::callbackTLACycleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        for (int i = 1; i < 102; i++){
+            wocData[3][i] = msg->data[i];
+        }
+        updateWOC();
+    }
+    void QNode::callbackWOCLeft(const std_msgs::Flaot32MultiArray::ConstPtr& msg){
+        for (int i = 1; i < 102; i++){
+            wocData[0][i] = msg->data[i];
+        }
+        updateWOC();
+    }
+    void QNode::callbackWOCRight(const std_msgs::Flaot32MultiArray::ConstPtr& msg){
+        for (int i = 1; i < 102; i++){
+            wocData[2][i] = msg->data[i];
+        }
+        updateWOC();
+    }
+
 
     void QNode::callbackGaitParetic(const std_msgs::Int16ConstPtr& msg){
         float t = ros::Time::now().toSec() - this->t_begin;

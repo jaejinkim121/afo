@@ -95,10 +95,15 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
 
     float t;
     t = (chrono::system_clock::now() - timeLeftSwing).count();
-    
-    if (!leftSwing) imuOpt_left.push(t, d_imu_angle);
-    if (!rightSwing) imuOpt_right.push(t, d_imu_angle);
-
+    std_msgs::Float32 msg;
+    if (!leftSwing) {
+        msg = imuOpt_left.push(t, d_imu_angle);
+        tla_left_pub.publish(msg);
+    }
+    if (!rightSwing) {
+        msg = imuOpt_right.push(t, d_imu_angle);
+        tla_right_pub.publish(msg);
+    }
     return;
 }
 
@@ -267,16 +272,20 @@ void gaitDetector(int* result){
             if (cutCntLeft == 5){
                 imuOpt_left.mean();
                 imuOpt_left.optimize();
-                std::vector<double> control;
-                imuOpt_left.getResult(control);
+                std::vector<double> control_left;
+                std:vector<double> tla_left;
+                imuOpt_left.getResult(control_left);
+                imuOpt_left.getTLA(tla_left);
                 cutCntLeft = 0;
 
-                std_msgs::Float32MultiArray msg_left;
-                int length_control = control.size();
-                for (int i = 0; i < length_control; i++){
-                    msg_left.data.push_back(control.at(i));
+                std_msgs::Float32MultiArray msg_left, msg_left_tla;
+                int length_control_left = control_left.size();
+                for (int i = 0; i < length_control_left; i++){
+                    msg_left.data.push_back(control_left.at(i));
+                    msg_left_tla.data.push_back(tla_left.at(i));
                 }
                 left_optimized_control_pub.publish(msg_left);
+                left_optimized_tla_pub.publish(msg_left_tla);
             }
         }
     }
@@ -306,16 +315,20 @@ void gaitDetector(int* result){
             if (cutCntRight == 5){
                 imuOpt_right.mean();
                 imuOpt_right.optimize();
-                std::vector<double> control;
-                imuOpt_left.getResult(control);
+                std::vector<double> control_right;
+                std::vector<double> tla_right;
+                imuOpt_right.getResult(control_right);
+                imuOpt_right.getResult(tla_right);
                 cutCntRight = 0;
 
-                std_msgs::Float32MultiArray msg_right;
-                int length_control = control.size();
-                for (int i = 0; i < length_control; i++){
-                    msg_right.data.push_back(control.at(i));
+                std_msgs::Float32MultiArray msg_right, msg_right_tla;
+                int length_control_right = control_right.size();
+                for (int i = 0; i < length_control_right; i++){
+                    msg_right.data.push_back(control_right.at(i));
+                    msg_right_tla.data.push_back(tla_right.at(i));
                 }
                 right_optimized_control_pub.publish(msg_right);
+                right_optimized_tla_pub.publish(msg_right_tla);
             }
         }
     }
@@ -504,6 +517,10 @@ int main(int argc, char**argv)
     afo_ips_force_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_right", 100);
     left_optimized_control_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/left_optimized_control", 100);
     right_optimized_control_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/right_optimized_control", 100);
+    left_optimized_tla_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/tla_cycle_left", 100);
+    right_optimized_tla_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/tla_cycle_right", 100);
+    tla_left_pub = n.advertise<std_msgs::Float32>("/afo_detector/tla_left", 100);
+    tla_right_pub = n.advertise<std_msgs::Float32>("/afo_detector/tla_right", 100);
     
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 

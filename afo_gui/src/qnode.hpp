@@ -22,6 +22,8 @@
 #define MOTOR_PLANTAR 3
 #define MOTOR_DORSI 4
 #define GAIT_PHASE 5
+#define LEFT 0 
+#define RIGHT 1
 
 namespace afo_gui{
 
@@ -44,6 +46,12 @@ public:
     void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void callbackTLALeft(const std_msgs::FloatConstPtr& msg);
+    void callbackTLARight(const std_msgs::FloatConstPtr& msg);
+    void callbackWOCLeft(const std_msgs::Float32MultiArray::Constptr& msg);
+    void callbackWOCRight(const std_msgs::Float32MultiArray::Constptr& msg);
+    void callbackTLACycleLeft(const std_msgs::Float32MultiArray::Constptr& msg);
+    void callbackTLACycleRight(const std_msgs::Float32MultiArray::Constptr& msg);
 
     void pubRunPFMH();
     void pubRunDFMH();
@@ -100,6 +108,8 @@ private:
     float* soleRightZero;
     float* plantarData;
     float* dorsiData;
+    float* tlaData;
+    std::array<float, 101> wocData[4];
     float* polyFit;
     double* linkX;
     double* linkY;
@@ -146,6 +156,7 @@ private:
     ros::Subscriber afo_gait_paretic_sub;
     ros::Subscriber afo_gait_nonparetic_sub;
     ros::Subscriber afo_poly_fit_sub;
+    ros::Subscriber woc_left_sub, woc_right_sub, tla_left_sub, tla_right_sub, tla_cycle_left_sub, tla_cycle_right_sub;
 
     int soleLeftCnt = 0;
     int soleRightCnt = 0;
