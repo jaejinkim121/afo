@@ -102,41 +102,23 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     ui->tabWidget->setCurrentIndex(0);
 
     loadParameterFile();
-    std::cout << "Test 1" << std::endl;
     initPlot();
-    std::cout << "Test 1" << std::endl;
     initSolePlot();
-    std::cout << "Test 1" << std::endl;
     toggleTrial();
-    std::cout << "Test 1" << std::endl;
     toggleTrial();
-    std::cout << "Test 1" << std::endl;
     updateMaxTorqueValue(true);
-    std::cout << "Test 1" << std::endl;
     updateMaxTorqueValue(false);
-    std::cout << "Test 1" << std::endl;
     updateRiseTimeValue(true);
-    std::cout << "Test 1" << std::endl;
     updateRiseTimeValue(false);
-    std::cout << "Test 1" << std::endl;
     updateFallTimeValue(true);
-    std::cout << "Test 1" << std::endl;
     updateFallTimeValue(false);
-    std::cout << "Test 1" << std::endl;
     updateTriggerTimeValue(true);
-    std::cout << "Test 1" << std::endl;
     updateTriggerTimeValue(false);
-    std::cout << "Test 1" << std::endl;
     updateCycleTimeValue();
-    std::cout << "Test 1" << std::endl;
     setPFO();
-    std::cout << "Test 1" << std::endl;
     setPIC();
-    std::cout << "Test 1" << std::endl;
     setNFO();
-    std::cout << "Test 1" << std::endl;
     setNIC();
-    std::cout << "Test 1" << std::endl;
 }
 
 MainWindow::~MainWindow()

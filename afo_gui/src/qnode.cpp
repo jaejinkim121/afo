@@ -184,6 +184,7 @@ namespace afo_gui {
     }
 
     void QNode::callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        std::cout << "CB soleleft start" << std::endl;
         soleLeftCnt++;
         if (soleLeftCnt < 9){
             return;
@@ -195,10 +196,12 @@ namespace afo_gui {
         for (int i = 0; i < 6; i++){
             soleLeftData[i+1] = msg->data[i] - soleLeftZero[i]; // * polyFit[2 * i] + polyFit[2 * i + 1];
         }
+        std::cout << "CB soleleft end" << std::endl;
         updateSoleLeft();
     }
 
     void QNode::callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        std::cout << "CB soleright start" << std::endl;
         soleRightCnt++;
         if (soleRightCnt < 9){
             return;
@@ -211,11 +214,12 @@ namespace afo_gui {
         for (int i = 0; i < 6; i++){
             soleRightData[i+1] = msg->data[i] - soleRightZero[i]; // * polyFit[12 + 2 * i] + polyFit[13 + 2 * i];
         }
-        
+        std::cout << "CB soleright end" << std::endl;
         updateSoleRight();
     }
 
     void QNode::callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        std::cout << "CB imu start" << std::endl;
         double r[7];
         double p[7];
         double y[7];
@@ -327,6 +331,7 @@ namespace afo_gui {
         afo_gui_kinematics_x_pub.publish(m_x);
         afo_gui_kinematics_y_pub.publish(m_y);
         afo_gui_kinematics_z_pub.publish(m_z);
+        std::cout << "CB imu end" << std::endl;
     }
 
     void QNode::callbackPlantar(const std_msgs::Float32MultiArray::ConstPtr& msg){
@@ -362,13 +367,15 @@ namespace afo_gui {
     }
 
     void QNode::callbackTLALeft(const std_msgs::Float32ConstPtr& msg){
+        std::cout << "CB TLAleft start" << std::endl;
         float t = ros::Time::now().toSec() - this->t_begin;
         tlaData[0] = t;
         tlaData[1] = msg->data;
-
+        std::cout << "CB TLAleft end" << std::endl;
         updateTLA();
     }
     void QNode::callbackTLARight(const std_msgs::Float32ConstPtr& msg){
+        std::cout << "CB TLA RIGHT start" << std::endl;
         return;
     }
     void QNode::callbackTLACycleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
