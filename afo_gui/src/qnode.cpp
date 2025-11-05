@@ -380,13 +380,13 @@ namespace afo_gui {
         }
         updateWOC();
     }
-    void QNode::callbackWOCLeft(const std_msgs::Flaot32MultiArray::ConstPtr& msg){
+    void QNode::callbackWOCLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
         for (int i = 1; i < 102; i++){
             wocData[0][i] = msg->data[i];
         }
         updateWOC();
     }
-    void QNode::callbackWOCRight(const std_msgs::Flaot32MultiArray::ConstPtr& msg){
+    void QNode::callbackWOCRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
         for (int i = 1; i < 102; i++){
             wocData[2][i] = msg->data[i];
         }

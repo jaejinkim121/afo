@@ -80,12 +80,13 @@ public:
     float* getPlantarData();
     float* getDorsiData();
     float* getGaitPhase();
+    float* getTLAData();
     double getMaxToeClearance(bool isLeft);
     void clearMaxToeClearance();
     double getStride();
     void clearStride();
     void getLink(double* linkX, double* linkY, double* linkZ);
-
+    void getWOCData(std::array<float, 101>* data);
 
 Q_SIGNALS:
     void rosShutdown();
@@ -96,6 +97,8 @@ Q_SIGNALS:
     void updateDorsi();
     void updateGaitPhase();
     void doneDorsiZeroing();
+    void updateTLA();
+    void updateWOC();
 
 private:
     int init_argc;
