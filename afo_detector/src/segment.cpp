@@ -81,6 +81,11 @@ ImuOptimizer::ImuOptimizer(bool isLeft){
     tla_.insert(tla_.end(), 101, 0.0);
     result_opt_.reserve(101);
     result_opt_.insert(result_opt_.end(), 101, 0.0);
+    linkLength_[0] = 0.3;
+    linkLength_[1] = 0.4;
+    linkLength_[2] = 0.4;
+    linkLength_[3] = 0.25;
+    
 
 }
 void ImuOptimizer::flush(){
@@ -163,7 +168,7 @@ void ImuOptimizer::setZero(std::array<float, 21>& d){
         zero_.value[i] = d[i];
     }
     for (int i = 0; i < 7; i++){
-        R_fromZero_[i] = AngleAxisd(d[3*i], Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1], Vector3d::UnitY()) * AngleAxisd(d[3 * i + 2], Vector3d::UnitX());
+        R_fromZero_[i] = AngleAxisd(d[3*i+2], Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1], Vector3d::UnitY()) * AngleAxisd(d[3 * i], Vector3d::UnitX());
     }
     isSetZero_ = true;
     return;
@@ -175,7 +180,7 @@ double ImuOptimizer::getTLA(std::array<float, 21>& d){
     Matrix3d R_fromData;
     std::array<Matrix3d, 7> R_;
     for (int i = 0 ; i < 7; i++){
-        R_fromData = AngleAxisd(d[3*i], Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1], Vector3d::UnitY()) * AngleAxisd(d[3 * i + 2], Vector3d::UnitX());
+        R_fromData = AngleAxisd(d[3*i + 2], Vector3d::UnitZ()) * AngleAxisd(d[3 * i + 1], Vector3d::UnitY()) * AngleAxisd(d[3 * i], Vector3d::UnitX());
         R_[i] = R_fromZero_[i] * R_fromData;
     }
     std::array<Vector3d, 7> p;
@@ -183,18 +188,18 @@ double ImuOptimizer::getTLA(std::array<float, 21>& d){
     for (int i = 1; i < 7; i++){
         p[i] = -R_[i] * Vector3d::UnitY();
     }
-    p[0] = R_[0] * Vector3d::UnitX();
+    p[0] = -R_[0] * Vector3d::UnitX();
     
     double y,z;
     y = 0;
     z = 0;
     if (isLeft_){
-        y = p[0].y() * linkLength_[0] * 0.5 + p[1].y() * linkLength_[1] + p[2].y() * linkLength_[2] - p[3].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
-        z = p[0].z() * linkLength_[0] * 0.5 + p[1].z() * linkLength_[1] + p[2].z() * linkLength_[2] - p[3].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        y = p[0].y() * linkLength_[0] * 0.5 + p[1].y() * linkLength_[1] + p[2].y() * linkLength_[2] + p[3].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        z = p[0].z() * linkLength_[0] * 0.5 + p[1].z() * linkLength_[1] + p[2].z() * linkLength_[2] + p[3].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
     }
     else{
-        y = -p[0].y() * linkLength_[0] * 0.5 + p[4].y() * linkLength_[1] + p[5].y() * linkLength_[2] - p[6].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
-        z = -p[0].z() * linkLength_[0] * 0.5 + p[4].z() * linkLength_[1] + p[5].z() * linkLength_[2] - p[6].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        y = -p[0].y() * linkLength_[0] * 0.5 + p[4].y() * linkLength_[1] + p[5].y() * linkLength_[2] + p[6].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        z = -p[0].z() * linkLength_[0] * 0.5 + p[4].z() * linkLength_[1] + p[5].z() * linkLength_[2] + p[6].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
     }
     
     return std::atan2(z,y) * 180 / 3.141592; // Unit: [degree]
