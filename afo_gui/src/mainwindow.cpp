@@ -1159,7 +1159,7 @@ void MainWindow::plotTLA(){
     appendCropQVector(&tla[0], data[1], tlaPlotMaxNum);
 //    appendCropQVector(&tla[1], data[2], tlaPlotMaxNum);
     ui->plot_TLA->xAxis->setRange(t_TLA[0], t_TLA[0] + 5.0);
-    ui->plot_TLA->yAxis->setRange(-2, 2);
+    ui->plot_TLA->yAxis->setRange(-7, 7);
     this->updatePlot(TLA);
 }
 
@@ -1416,7 +1416,7 @@ void MainWindow::updatePlot(int dataType){
 
     else if (dataType == TLA){
         ui->plot_TLA->graph(0)->setData(t_TLA, tla[0]);
-        ui->plot_TLA->graph(1)->setData(t_TLA, tla[1]);
+//        ui->plot_TLA->graph(1)->setData(t_TLA, tla[1]);
         ui->plot_TLA->replot();
     }
 

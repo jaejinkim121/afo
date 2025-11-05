@@ -118,7 +118,7 @@ private:
     int motorPlotMaxNum = 45;
     int gaitPhasePlotMaxNum = 50;
     int gaitPhasePlotMaxNum2 = 250;
-    int tlaPlotMaxNum = 45;
+    int tlaPlotMaxNum = 450;
     bool is_plot_data = false;
     bool is_plot_sole = false;
     bool is_plantar_run = false;
