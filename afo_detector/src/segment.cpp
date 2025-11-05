@@ -84,7 +84,7 @@ ImuOptimizer::ImuOptimizer(bool isLeft){
 
 }
 void ImuOptimizer::flush(){
-    q_.clear();
+    while(!q_.empty()) q_.pop();
 }
 float ImuOptimizer::push(float t, std::array<float, 21>& d){
     SampleTLA d_ = SampleTLA();

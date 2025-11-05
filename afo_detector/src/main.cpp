@@ -181,7 +181,7 @@ bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int
     float th, f;
     if (side == LEFT){
         //f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
-        f = d_soleLeft[sensorNum]
+        f = d_soleLeft[sensorNum];
         th = thLeft[isIC][sensorNum];
         if (isIC) return f >= th;
         else return f < th;
