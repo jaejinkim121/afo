@@ -1074,7 +1074,7 @@ void MainWindow::plotSoleLeft(){
     }
     ui->plot_sole_left_voltage->xAxis->setRange(t_v_l[0], t_v_l[0]+5.0);
 
-    if (is_plot_data)   this->updateSolePlot(SOLE_LEFT, data);
+//    if (is_plot_data)   this->updateSolePlot(SOLE_LEFT, data);
 
     if (!is_plot_sole) return;
     this->updatePlot(SOLE_LEFT);
@@ -1099,7 +1099,7 @@ void MainWindow::plotSoleRight(){
     }
     ui->plot_sole_right_voltage->xAxis->setRange(t_v_r[0], t_v_r[0]+5.0);
 
-    if (is_plot_data)   this->updateSolePlot(SOLE_RIGHT, data);
+//    if (is_plot_data)   this->updateSolePlot(SOLE_RIGHT, data);
 
     if (!is_plot_sole) return;
     this->updatePlot(SOLE_RIGHT);
@@ -1338,9 +1338,9 @@ void MainWindow::initPlot(){
     QCPTextElement *title_dorsi_command = new QCPTextElement(ui->plot_dorsi_command, "Dorsi", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_gaitPhase = new QCPTextElement(ui->plot_gaitPhase, "Gait Phase", QFont("sans", 16, QFont::Bold));
     QCPTextElement *title_gaitPhase2 = new QCPTextElement(ui->plot_gaitPhase_2, "Gait Phase", QFont("sans", 16, QFont::Bold));
-    QCPTextElement *title_TLA = new QCPTextElement(ui->plot_TLA, "Gait Phase", QFont("sans", 16, QFont::Bold));
-    QCPTextElement *title_optimized_control_left = new QCPTextElement(ui->plot_optimized_control_left, "Gait Phase", QFont("sans", 16, QFont::Bold));
-    QCPTextElement *title_optimized_control_right = new QCPTextElement(ui->plot_optimized_control_right, "Gait Phase", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_TLA = new QCPTextElement(ui->plot_TLA, "TLA", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_optimized_control_left = new QCPTextElement(ui->plot_optimized_control_left, "optimizer left", QFont("sans", 16, QFont::Bold));
+    QCPTextElement *title_optimized_control_right = new QCPTextElement(ui->plot_optimized_control_right, "optimizer right", QFont("sans", 16, QFont::Bold));
     
     for (int i = 0 ; i < 2; i++){
         infLineThreshold[i] = new QCPItemStraightLine(ui->plot_sole_left_voltage);

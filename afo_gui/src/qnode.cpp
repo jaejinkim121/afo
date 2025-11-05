@@ -145,10 +145,13 @@ namespace afo_gui {
     }
 
     float* QNode::getTLAData(){
+        std::cout << "getTLA Data" << std::endl;
         return this->tlaData;
     }
 
     void QNode::getWOCData(std::array<float, 101>* data){
+        
+        std::cout << "getWOC Data" << std::endl;
         data = wocData;
     }
 
@@ -369,15 +372,19 @@ namespace afo_gui {
         return;
     }
     void QNode::callbackTLACycleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        std::cout << "callbackTLACycle Left Start" << std::endl;
         for (int i = 1; i < 102; i++){
             wocData[1][i] = msg->data[i];
         }
+        std::cout << "callbackTLACycle Left End" << std::endl;
         updateWOC();
     }
     void QNode::callbackTLACycleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+        std::cout << "callbackTLACycle Right Start" << std::endl;
         for (int i = 1; i < 102; i++){
             wocData[3][i] = msg->data[i];
         }
+        std::cout << "callbackTLACycle Right End" << std::endl;
         updateWOC();
     }
     void QNode::callbackWOCLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
