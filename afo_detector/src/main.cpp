@@ -430,7 +430,10 @@ int main(int argc, char**argv)
     else affectedSide = RIGHT;
     
     for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
-    
+    std::cout << thresholdGap[0] << std::endl;
+    std::cout << thresholdGap[1] << std::endl;
+    std::cout << thresholdGap[2] << std::endl;
+    std::cout << thresholdGap[3] << std::endl;
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");
