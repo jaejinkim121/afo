@@ -153,14 +153,12 @@ bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int
     if (side == LEFT){
         f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
         th = thLeft[isIC][sensorNum];
-        std::cout << "Check Force Threshold - Left - " << f << ", " << d_soleLeft[sensorNum] << ", " << th << std::endl;
         if (isIC) return f >= th;
         else return f < th;
     }
     else {
         f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
         th = thRight[isIC][sensorNum];
-        std::cout << "Check Force Threshold - Right - " << f << ", " << d_soleRight[sensorNum] << ", " << th << std::endl;
 
         if (isIC) return f >= th;
         else return f < th;
@@ -432,6 +430,10 @@ int main(int argc, char**argv)
     else affectedSide = RIGHT;
     
     for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
+    std::cout << thresholdGap[0] << std::endl;
+    std::cout << thresholdGap[1] << std::endl;
+    std::cout << thresholdGap[2] << std::endl;
+    std::cout << thresholdGap[3] << std::endl;
     
 
     // Define ROS
