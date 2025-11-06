@@ -364,10 +364,6 @@ void loadThreshold(){
         }
     }
     
-    std::cout << thresholdGap[0] << std::endl;
-    std::cout << thresholdGap[1] << std::endl;
-    std::cout << thresholdGap[2] << std::endl;
-    std::cout << thresholdGap[3] << std::endl;
     thFile.close();
 }
 
@@ -426,7 +422,7 @@ int main(int argc, char**argv)
     for (int i = 0; i<18; i++){
         string str;
         getline(paramFile, str);
-        if (i != 13) continue;
+        if (i < 13) continue;
         params[i-13] = stof(str);
     }
 
@@ -434,10 +430,6 @@ int main(int argc, char**argv)
     else affectedSide = RIGHT;
     
     for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
-    std::cout << thresholdGap[0] << std::endl;
-    std::cout << thresholdGap[1] << std::endl;
-    std::cout << thresholdGap[2] << std::endl;
-    std::cout << thresholdGap[3] << std::endl;
     
 
     // Define ROS
