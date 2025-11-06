@@ -423,6 +423,9 @@ int main(int argc, char**argv)
 
     if (params[0] == 1.0) affectedSide = LEFT;
     else affectedSide = RIGHT;
+    std::cout << " detector affected side params - " << parmas[0]  << std::endl;
+    std::cout << " detector affected side - " <<  affectedSide << std::endl;
+    
     for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
     
 
