@@ -421,10 +421,8 @@ int main(int argc, char**argv)
         params[i-13] = stof(str);
     }
 
-    if (params[0] == 1.0) affectedSide = LEFT;
+    if (params[0] == 0.0) affectedSide = LEFT;
     else affectedSide = RIGHT;
-    std::cout << " detector affected side params - " << params[0]  << std::endl;
-    std::cout << " detector affected side - " <<  affectedSide << std::endl;
     
     for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
     
