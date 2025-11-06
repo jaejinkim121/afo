@@ -27,6 +27,7 @@ using namespace std::chrono;
 
 // #define VOLTAGE // Uncomment when you want to use voltage-based thresholding.
 
+void loadThreshold();
 
 float d_soleLeft[7];
 float f_soleLeft[7];
