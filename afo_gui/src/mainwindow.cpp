@@ -662,6 +662,7 @@ void MainWindow::toggleAffectedSide(){
     current_affected_side = 1 - current_affected_side;
     ui->horSlider_affected_side->setSliderPosition(current_affected_side);
     qnode.pubAffectedSide(current_affected_side);
+    updatePlotThreshold();
 }
 
 void MainWindow::targetLinkIdx(){
