@@ -104,6 +104,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     initSolePlot();
     toggleTrial();
     toggleTrial();
+    ui->horSlider_affected_side->setSliderPosition(current_affected_side);
     updateMaxTorqueValue(true);
     updateMaxTorqueValue(false);
     updateRiseTimeValue(true);

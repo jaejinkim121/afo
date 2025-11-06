@@ -140,6 +140,11 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
     }
     oFile.close();
 
+    thresholdSide = LEFT;
+    loadThreshold();    
+    thresholdSide = RIGHT;
+    loadThreshold();
+
 }
 
 
@@ -319,7 +324,6 @@ void loadForceCalibration(){
 		cout << "Parse failed." << endl;
 	}
 }
-
 
 void loadThreshold(){
     ifstream thFile;
