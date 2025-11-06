@@ -363,7 +363,11 @@ void loadThreshold(){
             thRight[FO][i] = stof(str) + thresholdGap[2*(affectedSide==RIGHT)];
         }
     }
-
+    
+    std::cout << thresholdGap[0] << std::endl;
+    std::cout << thresholdGap[1] << std::endl;
+    std::cout << thresholdGap[2] << std::endl;
+    std::cout << thresholdGap[3] << std::endl;
     thFile.close();
 }
 
