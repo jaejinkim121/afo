@@ -1159,13 +1159,13 @@ void MainWindow::plotTLA(){
     appendCropQVector(&tla[0], data[1], tlaPlotMaxNum);
 //    appendCropQVector(&tla[1], data[2], tlaPlotMaxNum);
     ui->plot_TLA->xAxis->setRange(t_TLA[0], t_TLA[0] + 5.0);
-    ui->plot_TLA->yAxis->setRange(-180, 180);
+    ui->plot_TLA->yAxis->setRange(-1, 1);
     this->updatePlot(TLA);
 }
 
 void MainWindow::plotWOC(){
     if (!is_plot_woc) return;
-    std::array<float, 101>* data;
+    WOCData data;
     qnode.getWOCData(data);
 
     woc_left[0].clear();
@@ -1173,6 +1173,7 @@ void MainWindow::plotWOC(){
     woc_right[0].clear();
     woc_right[1].clear();
     for (int i = 0; i < 101; i++){
+        std::cout << data[0][i] << ", " << data[1][i] << ", " << data[2][i] << ", " << data[3][i] << std::endl;
         woc_left[0].append(data[0][i]);
         woc_left[1].append(data[1][i]);
         woc_right[0].append(data[2][i]);
@@ -1320,6 +1321,10 @@ void MainWindow::initPlot(){
     ui->plot_optimized_control_right->graph(1)->setPen(pen[1]);
     ui->plot_optimized_control_right->graph(0)->setName("TLA");
     ui->plot_optimized_control_right->graph(1)->setName("WOC");
+
+    for (int i = 0; i < 101; i++){
+        t_woc.push_back(static_cast<float>(i) * 0.01);
+    }
 
     // Set plot title
     ui->plot_sole_left_voltage->plotLayout()->insertRow(0);

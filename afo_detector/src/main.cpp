@@ -96,7 +96,7 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     float t;
     t = (chrono::system_clock::now() - timeLeftSwing).count();
     std_msgs::Float32 msg_;
-    if (true) {
+    if (!leftSwing) {
         msg_.data = imuOpt_left.push(t, d_imu_angle);
         tla_left_pub.publish(msg_);
     }
@@ -176,6 +176,45 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
 
 }
 
+void callbackON(const std_msgs::BoolConstPtr& msg){
+    if (leftSwing == true) leftSwing = false;
+    else {
+        leftSwing = true;
+        imuOpt_left.cut();
+        if ((cutCntLeft == 2) && isFlush){
+            imuOpt_left.mean();
+            imuOpt_left.optimize();
+            std::vector<double> control_left;
+            std::vector<double> tla_left;
+            imuOpt_left.getResult(control_left);
+            imuOpt_left.getTLACycle(tla_left);
+            std::cout << "Result of optimization - ";
+            for (int i = 0; i < control_left.size(); i++){
+                std::cout << control_left.at(i) << ", ";
+            }
+            std::cout << std::endl;
+            std::cout << "Result of TLA - ";
+            for (int i = 0; i < tla_left.size(); i++){
+                std::cout << tla_left.at(i) << ", ";
+            }
+            std::cout << std::endl;
+            cutCntLeft = 0;
+
+            std_msgs::Float32MultiArray msg_left, msg_left_tla;
+            int length_control_left = control_left.size();
+            for (int i = 0; i < length_control_left; i++){
+                msg_left.data.push_back(control_left.at(i));
+                msg_left_tla.data.push_back(tla_left.at(i));
+            }
+            left_optimized_control_pub.publish(msg_left);
+            left_optimized_tla_pub.publish(msg_left_tla);
+        }
+        cutCntLeft++;
+    }
+}
+void callbackOFF(const std_msgs::BoolConstPtr& msg){
+    
+}
 
 bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int isIC){
     float th, f;
@@ -279,7 +318,7 @@ void gaitDetector(int* result){
                 imuOpt_left.mean();
                 imuOpt_left.optimize();
                 std::vector<double> control_left;
-                std:vector<double> tla_left;
+                std::vector<double> tla_left;
                 imuOpt_left.getResult(control_left);
                 imuOpt_left.getTLACycle(tla_left);
                 cutCntLeft = 0;
@@ -518,6 +557,8 @@ int main(int argc, char**argv)
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     imu_zero_sub = n.subscribe("/afo_gui/kinematics_zero", 1, callbackIMUZero);
     flush_sub = n.subscribe("/afo_gui/flush", 1, callbackFlush);
+    f_on = n.subscribe("/afo_gui/run_pf_mh", 1, callbackON);
+    f_off = n.subscribe("/afo_gui/run_df_mh", 1, callbackOFF);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     afo_ips_force_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_left", 100);
@@ -528,6 +569,8 @@ int main(int argc, char**argv)
     right_optimized_tla_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/tla_cycle_right", 100);
     tla_left_pub = n.advertise<std_msgs::Float32>("/afo_detector/tla_left", 100);
     tla_right_pub = n.advertise<std_msgs::Float32>("/afo_detector/tla_right", 100);
+
+
     
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
@@ -544,7 +587,7 @@ int main(int argc, char**argv)
     timeLeftSwing = system_clock::now();
     timeRightSwing = system_clock::now();
     while(ros::ok()){
-        gaitDetector(r);
+        //gaitDetector(r);
 
         if (r[0] == 1){
             msg_gait_nonparetic.data = r[2];

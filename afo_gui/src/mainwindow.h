@@ -25,6 +25,8 @@
 #define TLA 6
 #define WOCD 7
 
+using WOCData = std::array<std::array<float, 101>, 4>;
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

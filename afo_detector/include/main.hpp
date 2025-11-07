@@ -73,6 +73,7 @@ ros::Subscriber afo_affected_side_sub;
 ros::Subscriber afo_threshold_gap_sub;
 ros::Subscriber imu_zero_sub;
 ros::Subscriber flush_sub;
+ros::Subscriber f_on, f_off;
 
 ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
