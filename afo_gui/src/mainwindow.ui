@@ -1573,25 +1573,6 @@ Side</string>
        <string>Forced Trigger</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="button_run_pf_mh">
-      <property name="geometry">
-       <rect>
-        <x>730</x>
-        <y>20</y>
-        <width>141</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Run PF MH</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="button_run_df_mh">
       <property name="geometry">
        <rect>
@@ -1942,6 +1923,26 @@ ON/OFF</string>
         <width>441</width>
         <height>191</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="button_run_pf_mh">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>240</y>
+        <width>111</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Toggle
+ left event</string>
       </property>
      </widget>
     </widget>
