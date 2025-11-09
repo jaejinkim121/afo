@@ -240,9 +240,11 @@ void gaitDetector(int* result){
     }
     else{
         if (checkForceThreshold(LEFT, 1, FO) & checkForceThreshold(LEFT, 3, FO)){
-            leftSwing = true;
-            leftToeOff = true;
-            timeLeftSwing = system_clock::now();
+            if ((!HEELOFF) || checkForceThreshold(LEFT, 5, FO)){
+                leftSwing = true;
+                leftToeOff = true;
+                timeLeftSwing = system_clock::now();
+            }
         }
     }
     
@@ -263,9 +265,11 @@ void gaitDetector(int* result){
     }
     else{
         if (checkForceThreshold(RIGHT, 1, FO) & checkForceThreshold(RIGHT, 3, FO)){
-            rightSwing = true;
-            rightToeOff = true;
-            timeRightSwing = system_clock::now();
+            if ((!HEELOFF) || checkForceThreshold(RIGHT, 5, FO)){
+                rightSwing = true;
+                rightToeOff = true;
+                timeRightSwing = system_clock::now();
+            }
         }
     }
 

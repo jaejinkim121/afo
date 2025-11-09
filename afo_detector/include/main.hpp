@@ -24,7 +24,7 @@ using namespace std::chrono;
 #define IC 1
 #define LEFT true
 #define RIGHT false
-
+#define HEELOFF true
 // #define VOLTAGE // Uncomment when you want to use voltage-based thresholding.
 
 void loadThreshold();
