@@ -114,16 +114,14 @@ void callbackUpdateThreshold(const std_msgs::BoolConstPtr& msg){
     return;
 }
 
-
-
 void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 5; i++){
         thresholdGap[i] = msg->data[i];
     }
 
     ifstream iFile;
     ofstream oFile;
-    float params[18];
+    float params[19];
     iFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
     for (int i = 0; i<14; i++){
         string str;
@@ -131,11 +129,11 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
         params[i] = stof(str);
     }
     iFile.close();
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 5; i++){
         params[14+i] = thresholdGap[i];
     }
     oFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-    for (int i = 0; i<18;i++){
+    for (int i = 0; i<19;i++){
         oFile << params[i] << endl;
     }
     oFile.close();
@@ -240,9 +238,11 @@ void gaitDetector(int* result){
     }
     else{
         if (checkForceThreshold(LEFT, 1, FO) & checkForceThreshold(LEFT, 3, FO)){
-            leftSwing = true;
-            leftToeOff = true;
-            timeLeftSwing = system_clock::now();
+            if ((!HEELOFF) || checkForceThreshold(LEFT, 5, FO)){
+                leftSwing = true;
+                leftToeOff = true;
+                timeLeftSwing = system_clock::now();
+            }
         }
     }
     
@@ -263,9 +263,11 @@ void gaitDetector(int* result){
     }
     else{
         if (checkForceThreshold(RIGHT, 1, FO) & checkForceThreshold(RIGHT, 3, FO)){
-            rightSwing = true;
-            rightToeOff = true;
-            timeRightSwing = system_clock::now();
+            if ((!HEELOFF) || checkForceThreshold(RIGHT, 5, FO)){
+                rightSwing = true;
+                rightToeOff = true;
+                timeRightSwing = system_clock::now();
+            }
         }
     }
 
@@ -310,14 +312,14 @@ void loadForceCalibration(){
         // RIGHT Loading
         for (int i=0; i<=5; i++){
             for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[RIGHT][i][j] = value["ight"]["alpha"][to_string(i+1)][j].asDouble();
+                ipsCalibrationDataAlpha[RIGHT][i][j] = value["Right"]["alpha"][to_string(i+1)][j].asDouble();
             }
             
             for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[RIGHT][i][j] = value["ight"]["breakpoint"][to_string(i+1)][j].asDouble();
+                ipsCalibrationDataBP[RIGHT][i][j] = value["Right"]["breakpoint"][to_string(i+1)][j].asDouble();
             }
 
-            ipsCalibrationDataConstant[RIGHT][i]= value["ight"]["constant"][to_string(i+1)].asDouble();
+            ipsCalibrationDataConstant[RIGHT][i]= value["Right"]["constant"][to_string(i+1)].asDouble();
         }
 	}
 	else
@@ -355,11 +357,13 @@ void loadThreshold(){
         string str;
         getline(thFile, str);
         if (side == LEFT){
-            thLeft[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==LEFT)];
+            if (i == 5) thLeft[IC][i] = stof(str) + thresholdGap[4];
+            else thLeft[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==LEFT)];
             thLeft[FO][i] = stof(str) + thresholdGap[2*(affectedSide==LEFT)];
         }
         else{
-            thRight[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==RIGHT)];
+            if (i==5) thRight[IC][i] = stof(str) + thresholdGap[4];
+            else thRight[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==RIGHT)];
             thRight[FO][i] = stof(str) + thresholdGap[2*(affectedSide==RIGHT)];
         }
     }
@@ -429,7 +433,7 @@ int main(int argc, char**argv)
     if (params[0] == 0.0) affectedSide = LEFT;
     else affectedSide = RIGHT;
     
-    for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
+    for (int i = 0; i < 5; i++) thresholdGap[i] = params[i+1];
     std::cout << thresholdGap[0] << std::endl;
     std::cout << thresholdGap[1] << std::endl;
     std::cout << thresholdGap[2] << std::endl;

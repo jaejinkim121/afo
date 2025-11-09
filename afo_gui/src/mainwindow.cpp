@@ -32,6 +32,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_set_cycle_time, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_pic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_set_hic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_nfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_nic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_threshold, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -206,7 +207,10 @@ void MainWindow::buttonClicked(){
         this->setPIC();
         this->updateParameterFile();
     }
-
+    else if (state == "button_set_hic"){
+        this->setHIC();
+        this->updateParameterFile();
+    }
     else if (state == "button_set_nfo"){
         this->setNFO();
         this->updateParameterFile();
@@ -587,6 +591,21 @@ void MainWindow::setPFO(){
     std::string s = "PFO\n";
     s.append(CutOnDecimalPt(std::to_string(threshold[2]), 2));
     ui->button_set_pfo->setText(QString::fromStdString(s));
+}
+void MainWindow::setHIC(){
+    float t = 1;
+    try{
+        t = stof(ui->text_target_parameter->toPlainText().toStdString());
+        threshold[4] = t;
+
+        ui->text_target_parameter->clear();
+        }
+    catch(...){
+        updateLog("Target is empty");
+    }
+    std::string s = "HIC\n";
+    s.append(CutOnDecimalPt(std::to_string(threshold[4]), 2));
+    ui->button_set_hic->setText(QString::fromStdString(s));
 }
 
 void MainWindow::setPIC(){
@@ -997,7 +1016,8 @@ void MainWindow::updateParameterFile(){
     << threshold[0] << "\n"
     << threshold[1] << "\n"
     << threshold[2] << "\n"
-    << threshold[3] << "\n";
+    << threshold[3] << "\n"
+    << threshold[4];
     f.close();
 }
 
@@ -1005,8 +1025,8 @@ void MainWindow::loadParameterFile(){
     std::ifstream f("/home/afo/catkin_ws/src/afo/parameter_list.csv");
 
     std::string str;
-    float params[18];
-    for (int i = 0; i<18;i++){
+    float params[19];
+    for (int i = 0; i<19;i++){
         getline(f, str);
         params[i] = stof(str);
     }
@@ -1028,6 +1048,7 @@ void MainWindow::loadParameterFile(){
     threshold[1] = params[15];
     threshold[2] = params[16];
     threshold[3] = params[17];
+    threshold[4] = params[18];
 
     f.close();
 }
