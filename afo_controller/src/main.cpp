@@ -633,7 +633,6 @@ void terminateMotor(int sig)
     exit(0);
 }
 
-
 /*
 ** Program entry.
 ** Pass the path to the setup.yaml file as first command line argument.
@@ -648,6 +647,31 @@ int main(int argc, char**argv)
     n.getParam("/rr", rr);
     n.getParam("/afo_controller/configPath", configPath);
     ros::Rate loop_rate(rr);
+
+    ifstream paramFile;
+    paramFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
+    float params[13];
+
+    for (int i = 0; i<13; i++){
+        string str;
+        getline(paramFile, str);
+        params[i] = stof(str);
+    }
+    paramFile.close();
+    maxTorquePlantar = params[0];
+    maxTorqueDorsi = params[1];
+    startTimePF = params[2];
+    riseTimePF = params[3];
+    fallTimePF = params[4];
+    flatTimePF = params[5];
+    endTimePF = startTimePF + riseTimePF + fallTimePF + flatTimePF;
+    startTimeDF = params[6];
+    riseTimeDF = params[7];
+    fallTimeDF = params[8];
+    stance_time = params[9];
+    plantarPreTension = params[10];
+    dorsiPreTension = params[11];
+    cycleTime = params[12] * pow(10,6);
 
     // ros::Subscriber afo_gaitPhaseAffected = n.subscribe("/afo_predictor/gaitEventAffected", 1, callbackGaitPhaseAffected);
     // ros::Subscriber afo_gaitPhaseNonAffected = n.subscribe("/afo_predictor/gaitEventNonAffected", 1, callbackGaitPhaseNonAffected);

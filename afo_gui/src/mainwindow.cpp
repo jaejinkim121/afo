@@ -119,6 +119,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     setPIC();
     setNFO();
     setNIC();
+    setHIC();
 }
 
 MainWindow::~MainWindow()
