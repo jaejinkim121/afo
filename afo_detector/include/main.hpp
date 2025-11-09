@@ -40,7 +40,7 @@ bool leftSwing, rightSwing;
 bool affectedSide;
 bool leftToeOff, rightToeOff;
 
-float thresholdGap[4];
+float thresholdGap[5];
 float thLeft[2][6];
 float thRight[2][6];
 float meanLeft[6];
