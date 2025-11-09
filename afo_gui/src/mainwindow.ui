@@ -1028,7 +1028,7 @@ qproperty-alignment: AlignCenter;
 Paretic</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="button_set_phic">
+       <widget class="QPushButton" name="button_set_hic">
         <property name="geometry">
          <rect>
           <x>340</x>
