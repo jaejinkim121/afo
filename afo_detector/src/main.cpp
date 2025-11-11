@@ -357,7 +357,7 @@ void loadThreshold(){
         string str;
         getline(thFile, str);
         if (side == LEFT){
-            if (i == 5) {
+            if (i == 5 && (affectedSide==LEFT)) {
                 thLeft[IC][i] = stof(str) + thresholdGap[4];
                 thLeft[FO][i] = stof(str) + thresholdGap[5];
             }
@@ -367,7 +367,7 @@ void loadThreshold(){
             }
         }
         else{
-            if (i==5) {
+            if ((i==5) && (affectedSide==RIGHT)) {
                 thRight[IC][i] = stof(str) + thresholdGap[4];
                 thRight[FO][i] = stof(str) + thresholdGap[5];
             }
