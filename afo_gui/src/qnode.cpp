@@ -411,7 +411,7 @@ namespace afo_gui {
     
     void QNode::pubThresholdGap(float* threshold){
         std_msgs::Float32MultiArray m;
-        for (int i = 0; i < 5; i++){
+        for (int i = 0; i < 6; i++){
             m.data.push_back(threshold[i]);
         }
         afo_gui_threshold_gap_pub.publish(m);

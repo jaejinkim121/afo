@@ -115,7 +115,7 @@ void callbackUpdateThreshold(const std_msgs::BoolConstPtr& msg){
 }
 
 void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
-    for (int i = 0; i < 5; i++){
+    for (int i = 0; i < 6; i++){
         thresholdGap[i] = msg->data[i];
     }
 
@@ -129,11 +129,11 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
         params[i] = stof(str);
     }
     iFile.close();
-    for (int i = 0; i < 5; i++){
+    for (int i = 0; i < 6; i++){
         params[14+i] = thresholdGap[i];
     }
     oFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-    for (int i = 0; i<19;i++){
+    for (int i = 0; i<20;i++){
         oFile << params[i] << endl;
     }
     oFile.close();
@@ -357,14 +357,24 @@ void loadThreshold(){
         string str;
         getline(thFile, str);
         if (side == LEFT){
-            if (i == 5) thLeft[IC][i] = stof(str) + thresholdGap[4];
-            else thLeft[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==LEFT)];
-            thLeft[FO][i] = stof(str) + thresholdGap[2*(affectedSide==LEFT)];
+            if (i == 5) {
+                thLeft[IC][i] = stof(str) + thresholdGap[4];
+                thLeft[FO][i] = stof(str) + thresholdGap[5];
+            }
+            else {
+                thLeft[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==LEFT)];
+                thLeft[FO][i] = stof(str) + thresholdGap[2*(affectedSide==LEFT)];
+            }
         }
         else{
-            if (i==5) thRight[IC][i] = stof(str) + thresholdGap[4];
-            else thRight[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==RIGHT)];
-            thRight[FO][i] = stof(str) + thresholdGap[2*(affectedSide==RIGHT)];
+            if (i==5) {
+                thRight[IC][i] = stof(str) + thresholdGap[4];
+                thRight[FO][i] = stof(str) + thresholdGap[5];
+            }
+            else {
+                thRight[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==RIGHT)];
+                thRight[FO][i] = stof(str) + thresholdGap[2*(affectedSide==RIGHT)];
+            }
         }
     }
     
@@ -421,9 +431,9 @@ int main(int argc, char**argv)
     // Load affected side & thresholdGap
     ifstream paramFile;
     paramFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-    float params[5];
+    float params[6];
 
-    for (int i = 0; i<18; i++){
+    for (int i = 0; i<20; i++){
         string str;
         getline(paramFile, str);
         if (i < 13) continue;
@@ -433,11 +443,7 @@ int main(int argc, char**argv)
     if (params[0] == 0.0) affectedSide = LEFT;
     else affectedSide = RIGHT;
     
-    for (int i = 0; i < 5; i++) thresholdGap[i] = params[i+1];
-    std::cout << thresholdGap[0] << std::endl;
-    std::cout << thresholdGap[1] << std::endl;
-    std::cout << thresholdGap[2] << std::endl;
-    std::cout << thresholdGap[3] << std::endl;
+    for (int i = 0; i < 6; i++) thresholdGap[i] = params[i+1];
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");

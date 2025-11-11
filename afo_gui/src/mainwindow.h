@@ -44,10 +44,11 @@ public:
     void setCycleTime();
     void setLinkLength();
     void setPFO();
-    void setHIC();
     void setPIC();
     void setNFO();
     void setNIC();
+    void setHIC();
+    void setHFO();
     void setThreshold();
     void updatePlotThreshold();
     void toggleAffectedSide();
@@ -140,7 +141,7 @@ private:
     double flat_time[2] = {0.1, 0.0};
     double trigger_time[2] = {0.2, 0.05};
     double pre_tension[2] = {0.02, 0.02};
-    float threshold[5] = {3, 6, 3, 6, 10};
+    float threshold[6] = {3, 6, 3, 6, 8.0, 5.0};
     
 //    float threshold[4] = {0.01, 0.02, 0.01, 0.02};
 
