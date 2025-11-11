@@ -628,7 +628,7 @@ void MainWindow::setHFO(){
     }
     std::string s = "HFO\n";
     s.append(CutOnDecimalPt(std::to_string(threshold[5]), 2));
-    ui->button_set_hic->setText(QString::fromStdString(s));
+    ui->button_set_hfo->setText(QString::fromStdString(s));
 }
 void MainWindow::setPIC(){
     float t = 1;
