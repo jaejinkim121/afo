@@ -28,8 +28,11 @@ using namespace std::chrono;
 #define IC 1
 #define LEFT true
 #define RIGHT false
-
+#define HEELOFF true
 // #define VOLTAGE // Uncomment when you want to use voltage-based thresholding.
+
+void loadThreshold();
+
 float d_soleLeft[7];
 float f_soleLeft[7];
 float d_soleRight[7];
@@ -42,7 +45,7 @@ bool affectedSide;
 bool leftToeOff, rightToeOff;
 bool isFlush = false;
 
-float thresholdGap[4];
+float thresholdGap[6];
 float thLeft[2][6];
 float thRight[2][6];
 float meanLeft[6];

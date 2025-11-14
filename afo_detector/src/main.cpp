@@ -151,13 +151,13 @@ void callbackFlush(const std_msgs::BoolConstPtr& msg){
 }
 
 void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 6; i++){
         thresholdGap[i] = msg->data[i];
     }
 
     ifstream iFile;
     ofstream oFile;
-    float params[18];
+    float params[19];
     iFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
     for (int i = 0; i<14; i++){
         string str;
@@ -165,14 +165,19 @@ void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
         params[i] = stof(str);
     }
     iFile.close();
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 6; i++){
         params[14+i] = thresholdGap[i];
     }
     oFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-    for (int i = 0; i<18;i++){
+    for (int i = 0; i<20;i++){
         oFile << params[i] << endl;
     }
     oFile.close();
+
+    thresholdSide = LEFT;
+    loadThreshold();    
+    thresholdSide = RIGHT;
+    loadThreshold();
 
 }
 
@@ -229,6 +234,7 @@ bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int
         //f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
         f = d_soleRight[sensorNum];
         th = thRight[isIC][sensorNum];
+
         if (isIC) return f >= th;
         else return f < th;
     }
@@ -309,28 +315,30 @@ void gaitDetector(int* result){
     }
     else{
         if (checkForceThreshold(LEFT, 1, FO) & checkForceThreshold(LEFT, 3, FO)){
-            leftSwing = true;
-            leftToeOff = true;
-            timeLeftSwing = system_clock::now();
-            imuOpt_left.cut();
-            cutCntLeft++;
-            if ((cutCntLeft == 5) && isFlush){
-                imuOpt_left.mean();
-                imuOpt_left.optimize();
-                std::vector<double> control_left;
-                std::vector<double> tla_left;
-                imuOpt_left.getResult(control_left);
-                imuOpt_left.getTLACycle(tla_left);
-                cutCntLeft = 0;
+            if ((!HEELOFF) || checkForceThreshold(LEFT, 5, FO)){
+                leftSwing = true;
+                leftToeOff = true;
+                timeLeftSwing = system_clock::now();
+                imuOpt_left.cut();
+                cutCntLeft++;
+                if ((cutCntLeft == 5) && isFlush){
+                    imuOpt_left.mean();
+                    imuOpt_left.optimize();
+                    std::vector<double> control_left;
+                    std::vector<double> tla_left;
+                    imuOpt_left.getResult(control_left);
+                    imuOpt_left.getTLACycle(tla_left);
+                    cutCntLeft = 0;
 
-                std_msgs::Float32MultiArray msg_left, msg_left_tla;
-                int length_control_left = control_left.size();
-                for (int i = 0; i < length_control_left; i++){
-                    msg_left.data.push_back(control_left.at(i));
-                    msg_left_tla.data.push_back(tla_left.at(i));
+                    std_msgs::Float32MultiArray msg_left, msg_left_tla;
+                    int length_control_left = control_left.size();
+                    for (int i = 0; i < length_control_left; i++){
+                        msg_left.data.push_back(control_left.at(i));
+                        msg_left_tla.data.push_back(tla_left.at(i));
+                    }
+                    left_optimized_control_pub.publish(msg_left);
+                    left_optimized_tla_pub.publish(msg_left_tla);
                 }
-                left_optimized_control_pub.publish(msg_left);
-                left_optimized_tla_pub.publish(msg_left_tla);
             }
         }
     }
@@ -352,28 +360,30 @@ void gaitDetector(int* result){
     }
     else{
         if (checkForceThreshold(RIGHT, 1, FO) & checkForceThreshold(RIGHT, 3, FO)){
-            rightSwing = true;
-            rightToeOff = true;
-            timeRightSwing = system_clock::now();
-            imuOpt_right.cut();
-            cutCntRight++;
-            if ((cutCntRight == 5) && isFlush){
-                imuOpt_right.mean();
-                imuOpt_right.optimize();
-                std::vector<double> control_right;
-                std::vector<double> tla_right;
-                imuOpt_right.getResult(control_right);
-                imuOpt_right.getTLACycle(tla_right);
-                cutCntRight = 0;
+            if ((!HEELOFF) || checkForceThreshold(RIGHT, 5, FO)){
+                rightSwing = true;
+                rightToeOff = true;
+                timeRightSwing = system_clock::now();
+                imuOpt_right.cut();
+                cutCntRight++;
+                if ((cutCntRight == 5) && isFlush){
+                    imuOpt_right.mean();
+                    imuOpt_right.optimize();
+                    std::vector<double> control_right;
+                    std::vector<double> tla_right;
+                    imuOpt_right.getResult(control_right);
+                    imuOpt_right.getTLACycle(tla_right);
+                    cutCntRight = 0;
 
-                std_msgs::Float32MultiArray msg_right, msg_right_tla;
-                int length_control_right = control_right.size();
-                for (int i = 0; i < length_control_right; i++){
-                    msg_right.data.push_back(control_right.at(i));
-                    msg_right_tla.data.push_back(tla_right.at(i));
+                    std_msgs::Float32MultiArray msg_right, msg_right_tla;
+                    int length_control_right = control_right.size();
+                    for (int i = 0; i < length_control_right; i++){
+                        msg_right.data.push_back(control_right.at(i));
+                        msg_right_tla.data.push_back(tla_right.at(i));
+                    }
+                    right_optimized_control_pub.publish(msg_right);
+                    right_optimized_tla_pub.publish(msg_right_tla);
                 }
-                right_optimized_control_pub.publish(msg_right);
-                right_optimized_tla_pub.publish(msg_right_tla);
             }
         }
     }
@@ -419,14 +429,14 @@ void loadForceCalibration(){
         // RIGHT Loading
         for (int i=0; i<=5; i++){
             for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[RIGHT][i][j] = value["ight"]["alpha"][to_string(i+1)][j].asDouble();
+                ipsCalibrationDataAlpha[RIGHT][i][j] = value["Right"]["alpha"][to_string(i+1)][j].asDouble();
             }
             
             for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[RIGHT][i][j] = value["ight"]["breakpoint"][to_string(i+1)][j].asDouble();
+                ipsCalibrationDataBP[RIGHT][i][j] = value["Right"]["breakpoint"][to_string(i+1)][j].asDouble();
             }
 
-            ipsCalibrationDataConstant[RIGHT][i]= value["ight"]["constant"][to_string(i+1)].asDouble();
+            ipsCalibrationDataConstant[RIGHT][i]= value["Right"]["constant"][to_string(i+1)].asDouble();
         }
 	}
 	else
@@ -434,7 +444,6 @@ void loadForceCalibration(){
 		cout << "Parse failed." << endl;
 	}
 }
-
 
 void loadThreshold(){
     ifstream thFile;
@@ -465,15 +474,27 @@ void loadThreshold(){
         string str;
         getline(thFile, str);
         if (side == LEFT){
-            thLeft[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==LEFT)];
-            thLeft[FO][i] = stof(str) + thresholdGap[2*(affectedSide==LEFT)];
+            if (i == 5 && (affectedSide==LEFT)) {
+                thLeft[IC][i] = stof(str) + thresholdGap[4];
+                thLeft[FO][i] = stof(str) + thresholdGap[5];
+            }
+            else {
+                thLeft[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==LEFT)];
+                thLeft[FO][i] = stof(str) + thresholdGap[2*(affectedSide==LEFT)];
+            }
         }
         else{
-            thRight[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==RIGHT)];
-            thRight[FO][i] = stof(str) + thresholdGap[2*(affectedSide==RIGHT)];
+            if ((i==5) && (affectedSide==RIGHT)) {
+                thRight[IC][i] = stof(str) + thresholdGap[4];
+                thRight[FO][i] = stof(str) + thresholdGap[5];
+            }
+            else {
+                thRight[IC][i] = stof(str) + thresholdGap[1+2*(affectedSide==RIGHT)];
+                thRight[FO][i] = stof(str) + thresholdGap[2*(affectedSide==RIGHT)];
+            }
         }
     }
-
+    
     thFile.close();
 }
 
@@ -527,19 +548,19 @@ int main(int argc, char**argv)
     // Load affected side & thresholdGap
     ifstream paramFile;
     paramFile.open("/home/afo/catkin_ws/src/afo/parameter_list.csv");
-    float params[5];
+    float params[6];
 
-    for (int i = 0; i<18; i++){
+    for (int i = 0; i<20; i++){
         string str;
         getline(paramFile, str);
-        if (i != 13) continue;
+        if (i < 13) continue;
         params[i-13] = stof(str);
     }
 
     // if (params[0] == 1.0) affectedSide = LEFT;
     // else affectedSide = RIGHT;
-    for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
-    affectedSide = LEFT; // For both-side control, always LEFT is considered as PARETIC.
+    affectedSide = LEFT; // For both-side control, always LEFT is considered as PARETIC.    
+    for (int i = 0; i < 6; i++) thresholdGap[i] = params[i+1];
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");
