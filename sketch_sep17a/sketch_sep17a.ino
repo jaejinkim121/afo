@@ -9,35 +9,13 @@ bool flagSwitch = true;
 int pinIn = A0;
 int pinIn2 = A1;
 int valA = 0;
-<<<<<<< HEAD
-int valArray[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-=======
 int valB = 0;
 int valArray[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int syncArray[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
->>>>>>> main
 std_msgs::Int16MultiArray msg_val;
 std_msgs::Int16MultiArray msg_sync;
 ros::Publisher pub_val("/afo_arduino/analog_val", &msg_val);
-<<<<<<< HEAD
-
-
-bool flagSwitch = true;
-
-volatile int lastEncoded = 0;
-volatile long encoderValue = 0;
-
-int encoderPin1 = 2;
-int encoderPin2 = 3;
-
-int lastencoderValue = 0;
-
-int lastMSB = 0;
-int lastLSB = 0;
-
-=======
 ros::Publisher pub_sync("/afo_arduino/sync_val", &msg_sync);
->>>>>>> main
 Thread receiveThread = Thread();
 Thread pubThread = Thread();
 ThreadController threadControl = ThreadController();
