@@ -497,10 +497,10 @@ int main(int argc, char**argv)
         params[i-13] = stof(str);
     }
 
-    if (params[0] == 1.0) affectedSide = LEFT;
-    else affectedSide = RIGHT;
+    // if (params[0] == 1.0) affectedSide = LEFT;
+    // else affectedSide = RIGHT;
     for (int i = 0; i < 4; i++) thresholdGap[i] = params[i+1];
-    
+    affectedSide = LEFT; // For both-side control, always LEFT is considered as PARETIC.
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");

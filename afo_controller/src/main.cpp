@@ -8,6 +8,97 @@ double cubic(double init_time, double final_time, double current_time){
     double t = (current_time - init_time) / duration;
     return 3 * pow(t,2) - 2 * pow(t,3);
 }
+
+double pathPlannerPareticWOC(){
+    auto time = high_resolution_clock::now();
+
+    double currentCyclePercentage;
+    duration<double, micro> currentTimeGap = time - timeIC;
+    duration<double, micro> eventGap;
+    
+    currentCyclePercentage = (currentTimeGap.count()) / (cycleTime * stance_time);    // 
+    
+    // left control is an array that has 101-element which represents 0 to 1 time scale control input
+    // If current t < 1, interpolated control input must be calculated.
+    // Else, control input is zero.
+
+    if (currentCyclePercentage <= 0.0) {
+        plantarTorque = pareticControl[0];
+    }
+    else if (currentCyclePercentage >= 1.0) {
+        plantarToruqe = pareticControl[100];
+    }
+    else{
+        const double tableMaxIndex = static_cast<double>(leftControl.size() - 1); // 100
+        double idx = currentCyclePercentage * tableMaxIndex; // 0~100 실수 인덱스
+
+        // 3) 선형 보간을 위한 아래/위 인덱스와 보간 비율
+        std::size_t i0 = static_cast<std::size_t>(idx); // floor
+        std::size_t i1 = i0 + 1;
+
+        // 혹시나 방어적 코드 (idx가 딱 100인 특이 케이스)
+        if (i1 >= leftControl.size()) {
+            plantarTorque = pareticControl[100];
+        }
+
+        double frac = idx - static_cast<double>(i0); // 0~1 사이
+
+        // 4) 선형 보간
+        double u0 = pareticControl[i0];
+        double u1 = pareticControl[i1];
+
+        plantarTorque = u0 + frac * (u1 - u0);
+    }
+    
+    plantarTorque = min(max(plantarTorque, 0.0), 1.0);
+    return currentCyclePercentage;
+}
+
+double pathPlannerNonPareticWOC(){
+    auto time = high_resolution_clock::now();
+
+    double currentCyclePercentage;
+    duration<double, micro> currentTimeGap = time - timeNIC;
+    duration<double, micro> eventGap;
+    
+    currentCyclePercentage = (currentTimeGap.count()) / (cycleTime * stance_time);    // 
+    
+    // left control is an array that has 101-element which represents 0 to 1 time scale control input
+    // If current t < 1, interpolated control input must be calculated.
+    // Else, control input is zero.
+
+    if (currentCyclePercentage <= 0.0) {
+        dorsiTorque = nonPareticControl[0];
+    }
+    else if (currentCyclePercentage >= 1.0) {
+        dorsiToruqe = nonPareticControl[100];
+    }
+    else{
+        const double tableMaxIndex = static_cast<double>(nonPareticControl.size() - 1); // 100
+        double idx = currentCyclePercentage * tableMaxIndex; // 0~100 실수 인덱스
+
+        // 3) 선형 보간을 위한 아래/위 인덱스와 보간 비율
+        std::size_t i0 = static_cast<std::size_t>(idx); // floor
+        std::size_t i1 = i0 + 1;
+
+        // 혹시나 방어적 코드 (idx가 딱 100인 특이 케이스)
+        if (i1 >= nonPareticControl.size()) {
+            dorsiTorque = nonPareticControl[100];
+        }
+
+        double frac = idx - static_cast<double>(i0); // 0~1 사이
+
+        // 4) 선형 보간
+        double u0 = nonPareticControl[i0];
+        double u1 = nonPareticControl[i1];
+
+        dorsiTorque = u0 + frac * (u1 - u0);
+    }
+    
+    dorsiTorque = min(max(dorsiTorque, 0.0), 1.0);
+    return currentCyclePercentage;
+}
+
 double pathPlannerPF_MH(){
     auto time = high_resolution_clock::now();
     duration<double, micro> currentTimeGap = time - timeCuePF;
@@ -49,18 +140,18 @@ double pathPlannerDF_MH(){
 }
 
 double pathPlannerPlantarflexion(){
-     auto time = high_resolution_clock::now();
+    auto time = high_resolution_clock::now();
 
-     if (forced_trigger){
-        duration<double, micro> forcedTriggerTimeGap = time - timeFT;
-        if (forcedTriggerTimeGap.count() > cycleTime) {
-            timeFT = time;
-             timeIC = timeFT;
-         }
-         if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
-             if (timeFO < timeIC) timeFO = time;
-         }
-     }
+    if (forced_trigger){
+    duration<double, micro> forcedTriggerTimeGap = time - timeFT;
+    if (forcedTriggerTimeGap.count() > cycleTime) {
+        timeFT = time;
+            timeIC = timeFT;
+        }
+        if (forcedTriggerTimeGap.count() > cycleTime * stance_time){
+            if (timeFO < timeIC) timeFO = time;
+        }
+    }
     double currentCyclePercentage;
     duration<double, micro> currentTimeGap = time - timeIC;
     duration<double, micro> eventGap;
@@ -178,7 +269,17 @@ void callbackGaitPhase(const std_msgs::Int16MultiArray::ConstPtr& msg){
     }
     
 }
+void callbackUpdateControlLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    for (int i = 0; i < 101; i++){
+        pareticControl[i] = msg->data[i];
+    }
+}
 
+void callbackUpdateControlRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    for (int i = 0; i < 101; i++){
+        nonPareticControl[i] = msg->data[i];
+    }
+}
 void callbackGaitPhaseAffected(const std_msgs::Int16ConstPtr& msg){
     if (msg->data == 1){
         timeIC = high_resolution_clock::now();
@@ -203,6 +304,9 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
 }
     else if (msg->data != 1){
         std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;        
+    }
+    else if (msg->data == 1){
+        timeNIC = high_resolution_clock::now():
     }
 
     setGaitEventNonAffected = true;
@@ -487,7 +591,7 @@ void worker()
                     // CONTROL LOOP MAIN BODY
                     if (slave->getName() == "Plantar"){
                         if (setGaitEventNonAffected && setGaitEventAffected){
-                            currentTimePercentage = pathPlannerPlantarflexion();
+                            currentTimePercentage = pathPlannerPareticWOC();
                         }
                         if (setPF_cue_MH){
                             pathPlannerPF_MH();
@@ -525,7 +629,7 @@ void worker()
                     }
                     else if (slave->getName() == "Dorsi"){
                         if (setGaitEventNonAffected && setGaitEventAffected){
-                            currentTimePercentage = pathPlannerDorsiflexion(reading);
+                            currentTimePercentage = pathPlannerNonPareticWOC();
                         }
                         if (setDF_cue_MH){
                             pathPlannerDF_MH();
@@ -658,11 +762,13 @@ int main(int argc, char**argv)
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
-ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_trigger_time", 1, callbackPlantarTriggerTime);
+    ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_trigger_time", 1, callbackPlantarTriggerTime);
     afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
     afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
     afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
     afo_gui_forced_trigger = n.subscribe("/afo_gui/forced_trigger", 1, callbackForcedTrigger);
+    optimized_control_left_sub = n.subscribe("/afo_detector/left_optimized_control", 1, callbackUpdateControlLeft);
+    optimized_control_right_sub = n.subscribe("/afo_detector/right_optimized_control", 1, callbackUpdateControlRight);    
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);

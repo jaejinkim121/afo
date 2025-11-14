@@ -47,7 +47,7 @@ int dorsiTorqueDir = 1;
 bool isPlantar, isDorsi;
 bool setDF_cue_MH, setPF_cue_MH;
 
-system_clock::time_point timeIC, timeOFO, timeFO, timeCuePF, timeCueDF;
+system_clock::time_point timeIC, timeNIC, timeOFO, timeFO, timeCuePF, timeCueDF;
 system_clock::time_point timeFT;
 
 int dorsiBufferFlushingIndex = 0;
@@ -57,6 +57,8 @@ int controlMode = PRE;
 bool plantarRun, dorsiRun;
 
 //
+double pareticControl[101];
+double nonPareticControl[101];
 
 // Communication param.
 int etherCatCommunicationRate = 5500; // us
@@ -102,6 +104,7 @@ ros::Subscriber afo_gui_mh_df_run;
 ros::Subscriber afo_gui_mh_pf_run;
 ros::Subscriber afo_gui_forced_trigger;
 ros::Subscriber afo_mw_forced_trigger;
+ros::Subscriber optimized_control_left_sub, optimized_control_right_sub;
 
 ros::Publisher afo_motor_data_plantar;
 ros::Publisher afo_motor_data_dorsi;
