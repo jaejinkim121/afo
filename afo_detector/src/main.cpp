@@ -320,8 +320,7 @@ void gaitDetector(int* result){
                 leftToeOff = true;
                 timeLeftSwing = system_clock::now();
                 imuOpt_left.cut();
-                cutCntLeft++;
-                if ((cutCntLeft == 5) && isFlush){
+                if ((cutCntLeft++ == 5) && isFlush){
                     imuOpt_left.mean();
                     imuOpt_left.optimize();
                     std::vector<double> control_left;
@@ -365,8 +364,7 @@ void gaitDetector(int* result){
                 rightToeOff = true;
                 timeRightSwing = system_clock::now();
                 imuOpt_right.cut();
-                cutCntRight++;
-                if ((cutCntRight == 5) && isFlush){
+                if ((cutCntRight++ == 5) && isFlush){
                     imuOpt_right.mean();
                     imuOpt_right.optimize();
                     std::vector<double> control_right;

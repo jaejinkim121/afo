@@ -26,10 +26,10 @@ double pathPlannerPareticWOC(){
         plantarTorque = pareticControl[0];
     }
     else if (currentCyclePercentage >= 1.0) {
-        plantarToruqe = pareticControl[100];
+        plantarTorque = pareticControl[100];
     }
     else{
-        const double tableMaxIndex = static_cast<double>(leftControl.size() - 1); // 100
+        const double tableMaxIndex = static_cast<double>(100); // 100
         double idx = currentCyclePercentage * tableMaxIndex; // 0~100 실수 인덱스
 
         // 3) 선형 보간을 위한 아래/위 인덱스와 보간 비율
@@ -37,7 +37,7 @@ double pathPlannerPareticWOC(){
         std::size_t i1 = i0 + 1;
 
         // 혹시나 방어적 코드 (idx가 딱 100인 특이 케이스)
-        if (i1 >= leftControl.size()) {
+        if (i1 >= 101) {
             plantarTorque = pareticControl[100];
         }
 
@@ -71,10 +71,10 @@ double pathPlannerNonPareticWOC(){
         dorsiTorque = nonPareticControl[0];
     }
     else if (currentCyclePercentage >= 1.0) {
-        dorsiToruqe = nonPareticControl[100];
+        dorsiTorque = nonPareticControl[100];
     }
     else{
-        const double tableMaxIndex = static_cast<double>(nonPareticControl.size() - 1); // 100
+        const double tableMaxIndex = static_cast<double>(100); // 100
         double idx = currentCyclePercentage * tableMaxIndex; // 0~100 실수 인덱스
 
         // 3) 선형 보간을 위한 아래/위 인덱스와 보간 비율
@@ -82,7 +82,7 @@ double pathPlannerNonPareticWOC(){
         std::size_t i1 = i0 + 1;
 
         // 혹시나 방어적 코드 (idx가 딱 100인 특이 케이스)
-        if (i1 >= nonPareticControl.size()) {
+        if (i1 >= 101) {
             dorsiTorque = nonPareticControl[100];
         }
 
@@ -306,7 +306,7 @@ void callbackGaitPhaseNonAffected(const std_msgs::Int16ConstPtr& msg){
         std::cout << "Wrong Gait Phase Detected - Non Affected Side" << std::endl;        
     }
     else if (msg->data == 1){
-        timeNIC = high_resolution_clock::now():
+        timeNIC = high_resolution_clock::now();
     }
 
     setGaitEventNonAffected = true;

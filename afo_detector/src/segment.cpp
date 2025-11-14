@@ -208,8 +208,8 @@ double ImuOptimizer::getTLA(std::array<float, 21>& d){
     y = 0;
     z = 0;
     if (isLeft_){
-        y = p[0].y() * linkLength_[0] * 0.5 + p[4].y() * linkLength_[1] + p[5].y() * linkLength_[2] + p[6].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
-        z = p[0].z() * linkLength_[0] * 0.5 + p[4].z() * linkLength_[1] + p[5].z() * linkLength_[2] + p[6].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        y = p[0].y() * linkLength_[0] * 0.5 + p[1].y() * linkLength_[1] + p[2].y() * linkLength_[2] + p[3].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        z = p[0].z() * linkLength_[0] * 0.5 + p[1].z() * linkLength_[1] + p[2].z() * linkLength_[2] + p[3].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
     }
     else{
         y = -p[0].y() * linkLength_[0] * 0.5 + p[4].y() * linkLength_[1] + p[5].y() * linkLength_[2] + p[6].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
