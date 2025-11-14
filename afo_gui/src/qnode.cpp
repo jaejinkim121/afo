@@ -35,7 +35,11 @@ namespace afo_gui {
         pz = new double[7];
         yz = new double[7];
         tlaData = new float[2];
-
+        for (int i = 0; i < 4; i++){
+            for (int j = 0; j<101;j++){
+                wocData[i][j] = 0.0;
+            }
+        }
         leftToe = 0;
         leftToeMax = 0.0;
         rightToe = 0;
@@ -149,9 +153,9 @@ namespace afo_gui {
         return this->tlaData;
     }
 
-    void QNode::getWOCData(std::array<float, 101>* data){
+    void QNode::getWOCData(WOCData& out){
         
-        data = wocData;
+        out = wocData;
     }
 
     double QNode::getMaxToeClearance(bool isLeft){
@@ -362,7 +366,7 @@ namespace afo_gui {
     void QNode::callbackTLALeft(const std_msgs::Float32ConstPtr& msg){
         float t = ros::Time::now().toSec() - this->t_begin;
         tlaData[0] = t;
-        tlaData[1] = msg->data;
+        tlaData[1] = cos(msg->data);
         updateTLA();
     }
     void QNode::callbackTLARight(const std_msgs::Float32ConstPtr& msg){
@@ -373,8 +377,9 @@ namespace afo_gui {
         for (int i = 0; i < 101; i++){
             wocData[1][i] = msg->data[i];
         }
-        std::cout << "callbackTLACycle Left End" << std::endl;
         updateWOC();
+
+        std::cout << "callbackTLACycle Left End" << std::endl;
     }
     void QNode::callbackTLACycleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
         std::cout << "callbackTLACycle Right Start" << std::endl;
@@ -388,7 +393,10 @@ namespace afo_gui {
         for (int i = 0; i < 101; i++){
             wocData[0][i] = msg->data[i];
         }
+        std::cout << "callback WOC LEFT - START" << std::endl;
         updateWOC();
+        std::cout << "callback WOC LEFT - END" << std::endl;
+
     }
     void QNode::callbackWOCRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
         for (int i = 0; i < 101; i++){

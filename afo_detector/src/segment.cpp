@@ -37,7 +37,9 @@ void Optimizer::set_efficacy(const std::array<double, 101>& efficacy){
 
     for (int i = 1; i < efficacy.size() - 1; i++){
         col_cost.push_back(cos(efficacy[i]));
+        std::cout << cos(efficacy[i]) << ", ";
     }
+    std::cout << std::endl;
     return;
 }
 
@@ -49,7 +51,7 @@ void Optimizer::run_optimize(std::vector<double>& r){
     Highs highs_;
     HighsStatus return_status_;
 
-    highs_.setOptionValue("output_flag", false);
+    //highs_.setOptionValue("output_flag", false);
     lp_.sense_ = ObjSense::kMaximize;
     lp_.num_col_ = num_col;
     lp_.num_row_ = num_row;
@@ -63,10 +65,10 @@ void Optimizer::run_optimize(std::vector<double>& r){
     lp_.a_matrix_.start_  = Astart;
     lp_.a_matrix_.index_  = Aindex;
     lp_.a_matrix_.value_  = Avalue;
-
     highs_.passModel(lp_);
+    std::cout << "Run optimize - start optimize" << std::endl;
     highs_.run();
-
+    std::cout << "Run optimize - end optimize" << std::endl;
     const HighsSolution& sol = highs_.getSolution();
     for (int i = 0; i<num_col;i++) r[i+1] = sol.col_value[i];
 }
@@ -84,12 +86,14 @@ ImuOptimizer::ImuOptimizer(bool isLeft){
     linkLength_[0] = 0.3;
     linkLength_[1] = 0.4;
     linkLength_[2] = 0.4;
-    linkLength_[3] = 0.25;
+    linkLength_[3] = 0.2;
+    isFlush_ = false;
     
 
 }
 void ImuOptimizer::flush(){
     while(!q_.empty()) q_.pop();
+    isFlush_ = true;
 }
 float ImuOptimizer::push(float t, std::array<float, 21>& d){
     SampleTLA d_ = SampleTLA();
@@ -101,6 +105,12 @@ float ImuOptimizer::push(float t, std::array<float, 21>& d){
 }
 
 bool ImuOptimizer::cut(){
+    if (isFlush_){
+        seg_.clear();
+        seg_.reserve(1024);
+        isFlush_ = false;
+        return false;
+    }
     const size_t n = seg_.size();
     if (n == 0 ) return false;
     if (n == 1) return false;
@@ -110,7 +120,6 @@ bool ImuOptimizer::cut(){
 
     NormTLA out;
     out.cycle_time = duration;
-
     int i = 0;
     for (int k = 0; k <= N; k++){
         const float s = static_cast<float>(k) / static_cast<float>(N);
@@ -139,8 +148,10 @@ bool ImuOptimizer::mean(){
 
     NormTLA sum;
     static constexpr int K = N+1;
-    mean_.d[K] = {};
-    sum.d[K] = {};
+    for (int k=0;k<K;k++){
+        mean_.d[k] = 0;
+        sum.d[k] = 0;
+    }
     sum.cycle_time = 0.0;
     size_t count = 0;
     while(!q_.empty()){
@@ -156,9 +167,12 @@ bool ImuOptimizer::mean(){
     
     const float invN = 1.0 / static_cast<float>(count);
     mean_.cycle_time = sum.cycle_time * invN;
+    std::cout << "Mean cycle: ";
     for (int k = 0; k < K; k++){
         mean_.d[k] = sum.d[k] * invN;
+        std::cout << mean_.d[k] << ", ";
     }
+    std::cout << std::endl;
     return true;
 }
 
@@ -194,21 +208,25 @@ double ImuOptimizer::getTLA(std::array<float, 21>& d){
     y = 0;
     z = 0;
     if (isLeft_){
-        y = p[0].y() * linkLength_[0] * 0.5 + p[1].y() * linkLength_[1] + p[2].y() * linkLength_[2] + p[3].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
-        z = p[0].z() * linkLength_[0] * 0.5 + p[1].z() * linkLength_[1] + p[2].z() * linkLength_[2] + p[3].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        y = p[0].y() * linkLength_[0] * 0.5 + p[4].y() * linkLength_[1] + p[5].y() * linkLength_[2] + p[6].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
+        z = p[0].z() * linkLength_[0] * 0.5 + p[4].z() * linkLength_[1] + p[5].z() * linkLength_[2] + p[6].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
     }
     else{
         y = -p[0].y() * linkLength_[0] * 0.5 + p[4].y() * linkLength_[1] + p[5].y() * linkLength_[2] + p[6].y() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
         z = -p[0].z() * linkLength_[0] * 0.5 + p[4].z() * linkLength_[1] + p[5].z() * linkLength_[2] + p[6].z() * linkLength_[3];  // Foot IMU direction 때문에 negative sign 포함.
     }
-    
-    return std::atan2(z,y) * 180 / 3.141592; // Unit: [degree]
+    double res = 0;
+    res = std::atan2(-z,-y);// * 180 / 3.141592;
+    return res; // Unit: [rad]
 
 }
 
 void ImuOptimizer::optimize(){
+    std::cout << "Start optimize" << std::endl;
     opt_.set_efficacy(mean_.d);
+    std::cout << "Set efficacy" << std::endl;
     opt_.run_optimize(result_opt_);
+    std::cout << "End optimize" << std::endl;
 }
 
 void ImuOptimizer::getResult(std::vector<double>& target){
@@ -219,7 +237,7 @@ void ImuOptimizer::getResult(std::vector<double>& target){
 void ImuOptimizer::getTLACycle(std::vector<double>& target){
     std::vector<double> t;
     for (int i = 0; i < N+1; i++){
-        t.push_back(mean_.d[i]);
+        t.push_back(cos(mean_.d[i]));
     }
     target = t;
     return;

@@ -90,4 +90,5 @@ class ImuOptimizer{
         std::array<double, 7> linkLength_;
         bool isLeft_;
         bool isSetZero_;
+        bool isFlush_;
 };

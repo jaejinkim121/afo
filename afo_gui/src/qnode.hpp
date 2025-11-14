@@ -16,6 +16,7 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 #define SOLE_LEFT 1
 #define SOLE_RIGHT 2
@@ -24,6 +25,7 @@
 #define GAIT_PHASE 5
 #define LEFT 0 
 #define RIGHT 1
+using WOCData = std::array<std::array<float,101>, 4>;
 
 namespace afo_gui{
 
@@ -87,7 +89,7 @@ public:
     double getStride();
     void clearStride();
     void getLink(double* linkX, double* linkY, double* linkZ);
-    void getWOCData(std::array<float, 101>* data);
+    void getWOCData(WOCData& out);
 
 Q_SIGNALS:
     void rosShutdown();
@@ -113,7 +115,7 @@ private:
     float* plantarData;
     float* dorsiData;
     float* tlaData;
-    std::array<float, 101> wocData[4];
+    WOCData wocData;
     float* polyFit;
     double* linkX;
     double* linkY;
