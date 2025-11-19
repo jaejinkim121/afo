@@ -94,7 +94,7 @@ double pathPlannerNonPareticWOC(){
 
         dorsiTorque = u0 + frac * (u1 - u0);
     }
-    
+    std::cout << "Torque info :" << dorsiTorque << " at " << currentCyclePercentage << std::endl;
     dorsiTorque = min(max(dorsiTorque, 0.0), 1.0);
     return currentCyclePercentage;
 }
@@ -628,7 +628,7 @@ void worker()
                         afo_motor_data_plantar.publish(msg_motor_plantar);
                     }
                     else if (slave->getName() == "Dorsi"){
-                        if (setGaitEventNonAffected && setGaitEventAffected){
+                        if (setGaitEventNonAffected){
                             currentTimePercentage = pathPlannerNonPareticWOC();
                         }
                         if (setDF_cue_MH){

@@ -2,13 +2,12 @@
 
 
 float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
-    #ifdef VOLT
-        return voltage;
-    #endif
+    // #ifdef VOLT
+    //     return voltage;
+    // #endif
     float r;
     float bp[4];
     float a[4];
-
     r = ipsCalibrationDataConstant[side][sensorNum];
     
     for (int i = 0; i<4; i++){
@@ -22,6 +21,7 @@ float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
     r += a[1] * std::max(voltage - bp[0], (float)0.0);
     r += a[2] * std::max(voltage - bp[1], (float)0.0);
     r += a[3] * std::max(voltage - bp[2], (float)0.0);
+//    cout << r << ", " << side << ", " << sensorNum << ", " << voltage << endl;
 
     if (r<0) return 0;
     
@@ -38,7 +38,7 @@ void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
     for (int i = 0; i< 6; i++){
         d_soleLeft[i] = msg->data[i];
         f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i], i);
-        msg_force.data.push_back(d_soleLeft[i]);
+        msg_force.data.push_back(f_soleLeft[i]);
         #ifdef DEBUG
         cout << d_soleLeft[i];
         if (i != 6) cout << ", ";
@@ -61,7 +61,7 @@ void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
     for (int i = 0; i< 6; i++){
         d_soleRight[i] = msg->data[i];
         f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i], i);
-        msg_force.data.push_back(d_soleRight[i]);
+        msg_force.data.push_back(f_soleRight[i]);
         #ifdef DEBUG
         cout << d_soleRight[i];
         if (i != 6) cout << ", ";
@@ -100,7 +100,7 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
         msg_.data = imuOpt_left.push(t, d_imu_angle);
         tla_left_pub.publish(msg_);
     }
-    if (true) {
+    if (!rightSwing) {
         msg_.data = imuOpt_right.push(t, d_imu_angle);
         tla_right_pub.publish(msg_);
     }
@@ -148,6 +148,8 @@ void callbackFlush(const std_msgs::BoolConstPtr& msg){
     imuOpt_left.flush();
     imuOpt_right.flush();
     isFlush = true;
+    cutCntLeft = 0;
+    cutCntRight = 0;
 }
 
 void callbackThresholdGap(const std_msgs::Float32MultiArray::ConstPtr& msg){
@@ -224,15 +226,15 @@ void callbackOFF(const std_msgs::BoolConstPtr& msg){
 bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int isIC){
     float th, f;
     if (side == LEFT){
-        //f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
-        f = d_soleLeft[sensorNum];
+        f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
+        //f = d_soleLeft[sensorNum];
         th = thLeft[isIC][sensorNum];
         if (isIC) return f >= th;
         else return f < th;
     }
     else {
-        //f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
-        f = d_soleRight[sensorNum];
+        f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
+        //f = d_soleRight[sensorNum];
         th = thRight[isIC][sensorNum];
 
         if (isIC) return f >= th;
@@ -320,7 +322,7 @@ void gaitDetector(int* result){
                 leftToeOff = true;
                 timeLeftSwing = system_clock::now();
                 imuOpt_left.cut();
-                if ((cutCntLeft++ == 5) && isFlush){
+                if ((cutCntLeft == 5) && isFlush){
                     imuOpt_left.mean();
                     imuOpt_left.optimize();
                     std::vector<double> control_left;
@@ -338,6 +340,7 @@ void gaitDetector(int* result){
                     left_optimized_control_pub.publish(msg_left);
                     left_optimized_tla_pub.publish(msg_left_tla);
                 }
+                cutCntLeft++;
             }
         }
     }
@@ -364,7 +367,9 @@ void gaitDetector(int* result){
                 rightToeOff = true;
                 timeRightSwing = system_clock::now();
                 imuOpt_right.cut();
-                if ((cutCntRight++ == 5) && isFlush){
+                std::cout << cutCntRight << std::endl;
+                if ((cutCntRight++ == 3) && isFlush){
+                    
                     imuOpt_right.mean();
                     imuOpt_right.optimize();
                     std::vector<double> control_right;
@@ -606,7 +611,7 @@ int main(int argc, char**argv)
     timeLeftSwing = system_clock::now();
     timeRightSwing = system_clock::now();
     while(ros::ok()){
-        //gaitDetector(r);
+        gaitDetector(r);
 
         if (r[0] == 1){
             msg_gait_nonparetic.data = r[2];
