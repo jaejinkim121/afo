@@ -64,6 +64,7 @@ bool thresholdSide;
 
 system_clock::time_point initialTimeThreshold, currentTimeThreshold;
 system_clock::time_point timeLeftSwing, timeRightSwing;
+system_clock::time_point timeLeftStance, timeRightStance;
 float swinggap = 0.2;
 duration<double> currentTimeGap;
 

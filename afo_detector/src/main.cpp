@@ -93,15 +93,16 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
         d_imu_angle[3*i+2] = d_imu[9*i+2];
     }
 
-    float t;
-    t = (chrono::system_clock::now() - timeLeftSwing).count();
+    float tl, tr;
+    tl = (chrono::system_clock::now() - timeLeftStance).count();
+    tr = (chrono::system_clock::now() - timeRightStance).count();
     std_msgs::Float32 msg_;
     if (!leftSwing) {
-        msg_.data = imuOpt_left.push(t, d_imu_angle);
+        msg_.data = imuOpt_left.push(tl, d_imu_angle);
         tla_left_pub.publish(msg_);
     }
     if (!rightSwing) {
-        msg_.data = imuOpt_right.push(t, d_imu_angle);
+        msg_.data = imuOpt_right.push(tr, d_imu_angle);
         tla_right_pub.publish(msg_);
     }
     return;
@@ -304,6 +305,7 @@ void gaitDetector(int* result){
         if (leftDuration.count() >= swinggap){
             if (checkForceThreshold(LEFT, 5, IC)){
                 leftSwing = false;
+                timeLeftStance = system_clock::now();
             }
         }
     }
@@ -349,7 +351,10 @@ void gaitDetector(int* result){
     if(rightSwing){
         rightDuration = system_clock::now() - timeRightSwing;
         if (rightDuration.count() >= swinggap){
-            if (checkForceThreshold(RIGHT, 5, IC)) rightSwing = false;            
+            if (checkForceThreshold(RIGHT, 5, IC)) {
+                rightSwing = false;            
+                timeRightStance = system_clock::now();
+            }
         }
     }
     else if (rightToeOff){
@@ -610,6 +615,8 @@ int main(int argc, char**argv)
 
     timeLeftSwing = system_clock::now();
     timeRightSwing = system_clock::now();
+    timeLeftStance = system_clock::now();
+    timeRightStance = system_clock::now();
     while(ros::ok()){
         gaitDetector(r);
 
