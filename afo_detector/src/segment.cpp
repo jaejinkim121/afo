@@ -1,6 +1,6 @@
 #include "../include/segment.hpp"
 
-Optimizer::Optimizer(){
+Optimizer::Optimizer(float coeff_effort = 1, float coeff_smooth = 1){
     /// Optimization problem define.
     col_cost.reserve(num_col);
     col_cost.insert(col_cost.end(), 50, -1.0);
@@ -30,13 +30,72 @@ Optimizer::Optimizer(){
         Avalue.push_back(-1.0);
         Avalue.push_back(1.0);
     }
+
+    // Define q_start
+    q_start.push_back(0);
+    q_start.push_back(3);
+    for (int i = 2; i < num_col-1; i++){
+        q_start.push_back(5*i - 3);
+    }
+    q_start.push_back(5*num_col - 9);
+    q_start.push_back(5*num_col - 6);
+
+    // Define q_index with q_value
+    // first column
+    q_index.push_back(0);
+    q_index.push_back(1);
+    q_index.push_back(2);
+    q_value.push_back(alpha + beta * 5);
+    q_value.push_back(beta * -4);
+    q_value.push_back(beta * 1);
+    // second column
+    q_index.push_back(0);
+    q_index.push_back(1);
+    q_index.push_back(2);
+    q_index.push_back(3);
+    q_value.push_back(beta * -4);
+    q_value.push_back(alpha + beta * 6);
+    q_value.push_back(beta * -4);
+    q_value.push_back(beta * 1);
+
+    // column inside
+    for (int i = 2; i < num_col - 2; i++){
+        q_index.push_back(i-2);
+        q_index.push_back(i-1);
+        q_index.push_back(i);
+        q_index.push_back(i+1);
+        q_index.push_back(i+2);
+        q_value.push_back(beta * 1);
+        q_value.push_back(beta * -4);
+        q_value.push_back(alpha + beta * 6);
+        q_value.push_back(beta * -4);
+        q_value.push_back(beta * 1);
+    }
+
+    // second last column
+    q_index.push_back(num_col-4);
+    q_index.push_back(num_col-3);
+    q_index.push_back(num_col-2);
+    q_index.push_back(num_col-1);
+    q_value.push_back(beta * 1);
+    q_value.push_back(beta * -4);
+    q_value.push_back(alpha + beta * 6);
+    q_value.push_back(beta * -4);
+
+    // Last column
+    q_index.push_back(num_col-3);
+    q_index.push_back(num_col-2);
+    q_index.push_back(num_col-1);
+    q_value.push_back(beta * 1);
+    q_value.push_back(beta * -4);
+    q_value.push_back(alpha + beta * 5);
 }
 
 void Optimizer::set_efficacy(const std::array<double, 101>& efficacy){
     col_cost.clear();
 
     for (int i = 1; i < efficacy.size() - 1; i++){
-        col_cost.push_back(cos(efficacy[i]));
+        col_cost.push_back(-cos(efficacy[i]));
         std::cout << cos(efficacy[i]) << ", ";
     }
     std::cout << std::endl;
@@ -47,25 +106,40 @@ void Optimizer::run_optimize(std::vector<double>& r){
     if (r.size() != N_t+2){
         std::cout << "Optimizer - run_optimize - input result vector has wrong size" << std::endl;
     }
-    HighsLp lp_;
+
     Highs highs_;
     HighsStatus return_status_;
+    HighsModel model;
+    HighsLp& lp = model.lp_;   // lp는 model 안에 들어있는 LP 구조체
+    HighsHessian& H = model.hessian_;
 
-    //highs_.setOptionValue("output_flag", false);
-    lp_.sense_ = ObjSense::kMaximize;
-    lp_.num_col_ = num_col;
-    lp_.num_row_ = num_row;
-    lp_.col_cost_  = col_cost;
-    lp_.col_lower_ = col_lower;
-    lp_.col_upper_ = col_upper;
-    lp_.row_lower_ = row_lower;
-    lp_.row_upper_ = row_upper;
+    lp.sense_ = ObjSense::kMinimize;
+    lp.num_col_ = num_col;
+    lp.num_row_ = num_row;
+    lp.col_cost_  = col_cost;
+    lp.col_lower_ = col_lower;
+    lp.col_upper_ = col_upper;
+    lp.row_lower_ = row_lower;
+    lp.row_upper_ = row_upper;
 
-    lp_.a_matrix_.format_ = MatrixFormat::kColwise;
-    lp_.a_matrix_.start_  = Astart;
-    lp_.a_matrix_.index_  = Aindex;
-    lp_.a_matrix_.value_  = Avalue;
-    highs_.passModel(lp_);
+    lp.a_matrix_.format_ = MatrixFormat::kColwise;
+    lp.a_matrix_.start_  = Astart;
+    lp.a_matrix_.index_  = Aindex;
+    lp.a_matrix_.value_  = Avalue;
+
+    H.dim_    = lp.num_col_;              // Q의 dimension = 변수 수
+    H.format_ = HessianFormat::kSquare;   // q_*가 full square Q의 CSC라고 가정
+    // 만약 (row <= col) 만 넣은 upper triangular 형식이면:
+    // H.format_ = HessianFormat::kTriangular;
+
+    H.start_  = q_start;   // column-wise 시작 인덱스
+    H.index_  = q_index;   // 각 nonzero의 row index
+    H.value_  = q_value;   // 각 nonzero의 값 (Q_ij)
+
+    // 4) Model 전체를 HiGHS에 전달 (LP + QP 모두 포함)
+    HighsStatus status = highs.passModel(model);
+    if (status != HighsStatus::kOk) return status;
+
     std::cout << "Run optimize - start optimize" << std::endl;
     highs_.run();
     std::cout << "Run optimize - end optimize" << std::endl;

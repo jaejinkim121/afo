@@ -598,12 +598,8 @@ int main(int argc, char**argv)
     right_optimized_tla_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/tla_cycle_right", 100);
     tla_left_pub = n.advertise<std_msgs::Float32>("/afo_detector/tla_left", 100);
     tla_right_pub = n.advertise<std_msgs::Float32>("/afo_detector/tla_right", 100);
-
-
     
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
-
-
 
     thresholdSide = LEFT;
     loadThreshold();    
