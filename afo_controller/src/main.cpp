@@ -1,5 +1,73 @@
 #include "../include/main.hpp"
 
+
+static inline std::string trim(const std::string& s) {
+    size_t b = 0, e = s.size();
+    while (b < e && std::isspace(static_cast<unsigned char>(s[b]))) ++b;
+    while (e > b && std::isspace(static_cast<unsigned char>(s[e - 1]))) --e;
+    return s.substr(b, e - b);
+}
+
+static inline std::vector<std::string> split_csv_3(const std::string& line) {
+    // 아주 단순한 CSV(따옴표 없는) 전제. "1, 2, 3.0" 같은 형태 지원.
+    std::vector<std::string> out;
+    out.reserve(3);
+
+    std::string token;
+    std::stringstream ss(line);
+    while (std::getline(ss, token, ',')) {
+        out.push_back(trim(token));
+    }
+    return out;
+}
+
+std::vector<std::array<double, 3>> loadRandParamCsv(const std::string& csv_path) {
+    std::ifstream fin(csv_path);
+    if (!fin.is_open()) {
+        throw std::runtime_error("Failed to open csv: " + csv_path);
+    }
+
+    std::vector<std::array<double, 3>> table;
+    std::string line;
+    int line_no = 0;
+
+    while (std::getline(fin, line)) {
+        ++line_no;
+        line = trim(line);
+
+        // 빈 줄 / 주석 줄 무시
+        if (line.empty()) continue;
+        if (!line.empty() && (line[0] == '#')) continue;
+
+        auto cols = split_csv_3(line);
+        if (cols.size() != 3) {
+            std::ostringstream oss;
+            oss << "CSV parse error: expected 3 columns at line " << line_no
+                << " but got " << cols.size() << " | line: [" << line << "]";
+            throw std::runtime_error(oss.str());
+        }
+
+        try {
+            std::array<double, 3> row{
+                std::stod(cols[0]),
+                std::stod(cols[1]),
+                std::stod(cols[2])
+            };
+            table.push_back(row);
+        } catch (const std::exception& e) {
+            std::ostringstream oss;
+            oss << "CSV parse error: stod failed at line " << line_no
+                << " | line: [" << line << "] | what: " << e.what();
+            throw std::runtime_error(oss.str());
+        }
+    }
+
+    if (table.empty()) {
+        throw std::runtime_error("CSV is empty or contains no valid rows: " + csv_path);
+    }
+    return table;
+}
+
 double cubic(double init_time, double final_time, double current_time){
     if (current_time > final_time) return 1;
     if (current_time < init_time) return 0;
@@ -34,9 +102,12 @@ double pathPlannerPlantarParetic(){
         t = currentCyclePercentage - startTimePF;
         pareticTorque = cubic(0, riseTimePF, t);
     }
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF){
+        pareticTorque = 1.0;
+    }
     // Still Plantarflexion, torque decreasing
-    else if (currentCyclePercentage < endTimePF){
-        t = currentCyclePercentage - startTimePF - riseTimePF;
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF + fallTimePF){
+        t = currentCyclePercentage - startTimePF - riseTimePF - flatTimePF;
         pareticTorque = 1 - cubic(0, fallTimePF, t);
     }
     // After end of plantarflexion
@@ -73,9 +144,12 @@ double pathPlannerPlantarNonParetic(){
         t = currentCyclePercentage - startTimePF;
         nonpareticTorque = cubic(0, riseTimePF, t);
     }
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF){
+        nonpareticTorque = 1.0;
+    }
     // Still Plantarflexion, torque decreasing
-    else if (currentCyclePercentage < endTimePF){
-        t = currentCyclePercentage - startTimePF - riseTimePF;
+    else if (currentCyclePercentage < startTimePF + riseTimePF + flatTimePF + fallTimePF){
+        t = currentCyclePercentage - startTimePF - riseTimePF - flatTimePF;
         nonpareticTorque = 1 - cubic(0, fallTimePF, t);
     }
     // After end of plantarflexion
@@ -169,6 +243,7 @@ void callbackGaitPhaseAffected(const std_msgs::Int16ConstPtr& msg){
     else if (msg->data == 2){ 
         timeFOP = high_resolution_clock::now();
         pareticStopTorque = pareticCurrentTorque / maxTorquePlantar;
+
     }
     else
         std::cout << "Wrong Gait Phase Detected - Affected Side" << std::endl;
@@ -274,6 +349,11 @@ void callbackPlantarRun(const std_msgs::BoolConstPtr& msg){
 
 void callbackDorsiRun(const std_msgs::BoolConstPtr& msg){
     dorsiRun = msg->data;
+}
+
+void callbackRandRun(const std_msgs::BoolConstPtr& msg){
+    isRand = true;
+    timeRand = high_resolution_clock::now();
 }
 
 void worker()
@@ -468,6 +548,7 @@ int main(int argc, char**argv)
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
 ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_trigger_time", 1, callbackPlantarTriggerTime);
+ros::Subscriber afo_gui_rand_sub = n.subscribe("/afo_gui/sync", 1, callbackRandRun);
     afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
@@ -486,7 +567,7 @@ ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_tri
     afo_configuration_plantarPreTension = n.advertise<std_msgs::Float32>("/afo_controller/plantar_pretension", 10);
     afo_configuration_dirPlantar = n.advertise<std_msgs::Float32>("/afo_controller/dirPlantar", 10);
     afo_dorsi_zeroing_done = n.advertise<std_msgs::Bool>("/afo_controller/dorsi_zeroing_done", 10);
-    
+
     std::signal(SIGINT, terminateMotor);
 
     configurator = std::make_shared<EthercatDeviceConfigurator>(configPath); 
@@ -505,6 +586,19 @@ ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_tri
 
     plantarRun = false;
     dorsiRun = false;
+    isRand = false;
+    isOFF = false;
+    unsigned int paramIdx = 0;
+    duration<double, seconds> randGap;
+    // Load csv file
+    try {
+        auto params = loadRandParamCsv("rand_param.csv");
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] " << e.what() << "\n";
+        return 1;
+    }
+    //
+
     
     for(auto & master: configurator->getMasters())
     {
@@ -518,6 +612,22 @@ ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_tri
     worker_thread = std::make_unique<std::thread>(&worker);
 
     while(ros::ok()){
+        if (isRand){
+            randGap = high_resolution_clock::now() - timeRand;
+            if (randGap.count() > 40.0){
+                // Next parameter
+                startTime_buff = params[paramIdx][0];
+                riseTime_buff = params[paramIdx][1];
+                flatTime_buff = params[paramIdx][2];
+                if (paramIdx++ == 27) paramIdx = 0;
+                tineRand = high_resolution_clock::now();
+            }
+        }
+        if ((pareticTorque < 0.001) && (nonpareticTorque < 0.001)){
+            startTimePF = startTime_buff;
+            riseTimePF = riseTime_buff;
+            flatTimePF =flatTime_buff;
+        }
 	    ros::spinOnce();
     }
 }

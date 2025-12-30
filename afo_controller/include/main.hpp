@@ -6,6 +6,13 @@
 #include <fstream>
 #include <algorithm>
 
+#include <array>
+#include <cctype>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #include "ros/ros.h"
 #include "rosbag/bag.h"
 #include "std_msgs/Bool.h"
@@ -73,6 +80,7 @@ double cycleTime = 4.0 * pow(10,6);
 double startTimePF = 0.2;
 double riseTimePF = 0.2;
 double fallTimePF = 0.2;
+double flatTimePF = 0.2;
 double endTimePF = startTimePF + riseTimePF + fallTimePF;
 double relaxTime = 0.3 * pow(10,6);
 double startTimeDF = 0.0;
@@ -98,6 +106,15 @@ double dirDorsi = -1;
 double dirParetic = 1;
 double dirNonParetic = -1;
 
+
+// Randomizer buffer parameter
+double maxTorque_buff = 0.0;
+double startTime_buff = 0.1;
+double riseTime_buff = 0.1;
+double flatTime_buff = 0.1;
+bool isRand;
+bool isOFF;
+system_clock::time_point timeRand;
 // Define ros publisher and subscriber
 ros::Subscriber afo_gait_paretic;
 ros::Subscriber afo_gait_nonparetic;
