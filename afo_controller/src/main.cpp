@@ -589,14 +589,9 @@ ros::Subscriber afo_gui_rand_sub = n.subscribe("/afo_gui/sync", 1, callbackRandR
     isRand = false;
     isOFF = false;
     unsigned int paramIdx = 0;
-    duration<double, seconds> randGap;
+    duration<double> randGap;
     // Load csv file
-    try {
-        auto params = loadRandParamCsv("rand_param.csv");
-    } catch (const std::exception& e) {
-        std::cerr << "[ERROR] " << e.what() << "\n";
-        return 1;
-    }
+    auto params = loadRandParamCsv("rand_param.csv");
     //
 
     
@@ -620,7 +615,7 @@ ros::Subscriber afo_gui_rand_sub = n.subscribe("/afo_gui/sync", 1, callbackRandR
                 riseTime_buff = params[paramIdx][1];
                 flatTime_buff = params[paramIdx][2];
                 if (paramIdx++ == 27) paramIdx = 0;
-                tineRand = high_resolution_clock::now();
+                timeRand = high_resolution_clock::now();
             }
         }
         if ((pareticTorque < 0.001) && (nonpareticTorque < 0.001)){
