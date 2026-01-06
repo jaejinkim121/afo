@@ -76,10 +76,10 @@ bool plantarRun, dorsiRun;
 int etherCatCommunicationRate = 5500; // us
 
 // Time Parameter
-double cycleTime = 4.0 * pow(10,6);
+double cycleTime = 2.0 * pow(10,6);
 double startTimePF = 0.2;
 double riseTimePF = 0.2;
-double fallTimePF = 0.2;
+double fallTimePF = 0.1;
 double flatTimePF = 0.2;
 double endTimePF = startTimePF + riseTimePF + fallTimePF;
 double relaxTime = 0.3 * pow(10,6);

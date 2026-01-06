@@ -589,9 +589,13 @@ ros::Subscriber afo_gui_rand_sub = n.subscribe("/afo_gui/sync", 1, callbackRandR
     isRand = false;
     isOFF = false;
     unsigned int paramIdx = 0;
-    duration<double> randGap;
+    duration<double, seconds> randGap;
     // Load csv file
-    auto params = loadRandParamCsv("/home/afo/catkin_ws/src/afo/rand_param.csv");
+    try {        auto params = loadRandParamCsv("rand_param.csv");
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] " << e.what() << "\n";
+        return 1;
+    }
     //
 
     
