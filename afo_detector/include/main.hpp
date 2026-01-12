@@ -62,7 +62,7 @@ system_clock::time_point initialTimePolycalib, currentTimePolycalib;
 system_clock::time_point timeRightStance, timeRightSwing;
 system_clock::time_point timeLeftStance, timeLeftSwing;
 duration<double> currentTimeGap;
-float oppositeTimeDiff = 2.0;
+float oppositeTimeDiff = 1.0;
 bool swingTurned = true;
 bool stanceTurned = true;
 ros::Subscriber afo_soleSensor_left_sub;

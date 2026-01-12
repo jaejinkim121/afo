@@ -7,11 +7,11 @@ ethercat_devices:
     name:               Paretic
     configuration_file: plantar.yaml
     ethercat_bus:       enp2s0
-    ethercat_address:   2
+    ethercat_address:   1
 
   - type:               Maxon
     name:               NonParetic
     configuration_file: dorsi.yaml
     ethercat_bus:       enp2s0
-    ethercat_address:   1
+    ethercat_address:   2
 

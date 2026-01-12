@@ -299,7 +299,7 @@ int main(int argc, char**argv)
     is_imu = false;
     leftSwing = false;
     rightSwing = false;
-    affectedSide = RIGHT;
+    affectedSide = LEFT;
     timeLeftSwing = system_clock::now();
     timeRightSwing = system_clock::now();
     // Define ROS
@@ -317,7 +317,7 @@ int main(int argc, char**argv)
     afo_threshold_gap_sub = n.subscribe("/afo_gui/threshold_gap", 1, callbackThresholdGap);
     afo_gait_nonparetic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_nonparetic", 100);
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
-//    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector);
+    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/sync_val", 1, gaitDetector_curexo);
 
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
@@ -331,7 +331,7 @@ int main(int argc, char**argv)
 
 
     while(ros::ok()){
-        gaitDetector();
+//        gaitDetector();
         if (result[0] == 1){
             msg_gait_nonparetic.data = result[2];
             afo_gait_nonparetic_pub.publish(msg_gait_nonparetic);
