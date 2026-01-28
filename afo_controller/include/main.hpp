@@ -97,8 +97,8 @@ double maxPositionDorsi = 3000;
 double positionDiffLimit = 500;
 double dorsiZeroingIncrement = 0.1;
 double dorsiTorqueSlope = 0.05;
-double dorsiPreTension = 0.03;   // It's not normalized value.
-double plantarPreTension = 0.03; // It's not normalized value.
+double dorsiPreTension = 0.0;   // It's not normalized value.
+double plantarPreTension = 0.0; // It's not normalized value.
 
 // To switch target direction easily. CW = -1, CCW = 1
 double dirPlantar = -1;
