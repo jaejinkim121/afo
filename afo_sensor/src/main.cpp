@@ -90,10 +90,10 @@ int main(int argc, char** argv){
         msg_imu.data.clear();
         msg_sole_left.data.clear();
         msg_sole_right.data.clear();
-        for ( int i = 0; i<63 ; i++){
+        for ( int i = 0; i<64 ; i++){
             msg_imu.data.push_back(serialIMU->imuData[i]);
         }
-        for ( int i = 0 ; i < 6 ; i++){
+        for ( int i = 0 ; i < 7 ; i++){
             msg_sole_left.data.push_back(serialSoleLeft->sole[i]);
             msg_sole_right.data.push_back(serialSoleRight->sole[i]);
         }

@@ -36,11 +36,12 @@ private:
 	float gyroAbs = 0;
 	float soleAbs = 0;
 	chrono::duration<double> sec;
+	chrono::system_clock::time_point now;
 
 public:
 
-	float* imuData = new float[63];
-	float* sole = new float[6];
+	float* imuData = new float[64]; // 9*7 + 1(for time)
+	float* sole = new float[7];  // 6 + 1(for time)
 	serial(const char *device, const int baud);
 	~serial();
 	int serialOpen(const char *device, const int baud);

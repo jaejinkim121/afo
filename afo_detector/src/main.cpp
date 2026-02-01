@@ -36,8 +36,8 @@ void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
     #endif
 
     for (int i = 0; i< 6; i++){
-        d_soleLeft[i] = msg->data[i];
-        f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i], i);
+        d_soleLeft[i] = msg->data[i+1];
+        f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i+1], i);
         msg_force.data.push_back(f_soleLeft[i]);
         #ifdef DEBUG
         cout << d_soleLeft[i];
@@ -59,8 +59,8 @@ void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
     #endif
 
     for (int i = 0; i< 6; i++){
-        d_soleRight[i] = msg->data[i];
-        f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i], i);
+        d_soleRight[i] = msg->data[i+1];
+        f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i+1], i);
         msg_force.data.push_back(f_soleRight[i]);
         #ifdef DEBUG
         cout << d_soleRight[i];
@@ -78,7 +78,7 @@ void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg){
     #endif
 
     for (int i = 0; i< 63; i++){
-        d_imu[i] = msg->data[i];
+        d_imu[i] = msg->data[i+1];
 
         #ifdef DEBUG
         cout << d_imu[i];
@@ -176,46 +176,6 @@ void gaitDetector(int* result){
     
     prevLeft = leftSwing;
     prevRight = rightSwing;
-
-    ////// ALL SENSOR DETECTION //////
-    // Left Detection
-    /*
-    if(leftSwing){
-        for (int i= 0; i<6; i++){
-            if(d_soleLeft[i] > thLeft[IC][i]){
-                leftSwing = false;
-            }
-        }
-    }
-    else{
-        leftTmp = true;
-        for (int i = 0; i< 6; i++){
-            if(d_soleLeft[i] > thLeft[FO][i]){
-                leftTmp = false;
-                break;
-            }
-        }
-        leftSwing = leftTmp;        
-    }
-    // Right Detection
-    if(rightSwing){
-        for (int i= 0; i<6; i++){
-            if(d_soleRight[i] > thRight[IC][i]){
-                rightSwing = false;
-            }
-        }
-    }
-    else{
-        rightTmp = true;
-        for (int i = 0; i< 6; i++){
-            if(d_soleRight[i] > thRight[FO][i]){
-                rightTmp = false;
-                break;
-            }
-        }
-        rightSwing = rightTmp;        
-    }
-*/
 
     /////// Left Heel & Toe only detection //////
     duration<double> leftDuration, rightDuration;

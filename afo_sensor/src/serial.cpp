@@ -31,10 +31,10 @@ vector<string> split_comma(uint8_t *incomingData, char delimiter) {
 
 serial::serial(const char *device, const int baud) {
 	this->serialOpen(device, baud);
-	for (int i = 0; i < 6; i++){
+	for (int i = 0; i < 7; i++){
 		this->sole[i] = 1;
 	}
-	for (int i = 0; i < 63 ; i++){
+	for (int i = 0; i < 64 ; i++){
 		this->imuData[i] = 0;
 	}
 }
@@ -166,14 +166,15 @@ int serial::readIMU(ostream& datafile, chrono::system_clock::time_point start) {
 			num_temp = "";
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
-			datafile << this->marker << "," << this->test_ind << "," << sec.count() << "," << incomingData << endl;
+			//datafile << this->marker << "," << this->test_ind << "," << sec.count() << "," << incomingData << endl;
 			try{
 				vector<string> result = split_comma(incomingData, ',');
 				num_temp += result.at(0).at(4);
 				num = stoi(num_temp);
 				for (int i = 0; i <9; i++){
-					this->imuData[9 * num + i] = stof(result.at(i+1));
+					this->imuData[1 + 9 * num + i] = stof(result.at(i+1));
 				}
+				this->imuData[0] = sec.count();
 			}
 			catch(...){}
 		}
@@ -197,11 +198,12 @@ int serial::readSole(ostream& datafile, chrono::system_clock::time_point start) 
 		if (nread > 0) {
 			incomingData[nread - 2] = 0;
 			sec = chrono::system_clock::now() - start;
-			datafile << this->marker << " " << this->test_ind << " " << sec.count() << " " << incomingData << endl;
+			//datafile << this->marker << " " << this->test_ind << " " << sec.count() << " " << incomingData << endl;
 			try{
 			sscanf((char*)incomingData, "%f %f %f %f %f %f", 
-				this->sole, this->sole + 1, this->sole + 2, this->sole + 3, this->sole + 4, this->sole + 5
+				this->sole + 1, this->sole + 2, this->sole + 3, this->sole + 4, this->sole + 5, this->sole + 6
 			);
+			this->sole[0] = sec.count();
 			}
 			catch(...){
 			cout << "SSCANF ERROR" << endl;
