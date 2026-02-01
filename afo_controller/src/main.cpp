@@ -476,7 +476,7 @@ void worker()
                     if (dorsiRun){
                         command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                         command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
-                        command.setTargetTorque(dirNonParetic * (plantarPreTension + maxTorquePlantar * nonpareticTorque));
+                        command.setTargetTorque(dirNonParetic * (plantarPreTension + (maxTorqueDorsi) * nonpareticTorque));
                     }
                     else{
                         command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
@@ -489,7 +489,7 @@ void worker()
                     msg_motor_dorsi.data.clear();
                     msg_motor_dorsi.data.push_back(currentTimePercentage);
                     msg_motor_dorsi.data.push_back(dorsiModeInt);
-                    msg_motor_dorsi.data.push_back(dirNonParetic * (maxTorquePlantar * nonpareticTorque + plantarPreTension));
+                    msg_motor_dorsi.data.push_back(dirNonParetic * ((maxTorqueDorsi) * nonpareticTorque + plantarPreTension));
                     msg_motor_dorsi.data.push_back(0);
                     msg_motor_dorsi.data.push_back(reading.getActualCurrent());
                     msg_motor_dorsi.data.push_back(reading.getActualTorque());
@@ -588,7 +588,7 @@ ros::Subscriber afo_gui_rand_sub = n.subscribe("/afo_gui/sync", 1, callbackRandR
     dorsiRun = false;
     isRand = false;
     isOFF = false;
-    unsigned int paramIdx = 0;
+    unsigned int paramIdx = 12;
     duration<double> randGap;
     // Load csv file
     auto params = loadRandParamCsv("/home/afo/catkin_ws/src/afo/rand_param.csv");
@@ -605,6 +605,11 @@ ros::Subscriber afo_gui_rand_sub = n.subscribe("/afo_gui/sync", 1, callbackRandR
     }
 
     worker_thread = std::make_unique<std::thread>(&worker);
+    for (int pidx = 0; pidx < 23; pidx++){
+        std::cout << params[pidx][0] << ", " << params[pidx][1] << ", " << params[pidx][2] << ", " << std::endl;
+
+
+    }
 
     while(ros::ok()){
         if (isRand){
@@ -614,15 +619,16 @@ ros::Subscriber afo_gui_rand_sub = n.subscribe("/afo_gui/sync", 1, callbackRandR
                 startTime_buff = params[paramIdx][0];
                 riseTime_buff = params[paramIdx][1];
                 flatTime_buff = params[paramIdx][2];
-                if (paramIdx++ == 27) paramIdx = 0;
+                if (++paramIdx == 23) paramIdx = 0;
                 timeRand = high_resolution_clock::now();
             }
         }
-        if ((pareticTorque < 0.001) && (nonpareticTorque < 0.001)){
+        if (true){
             startTimePF = startTime_buff;
             riseTimePF = riseTime_buff;
             flatTimePF =flatTime_buff;
         }
+            std::cout << paramIdx << std::endl;
 	    ros::spinOnce();
     }
 }
