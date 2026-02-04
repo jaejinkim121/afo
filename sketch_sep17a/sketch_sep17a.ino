@@ -19,7 +19,6 @@ std_msgs::Int16MultiArray msg_val;
 std_msgs::Int16MultiArray msg_sync;
 ros::Publisher pub_val("/afo_arduino/analog_val", &msg_val);
 ros::Publisher pub_sync("/afo_arduino/sync_val", &msg_sync);
-ros::Subscriber<std_msgs::Bool> sub_sync("/afo_gui/sync", &sync_cb);
 Thread receiveThread = Thread();
 Thread pubThread = Thread();
 ThreadController threadControl = ThreadController();
@@ -30,6 +29,7 @@ void sync_cb(const std_msgs::Bool& msg){
   digitalWrite(pinOut, cur_sync);
 
 }
+ros::Subscriber<std_msgs::Bool> sub_sync("/afo_gui/sync", &sync_cb);
 
 void receiveSync(){
   
