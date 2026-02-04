@@ -6,22 +6,12 @@ float getForcefromVolt(unsigned int side, float voltage, int sensorNum){
         return voltage;
     #endif
     float r;
-    float bp[4];
-    float a[4];
-
-    r = ipsCalibrationDataConstant[side][sensorNum];
+    float a,b,c;
+    a = ipsCalibrationData[side][sensorNum][0];
+    b = ipsCalibrationData[side][sensorNum][1];
+    c = ipsCalibrationData[side][sensorNum][2];
     
-    for (int i = 0; i<4; i++){
-        a[i] = ipsCalibrationDataAlpha[side][sensorNum][i];
-    }
-    for (int i =0 ; i<3; i++){
-        bp[i] = ipsCalibrationDataBP[side][sensorNum][i];
-    }
-
-    r += a[0] * voltage;
-    r += a[1] * std::max(voltage - bp[0], (float)0.0);
-    r += a[2] * std::max(voltage - bp[1], (float)0.0);
-    r += a[3] * std::max(voltage - bp[2], (float)0.0);
+    r = a * exp(b * voltage) + c;
 
     if (r<0) return 0;
     
@@ -258,29 +248,14 @@ void loadForceCalibration(){
         
         // LEFT Loading
         for (int i=0; i<6; i++){
-            for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[LEFT][i][j] = value["Left"]["alpha"][to_string(i+1)][j].asDouble();
-            }
-            
-            for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[LEFT][i][j] = value["Left"]["breakpoint"][to_string(i+1)][j].asDouble();
-            }
+            ipsCalibrationData[LEFT][i][0] = value["Left"]["a"][to_string(i+1)].asDouble();
+            ipsCalibrationData[LEFT][i][1] = value["Left"]["b"][to_string(i+1)].asDouble();
+            ipsCalibrationData[LEFT][i][2] = value["Left"]["c"][to_string(i+1)].asDouble();
 
-            ipsCalibrationDataConstant[LEFT][i]= value["Left"]["constant"][to_string(i+1)].asDouble();
-        }
-        
-        // RIGHT Loading
-        for (int i=0; i<=5; i++){
-            for (int j=0; j<4; j++){
-                ipsCalibrationDataAlpha[RIGHT][i][j] = value["Right"]["alpha"][to_string(i+1)][j].asDouble();
-            }
-            
-            for (int j=0; j<3;j++){
-                ipsCalibrationDataBP[RIGHT][i][j] = value["Right"]["breakpoint"][to_string(i+1)][j].asDouble();
-            }
-
-            ipsCalibrationDataConstant[RIGHT][i]= value["Right"]["constant"][to_string(i+1)].asDouble();
-        }
+            ipsCalibrationData[RIGHT][i][0] = value["Right"]["a"][to_string(i+1)].asDouble();
+            ipsCalibrationData[RIGHT][i][1] = value["Right"]["b"][to_string(i+1)].asDouble();
+            ipsCalibrationData[RIGHT][i][2] = value["Right"]["c"][to_string(i+1)].asDouble();
+        }            
 	}
 	else
 	{
