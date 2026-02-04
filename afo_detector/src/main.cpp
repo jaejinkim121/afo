@@ -27,7 +27,7 @@ void callbackSoleLeft(const std_msgs::Float32MultiArray::ConstPtr& msg){
 
     for (int i = 0; i< 6; i++){
         d_soleLeft[i] = msg->data[i+1];
-        f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i+1], i);
+        f_soleLeft[i] = getForcefromVolt(LEFT, d_soleLeft[i], i);
         msg_force.data.push_back(f_soleLeft[i]);
         #ifdef DEBUG
         cout << d_soleLeft[i];
@@ -50,7 +50,7 @@ void callbackSoleRight(const std_msgs::Float32MultiArray::ConstPtr& msg){
 
     for (int i = 0; i< 6; i++){
         d_soleRight[i] = msg->data[i+1];
-        f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i+1], i);
+        f_soleRight[i] = getForcefromVolt(RIGHT, d_soleRight[i], i);
         msg_force.data.push_back(f_soleRight[i]);
         #ifdef DEBUG
         cout << d_soleRight[i];
