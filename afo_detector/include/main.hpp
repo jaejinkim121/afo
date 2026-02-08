@@ -27,6 +27,12 @@ using namespace std::chrono;
 #define HEELOFF true
 // #define VOLTAGE // Uncomment when you want to use voltage-based thresholding.
 
+// Heel은 무조건 1로 해둬야 함 (마지막 element)
+//bool isUseIPS = [1, 1, 1, 1, 1, 1]; // MT5, T2, MT3, T1, MT1, H   -->> All use preset
+bool isUseIPS = [1, 0, 1, 0, 1, 1]; // -->> MT only preset
+//bool isUseIPS = [0, 1, 0, 1, 0, 1]; // -->> Toe only preset
+//bool isUseIPS = [1, 1, 0, 0, 1, 1]; // -->> Free use.
+
 void loadThreshold();
 
 float d_soleLeft[7];

@@ -141,15 +141,27 @@ bool checkForceThreshold(unsigned int side, unsigned int sensorNum, unsigned int
     if (side == LEFT){
         f = getForcefromVolt(side, d_soleLeft[sensorNum], sensorNum);
         th = thLeft[isIC][sensorNum];
-        if (isIC) return f >= th;
-        else return f < th;
+        if (isIC){
+            if (isUseIPS[sensorNum]) return f >= th;
+            else return false;
+        }
+        else{
+            if (isUseIPS[sensorNum]) return f < th;
+            else return true;
+        }
     }
     else {
         f = getForcefromVolt(side, d_soleRight[sensorNum], sensorNum);
         th = thRight[isIC][sensorNum];
 
-        if (isIC) return f >= th;
-        else return f < th;
+        if (isIC){
+            if (isUseIPS[sensorNum]) return f >= th;
+            else return false;
+        }
+        else{
+            if (isUseIPS[sensorNum]) return f < th;
+            else return true;
+        }
     }
 }
 
@@ -163,7 +175,7 @@ void gaitDetector(int* result){
 
     bool leftTmp, rightTmp;
     bool prevLeft, prevRight;
-    
+    bool toeTmp_left, toeTmp_right;
     prevLeft = leftSwing;
     prevRight = rightSwing;
 
@@ -179,15 +191,25 @@ void gaitDetector(int* result){
         }
     }
     else if (leftToeOff){
+        if (checkForceThreshold(LEFT, 0, IC)){
+            leftToeOff = false;
+        }
         if (checkForceThreshold(LEFT, 1, IC)){
+            leftToeOff = false;
+        }
+        if (checkForceThreshold(LEFT, 2, IC)){
             leftToeOff = false;
         }
         if (checkForceThreshold(LEFT, 3, IC)){
             leftToeOff = false;
+        }        
+        if (checkForceThreshold(LEFT, 4, IC)){
+            leftToeOff = false;
         }
     }
     else{
-        if (checkForceThreshold(LEFT, 1, FO) & checkForceThreshold(LEFT, 3, FO)){
+        toeTmp_left = checkForceThreshold(LEFT, 0, FO) & checkForceThreshold(LEFT, 1, FO) & checkForceThreshold(LEFT, 2, FO) & checkForceThreshold(LEFT, 3, FO) & checkForceThreshold(LEFT, 4, FO);
+        if (toeTmp_left){
             if ((!HEELOFF) || checkForceThreshold(LEFT, 5, FO)){
                 leftSwing = true;
                 leftToeOff = true;
@@ -204,15 +226,25 @@ void gaitDetector(int* result){
         }
     }
     else if (rightToeOff){
+        if (checkForceThreshold(RIGHT, 0, IC)){
+            rightToeOff = false;
+        }
         if (checkForceThreshold(RIGHT, 1, IC)){
+            rightToeOff = false;
+        }
+        if (checkForceThreshold(RIGHT, 2, IC)){
             rightToeOff = false;
         }
         if (checkForceThreshold(RIGHT, 3, IC)){
             rightToeOff = false;
         }
+        if (checkForceThreshold(RIGHT, 4, IC)){
+            rightToeOff = false;
+        }
     }
     else{
-        if (checkForceThreshold(RIGHT, 1, FO) & checkForceThreshold(RIGHT, 3, FO)){
+        toeTmp_right = checkForceThreshold(RIGHT, 0, FO) & checkForceThreshold(RIGHT, 1, FO) & checkForceThreshold(RIGHT, 2, FO) & checkForceThreshold(RIGHT, 3, FO) & checkForceThreshold(RIGHT, 4, FO);
+        if (toeTmp_right){
             if ((!HEELOFF) || checkForceThreshold(RIGHT, 5, FO)){
                 rightSwing = true;
                 rightToeOff = true;
