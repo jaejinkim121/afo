@@ -83,3 +83,5 @@ ros::Publisher afo_gait_nonparetic_pub;
 ros::Publisher afo_gait_paretic_pub;
 ros::Publisher afo_ips_force_left_pub;
 ros::Publisher afo_ips_force_right_pub;
+ros::Publisher afo_zeroing_value_pub;
+ros::Publisher afo_threshold_value_pub;

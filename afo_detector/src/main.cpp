@@ -369,6 +369,17 @@ void loadThreshold(){
             }
         }
     }
+    std_msgs::Float32MultiArray msg;
+    msg.data.clear();
+    for (int i =0; i<6; i++){
+        msg.data.push_back(thLeft[IC][i]);
+        msg.data.push_back(thLeft[FO][i]);
+    }
+    for (int i =0; i<6; i++){
+        msg.data.push_back(thRight[IC][i]);
+        msg.data.push_back(thRight[FO][i]);
+    }
+    afo_threshold_value_pub.publish(msg);
     
     thFile.close();
 }
@@ -376,28 +387,32 @@ void loadThreshold(){
 void saveThreshold(){
     bool side = thresholdSide;
     ofstream zeroFile;
+
+    std_msgs::FLoat32MultiArray msg;
+    msg.data.clear();
+    double value;
     if (side == LEFT){
+        msg.data.push_back(0); //  0 for left, 1 for right, side denominator
         zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-//            thFile << meanLeft[i] + thresholdGap[1+2 * (affectedSide==LEFT)] << endl;
-            zeroFile << meanLeft[i] << endl;
+            value = getForcefromVolt(LEFT, meanLeft[i], i)
+            zeroFile << value << endl;
+            msg.data.push_back(value);
         }
-        for (int i = 0; i < 6; i++){
-//            thFile << meanLeft[i] + thresholdGap[2 * affectedSide==LEFT] << endl;
-        }
+        afo_zeroing_value_pub.publish(msg);
     }
     else {
+        msg.data.push_back(1);  //  0 for left, 1 for right, side denominator
         zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
         for (int i = 0; i < 6; i++){
-//            thFile << meanRight[i] + thresholdGap[1 + 2 * (affectedSide==RIGHT)] << endl;
-            zeroFile << meanRight[i] << endl;
-
+            value = getForcefromVolt(RIGHT, meanRight[i], i)
+            zeroFile << value << endl;
+            msg.data.push_back(value);
         }
-        for (int i = 0; i < 6 ; i++){
-//            thFile << meanRight[i] + thresholdGap[2 * affectedSide==RIGHT] << endl;
-        }
+        afo_zeroing_value_pub.publish(msg);
     }
     
+
     zeroFile.close();
 }
 
@@ -455,7 +470,8 @@ int main(int argc, char**argv)
     afo_gait_paretic_pub = n.advertise<std_msgs::Int16>("/afo_detector/gait_paretic", 100);
     afo_ips_force_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_left", 100);
     afo_ips_force_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_right", 100);
-    
+    afo_zeroing_value_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/zeroing_value", 100);
+    afo_threshold_value_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/threshold_value", 100);
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
 
@@ -487,6 +503,9 @@ int main(int argc, char**argv)
             if (currentTimeGap.count() > recordTimeThreshold){
                 runThreshold = false;
                 saveThreshold();
+                thresholdSide = LEFT;
+                loadThreshold();
+                thresholdSide =RIGHT;
                 loadThreshold();
             } 
             else updateAverage();
