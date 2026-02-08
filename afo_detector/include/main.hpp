@@ -51,7 +51,13 @@ float thLeft[2][6];
 float thRight[2][6];
 float meanLeft[6];
 float meanRight[6];
-float ipsCalibrationData[2][6][3];
+
+float ipsCalibrationDataAlpha[2][6][4];
+float ipsCalibrationDataConstant[2][6];
+float ipsCalibrationDataBP[2][6][3];
+
+
+
 int dataNum;
 
 float referenceForceLow = 5.0;
