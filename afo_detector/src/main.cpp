@@ -396,14 +396,14 @@ void saveThreshold(){
 }
 
 void loadZero(){
-    ofstream zeroFileLeft;
-    ofstream zeroFileRight;
+    ifstream zeroFileLeft;
+    ifstream zeroFileRight;
 
-    std_msgs::FLoat32MultiArray msg;
+    std_msgs::Float32MultiArray msg;
     msg.data.clear();
     double value;
 
-    zeroFileLeft.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
+    zeroFileLeft.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv");
     string str;
     for (int i = 0; i < 6; i++){
         getline(zeroFileLeft, str);
@@ -412,7 +412,7 @@ void loadZero(){
     }
     zeroFileLeft.close();
 
-    zeroFileRight.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
+    zeroFileRight.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv");
     for (int i = 0; i < 6; i++){
         getline(zeroFileRight, str);
         value = stof(str);
@@ -458,6 +458,7 @@ int main(int argc, char**argv)
     else affectedSide = RIGHT;
     
     for (int i = 0; i < 6; i++) thresholdGap[i] = params[i+1];
+    std::cout << "assassassassassassassassassassass" << std::endl;
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");
@@ -481,13 +482,20 @@ int main(int argc, char**argv)
     afo_threshold_value_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/threshold_value", 100);
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
-
+std::cout << "assassassassassassassassassassass" << std::endl;
     loadZero();
+    std::cout << "assassassassassassassassassassass" << std::endl;
+
     thresholdSide = LEFT;
+    std::cout << "assassassassassassassassassassass" << std::endl;
+
     loadThreshold();    
     thresholdSide = RIGHT;
     loadThreshold();
+    std::cout << "assassassassassassassassassassass" << std::endl;
+
     loadForceCalibration();
+    std::cout << "assassassassassassassassassassass" << std::endl;
 
     std_msgs::Float32MultiArray msg_;
     msg_.data.clear();
