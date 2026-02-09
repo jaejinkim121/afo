@@ -70,8 +70,8 @@ int main(int argc, char** argv){
 
     // 지금은 sensor node에서 Streaming 신호를 주지만, 나중에는 GUI에서 신호를 줄 수 있도록 해보자.
 
-    serialSoleLeft->serialWrite("[s]");
-	serialSoleRight->serialWrite("[s]");
+    //serialSoleLeft->serialWrite("[s]");
+	//serialSoleRight->serialWrite("[s]");
     cout << "afo_sensor Node - Sole sensor Streaming Signal Sent" << endl;
 
     usleep(200000);
