@@ -369,17 +369,6 @@ void loadThreshold(){
             }
         }
     }
-    std_msgs::Float32MultiArray msg;
-    msg.data.clear();
-    for (int i =0; i<6; i++){
-        msg.data.push_back(thLeft[IC][i]);
-        msg.data.push_back(thLeft[FO][i]);
-    }
-    for (int i =0; i<6; i++){
-        msg.data.push_back(thRight[IC][i]);
-        msg.data.push_back(thRight[FO][i]);
-    }
-    afo_threshold_value_pub.publish(msg);
     
     thFile.close();
 }
@@ -482,6 +471,19 @@ int main(int argc, char**argv)
     loadThreshold();
     loadForceCalibration();
 
+    std_msgs::Float32MultiArray msg_;
+    msg_.data.clear();
+    for (int i =0; i<6; i++){
+        msg_.data.push_back(thLeft[IC][i]);
+        msg_.data.push_back(thLeft[FO][i]);
+    }
+    for (int i =0; i<6; i++){
+        msg_.data.push_back(thRight[IC][i]);
+        msg_.data.push_back(thRight[FO][i]);
+    }
+    afo_threshold_value_pub.publish(msg_);
+
+
     int r[4];
 
     timeLeftSwing = system_clock::now();
@@ -507,6 +509,17 @@ int main(int argc, char**argv)
                 loadThreshold();
                 thresholdSide =RIGHT;
                 loadThreshold();
+
+                msg_.data.clear();
+                for (int i =0; i<6; i++){
+                    msg_.data.push_back(thLeft[IC][i]);
+                    msg_.data.push_back(thLeft[FO][i]);
+                }
+                for (int i =0; i<6; i++){
+                    msg_.data.push_back(thRight[IC][i]);
+                    msg_.data.push_back(thRight[FO][i]);
+                }
+                afo_threshold_value_pub.publish(msg_);
             } 
             else updateAverage();
         }
