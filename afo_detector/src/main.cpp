@@ -377,33 +377,51 @@ void saveThreshold(){
     bool side = thresholdSide;
     ofstream zeroFile;
 
+    double value;
+    if (side == LEFT){
+        zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
+        for (int i = 0; i < 6; i++){
+            value = getForcefromVolt(LEFT, meanLeft[i], i);
+            zeroFile << value << endl;
+        }
+    }
+    else {
+        zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
+        for (int i = 0; i < 6; i++){
+            value = getForcefromVolt(RIGHT, meanRight[i], i);
+            zeroFile << value << endl;
+        }
+    }
+    zeroFile.close();
+}
+
+void loadZero(){
+    ofstream zeroFileLeft;
+    ofstream zeroFileRight;
+
     std_msgs::FLoat32MultiArray msg;
     msg.data.clear();
     double value;
-    if (side == LEFT){
-        msg.data.push_back(0); //  0 for left, 1 for right, side denominator
-        zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
-        for (int i = 0; i < 6; i++){
-            value = getForcefromVolt(LEFT, meanLeft[i], i)
-            zeroFile << value << endl;
-            msg.data.push_back(value);
-        }
-        afo_zeroing_value_pub.publish(msg);
-    }
-    else {
-        msg.data.push_back(1);  //  0 for left, 1 for right, side denominator
-        zeroFile.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
-        for (int i = 0; i < 6; i++){
-            value = getForcefromVolt(RIGHT, meanRight[i], i)
-            zeroFile << value << endl;
-            msg.data.push_back(value);
-        }
-        afo_zeroing_value_pub.publish(msg);
-    }
-    
 
-    zeroFile.close();
+    zeroFileLeft.open("/home/afo/catkin_ws/src/afo/sole_zero_left.csv", ios::trunc);
+    string str;
+    for (int i = 0; i < 6; i++){
+        getline(zeroFileLeft, str);
+        value = stof(str);
+        msg.data.push_back(value);
+    }
+    zeroFileLeft.close();
+
+    zeroFileRight.open("/home/afo/catkin_ws/src/afo/sole_zero_right.csv", ios::trunc);
+    for (int i = 0; i < 6; i++){
+        getline(zeroFileRight, str);
+        value = stof(str);
+        msg.data.push_back(value);
+    }
+    afo_zeroing_value_pub.publish(msg);
+    zeroFileRight.close();
 }
+
 
 void updateAverage(){
     for (int i = 0; i < 6; i++){
@@ -464,7 +482,7 @@ int main(int argc, char**argv)
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
 
 
-
+    loadZero();
     thresholdSide = LEFT;
     loadThreshold();    
     thresholdSide = RIGHT;
@@ -505,11 +523,8 @@ int main(int argc, char**argv)
             if (currentTimeGap.count() > recordTimeThreshold){
                 runThreshold = false;
                 saveThreshold();
-                thresholdSide = LEFT;
                 loadThreshold();
-                thresholdSide =RIGHT;
-                loadThreshold();
-
+                loadZero();
                 msg_.data.clear();
                 for (int i =0; i<6; i++){
                     msg_.data.push_back(thLeft[IC][i]);
