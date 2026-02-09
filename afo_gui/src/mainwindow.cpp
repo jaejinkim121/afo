@@ -123,6 +123,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     setNIC();
     setHIC();
     setHFO();
+    setThreshold();
 }
 
 MainWindow::~MainWindow()
