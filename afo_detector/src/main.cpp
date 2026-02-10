@@ -481,21 +481,14 @@ int main(int argc, char**argv)
     afo_zeroing_value_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/zeroing_value", 100);
     afo_threshold_value_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/threshold_value", 100);
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
-
-std::cout << "assassassassassassassassassassass" << std::endl;
-    loadZero();
-    std::cout << "assassassassassassassassassassass" << std::endl;
-
+    usleep(1000000);
     thresholdSide = LEFT;
-    std::cout << "assassassassassassassassassassass" << std::endl;
 
     loadThreshold();    
     thresholdSide = RIGHT;
     loadThreshold();
-    std::cout << "assassassassassassassassassassass" << std::endl;
 
     loadForceCalibration();
-    std::cout << "assassassassassassassassassassass" << std::endl;
 
     std_msgs::Float32MultiArray msg_;
     msg_.data.clear();
@@ -511,7 +504,7 @@ std::cout << "assassassassassassassassassassass" << std::endl;
 
 
     int r[4];
-
+    loadZero();
     timeLeftSwing = system_clock::now();
     timeRightSwing = system_clock::now();
     while(ros::ok()){
