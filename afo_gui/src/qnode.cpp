@@ -119,7 +119,7 @@ namespace afo_gui {
         std::cout << "Ros shutdown, proceeding to close the gui." << std::endl;
         Q_EMIT rosShutdown(); // used to signal the gui for a shutdown (useful to roslaunch)
     }
-    
+
     int* QNode::getNoupdate(){
         return this->noupdate_;
     }
@@ -398,13 +398,13 @@ namespace afo_gui {
     }
 
     void QNode::callbackNoupdateIPS(const std_msgs::BoolConstPtr& msg){
-        noupdate_[msg.data] = 1;
+        noupdate_[msg->data] = 1;
         noupdateIPS();
     }
 
     void QNode::callbackNoupdateIMU(const std_msgs::Int16MultiArray::ConstPtr& msg){
         for (int i = 0; i < 7; i++){
-            noupdate_[i+2] = msg.data[i];
+            noupdate_[i+2] = msg->data[i];
         }
         noupdateIMU();
     }

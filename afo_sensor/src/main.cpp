@@ -100,7 +100,7 @@ int main(int argc, char** argv){
             msg_noup_ips.data = false;
             update_ips_pub.publish(msg_noup_ips);
         }
-        mgs_noup_imu.data.clear();
+        msg_noup_imu.data.clear();
         for (int i = 0; i<7; i++){
             if (serialIMU->get_update_delay_imu(i)){
                 msg_noup_imu.data.push_back(1);
