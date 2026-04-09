@@ -36,6 +36,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui->button_set_nic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_hic, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_set_hfo, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    QObject::connect(ui->button_noupdate, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
     QObject::connect(ui->button_set_threshold, SIGNAL(clicked()), this, SLOT(buttonClicked()));
     QObject::connect(ui->button_affected_side, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -97,6 +98,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(updateGaitPhase()), this, SLOT(updateGaitPhaseState()));
     QObject::connect(&qnode, SIGNAL(updatePolyFitPlot()), this, SLOT(updatePolyFit()));
     QObject::connect(&qnode, SIGNAL(doneDorsiZeroing()), this, SLOT(dorsiZeroingDone()));
+    QObject::connect(&qnode, SIGNAL(noupdateIPS()), this, SLOT(showNoupdateIPS()));
+    QObject::connect(&qnode, SIGNAL(noupdateIMU()), this, SLOT(showNoupdateIMU()));
     
     ui->RightBox->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
@@ -415,6 +418,9 @@ void MainWindow::buttonClicked(){
     }
     else if (state == "button_forced_trigger"){
         qnode.pubForcedTrigger();
+    }
+    else if (state == "button_noupdate"){
+        ui->button_noupdate->hide();
     }
 
 }
@@ -1455,6 +1461,18 @@ void MainWindow::updateRGB(float f){
         case 4 : rgb[0] = 0; rgb[1] = 0; rgb[2] = 255; break;
     }
 }
+
+void MainWindow::showNoupdateIPS(){
+    ui->button_noupdate->setText("IPS error");
+    ui->button_noupdate->show();
+}
+
+void MainWindow::showNoupdateIMU(){
+    ui->button_noupdate->setText("IMU error");
+    ui->button_noupdate->show();
+}
+
+
 
 void appendCropQVector(QVector<double> *vector, double data, int maxNum){
     if (maxNum == 0){

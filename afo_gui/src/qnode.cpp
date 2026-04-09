@@ -103,6 +103,8 @@ namespace afo_gui {
         afo_gait_paretic_sub = nh->subscribe("/afo_detector/gait_paretic", 1, &QNode::callbackGaitParetic, this);
         afo_gait_nonparetic_sub = nh->subscribe("/afo_detector/gait_nonparetic", 1, &QNode::callbackGaitNonparetic, this);
         afo_poly_fit_sub = nh->subscribe("/afo_detector/poly_fit", 1, &QNode::callbackPolyFit, this);
+        update_ips_sub = nh->subscribe("/afo_sensor/noupdate_ips", 1, &QNode::callbackNoupdateIPS, this);
+        update_imu_sub = nh->subscribe("/afo_sensor/noupdate_imu", 1, &QNode::callbackNoupdateIMU, this);
     }
 
     void QNode::run() {
@@ -117,7 +119,11 @@ namespace afo_gui {
         std::cout << "Ros shutdown, proceeding to close the gui." << std::endl;
         Q_EMIT rosShutdown(); // used to signal the gui for a shutdown (useful to roslaunch)
     }
-
+    
+    int* QNode::getNoupdate(){
+        return this->noupdate_;
+    }
+    
     float* QNode::getSoleLeftData(){
         return this->soleLeftData;
     }
@@ -389,6 +395,18 @@ namespace afo_gui {
         for (int i = 0; i < 24; i++){
             polyFit[i] = msg->data[i];
         }
+    }
+
+    void QNode::callbackNoupdateIPS(const std_msgs::BoolConstPtr& msg){
+        noupdate_[msg.data] = 1;
+        noupdateIPS();
+    }
+
+    void QNode::callbackNoupdateIMU(const std_msgs::Int16MultiArray::ConstPtr& msg){
+        for (int i = 0; i < 7; i++){
+            noupdate_[i+2] = msg.data[i];
+        }
+        noupdateIMU();
     }
 
     void QNode::pubRunPFMH(){

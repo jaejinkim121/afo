@@ -33,7 +33,7 @@
      <string notr="true">QTabBar::tab { height: 50px; width: 100px;}</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="Developer">
      <attribute name="title">
@@ -2110,11 +2110,31 @@ Zero</string>
      <string>Next Page</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="button_noupdate">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>90</y>
+      <width>701</width>
+      <height>321</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>36</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>No sensor update detected</string>
+    </property>
+   </widget>
    <zorder>button_emergency</zorder>
    <zorder>RightBox</zorder>
    <zorder>log</zorder>
    <zorder>button_toggle_trial</zorder>
    <zorder>button_toggle_page</zorder>
+   <zorder>button_noupdate</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

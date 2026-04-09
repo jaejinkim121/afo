@@ -37,6 +37,9 @@ private:
 	float soleAbs = 0;
 	chrono::duration<double> sec;
 	chrono::system_clock::time_point now;
+	chrono::system_clock::time_point last_update_sole_;
+	chrono::system_clock::time_point[7] last_update_imu_;
+	
 
 public:
 
@@ -58,5 +61,7 @@ public:
 	int calculate_target_sole();
 	int calculate_target_gyro();
 	void set_norm(float* sole_norm_t);
+	bool get_update_delay_ips();
+	bool get_update_delay_imu(int num_imu);
 
 };

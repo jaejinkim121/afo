@@ -106,6 +106,8 @@ public Q_SLOTS:
     void plotDorsi();
     void updateGaitPhaseState();
     void dorsiZeroingDone();
+    void showNoupdateIPS();
+    void showNoupdateIMU();
 
 private:
     afo_gui::QNode qnode;

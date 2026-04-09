@@ -38,6 +38,8 @@ int main(int argc, char** argv){
     ros::Publisher afo_soleSensor_left_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_left", 100);
     ros::Publisher afo_soleSensor_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/soleSensor_right", 100);
     ros::Publisher afo_imu_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_sensor/imu", 100);
+    ros::Publisher update_ips_pub = n.advertise<std_msgs::Bool>("/afo_sensor/noupdate_ips", 100);
+    ros::Publisher update_imu_pub = n.advertise<std_msgs::Int16MultiArray>("/afo_sensor/noupdate_imu", 100);
 
     std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
@@ -85,8 +87,31 @@ int main(int argc, char** argv){
     std_msgs::Float32MultiArray msg_sole_left;
     std_msgs::Float32MultiArray msg_sole_right;
     std_msgs::Bool msg_sync;
-
+    std_msgs::Bool msg_noup_ips;
+    std_msgs::Int16MultiArray msg_noup_imu;
+    bool is_noup_imu = false;
     while(ros::ok()){
+        if (serialSoleLeft->get_update_delay_ips){
+            msg_noup_ips.data = true;
+            update_ips_pub.publish(msg_noup_ips);
+        }
+        if (serialSoleRight->get_update_delay_ips){
+            msg_noup_ips.data = false;
+            update_ips_pub.publish(msg_noup_ips);
+        }
+        mgs_noup_imu.data.clear();
+        for (int i = 0; i<7; i++){
+            if (serialIMU->get_update_delay_imu(i)){
+                msg_noup_imu.data.push_back(1);
+                is_noup_imu = true;
+            }
+            else msg_noup.data.push_back(0);
+        }
+        if (is_noup_imu){
+            update_imu_pub.publish(msg_noup_imu);
+            is_noup_imu = false;
+        }
+
         msg_imu.data.clear();
         msg_sole_left.data.clear();
         msg_sole_right.data.clear();

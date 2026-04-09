@@ -44,6 +44,8 @@ public:
     void callbackGaitNonparetic(const std_msgs::Int16ConstPtr& msg);
     void callbackIMU(const std_msgs::Float32MultiArray::ConstPtr& msg);
     void callbackPolyFit(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void callbackNoupdateIMU(const std_msgs::Int16MultiArray::ConstPtr& msg);
+    void callbackNoupdateIPS(const std_msgs::BoolConstPtr& msg);
 
     void pubRunPFMH();
     void pubRunDFMH();
@@ -78,6 +80,9 @@ public:
     void clearStride();
     void getLink(double* linkX, double* linkY, double* linkZ);
 
+    int* getNoupdate();
+
+
 
 Q_SIGNALS:
     void rosShutdown();
@@ -88,6 +93,8 @@ Q_SIGNALS:
     void updateDorsi();
     void updateGaitPhase();
     void doneDorsiZeroing();
+    void noupdateIPS();
+    void noupdateIMU();
 
 private:
     int init_argc;
@@ -109,6 +116,7 @@ private:
     float leftToe, rightToe, leftToeMax, rightToeMax;
     float stride;
     double t_begin;
+    int[9] noupdate_;
 
     ros::NodeHandle* nh;
 
@@ -146,6 +154,8 @@ private:
     ros::Subscriber afo_gait_paretic_sub;
     ros::Subscriber afo_gait_nonparetic_sub;
     ros::Subscriber afo_poly_fit_sub;
+    ros::Subscriber update_imu_sub;
+    ros::Subscriber update_ips_sub;
 
     int soleLeftCnt = 0;
     int soleRightCnt = 0;

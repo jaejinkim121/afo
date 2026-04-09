@@ -10,6 +10,7 @@
 #include "serial.h"
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
+#include "std_msgs/Int16MultiArray.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
 #include "rosbag/bag.h"
@@ -25,7 +26,7 @@ string test_suffix;
 const char* ID_leftSole = "/dev/ttyACM1";
 const char* ID_rightSole = "/dev/ttyACM2";
 const char* ID_IMU = "/dev/ttyUSB0";
-const int baudrate = 921600;
+const int baudrate = 115200;
 const int baudrate_sole = 115200;
 
 serial* serialSoleLeft;
