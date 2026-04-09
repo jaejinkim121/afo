@@ -116,7 +116,7 @@ private:
     float leftToe, rightToe, leftToeMax, rightToeMax;
     float stride;
     double t_begin;
-    int[9] noupdate_;
+    int noupdate_[9] = {0,0,0,0,0,0,0,0,0};
 
     ros::NodeHandle* nh;
 

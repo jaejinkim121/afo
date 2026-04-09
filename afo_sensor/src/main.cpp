@@ -91,11 +91,11 @@ int main(int argc, char** argv){
     std_msgs::Int16MultiArray msg_noup_imu;
     bool is_noup_imu = false;
     while(ros::ok()){
-        if (serialSoleLeft->get_update_delay_ips){
+        if (serialSoleLeft->get_update_delay_ips()){
             msg_noup_ips.data = true;
             update_ips_pub.publish(msg_noup_ips);
         }
-        if (serialSoleRight->get_update_delay_ips){
+        if (serialSoleRight->get_update_delay_ips()){
             msg_noup_ips.data = false;
             update_ips_pub.publish(msg_noup_ips);
         }
