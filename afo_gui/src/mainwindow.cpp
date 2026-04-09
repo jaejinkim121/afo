@@ -103,7 +103,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     
     ui->RightBox->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
-
+    ui->button_noupdate->hide();
     loadParameterFile();
 
     initPlot();
