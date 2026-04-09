@@ -38,7 +38,7 @@ private:
 	chrono::duration<double> sec;
 	chrono::system_clock::time_point now;
 	chrono::system_clock::time_point last_update_sole_;
-	chrono::system_clock::time_point[7] last_update_imu_;
+	chrono::system_clock::time_point last_update_imu_[7];
 	
 
 public:

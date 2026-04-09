@@ -205,7 +205,7 @@ int serial::readSole(ostream& datafile, chrono::system_clock::time_point start) 
 				this->sole + 1, this->sole + 2, this->sole + 3, this->sole + 4, this->sole + 5, this->sole + 6
 			);
 			this->sole[0] = sec.count();
-			this->last_update_ = chrono::system_clock::now();
+			this->last_update_sole_ = chrono::system_clock::now();
 			}
 			catch(...){
 			cout << "SSCANF ERROR" << endl;
@@ -252,7 +252,7 @@ float serial::get_target_imu(){
 
 bool serial::get_update_delay_imu(int num_imu){
 	chrono::duration<double> sec;
-	sec = chrono::system_clock::now() - this->last_update_imu[num_imu];
+	sec = chrono::system_clock::now() - this->last_update_imu_[num_imu];
 	if (sec.count() < 1.0) return true;
 	else return false;
 }
