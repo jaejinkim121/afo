@@ -89,6 +89,7 @@ int main(int argc, char** argv){
     std_msgs::Bool msg_sync;
     std_msgs::Bool msg_noup_ips;
     std_msgs::Int16MultiArray msg_noup_imu;
+
     bool is_noup_imu = false;
     while(ros::ok()){
         if (serialSoleLeft->get_update_delay_ips()){
@@ -105,7 +106,7 @@ int main(int argc, char** argv){
                 msg_noup_imu.data.push_back(1);
                 is_noup_imu = true;
             }
-            else msg_noup.data.push_back(0);
+            else msg_noup_imu.data.push_back(0);
         }
         if (is_noup_imu){
             update_imu_pub.publish(msg_noup_imu);
