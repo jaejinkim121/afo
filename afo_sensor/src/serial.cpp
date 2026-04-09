@@ -253,14 +253,14 @@ float serial::get_target_imu(){
 bool serial::get_update_delay_imu(int num_imu){
 	chrono::duration<double> sec;
 	sec = chrono::system_clock::now() - this->last_update_imu_[num_imu];
-	if (sec.count() < 1.0) return true;
+	if (sec.count() > 1.0) return true;
 	else return false;
 }
 
 bool serial::get_update_delay_ips(){
 	chrono::duration<double> sec;
 	sec = chrono::system_clock::now() - this->last_update_sole_;
-	if (sec.count() < 1.0) return true;
+	if (sec.count() > 1.0) return true;
 	else return false;
 
 }
