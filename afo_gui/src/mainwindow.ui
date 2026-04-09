@@ -33,7 +33,7 @@
      <string notr="true">QTabBar::tab { height: 50px; width: 100px;}</string>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Developer">
      <attribute name="title">
@@ -1543,25 +1543,6 @@ Side</string>
        <string>Run Both MH</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="button_noupdate">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>20</y>
-        <width>731</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>36</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>No sensor update detected</string>
-      </property>
-     </widget>
     </widget>
     <widget class="QWidget" name="Data">
      <attribute name="title">
@@ -2129,11 +2110,31 @@ Zero</string>
      <string>Next Page</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="button_noupdate">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>70</y>
+      <width>801</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>36</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>No sensor update detected</string>
+    </property>
+   </widget>
    <zorder>button_emergency</zorder>
    <zorder>RightBox</zorder>
    <zorder>log</zorder>
    <zorder>button_toggle_trial</zorder>
    <zorder>button_toggle_page</zorder>
+   <zorder>button_noupdate</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
