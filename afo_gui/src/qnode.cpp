@@ -75,6 +75,7 @@ namespace afo_gui {
         afo_gui_max_torque_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/max_torque", 100);
         afo_gui_rise_time_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/rise_time", 100);
         afo_gui_fall_time_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/fall_time", 100);
+        afo_gui_flat_time_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/flat_time", 100);
         afo_gui_trigger_time_pub = nh->advertise<std_msgs::Float32MultiArray>("/afo_gui/trigger_time", 100);
         afo_gui_cycle_time_pub = nh->advertise<std_msgs::Float32>("/afo_gui/cycle_time", 100);
         afo_gui_plantar_run_pub = nh->advertise<std_msgs::Bool>("/afo_gui/plantar_run", 100);
@@ -460,6 +461,14 @@ namespace afo_gui {
         m.data.push_back(p);
         m.data.push_back(d);
         afo_gui_fall_time_pub.publish(m);
+    }
+
+    void QNode::pubFlatTime(float p, float d){
+        std_msgs::Float32MultiArray m;
+        m.data.push_back(p);
+        m.data.push_back(d);
+        afo_gui_flat_time_pub.publish(m);
+        
     }
 
     void QNode::pubTriggerTime(float p, float d){

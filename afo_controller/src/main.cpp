@@ -256,6 +256,11 @@ void callbackFallTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
     afo_configuration_fallTimeDorsi.publish(m_d);
 }
 
+void callbackFlatTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
+    flatTimePF = msg->data[0];
+    flatTImeDF = msg->data[1];
+}
+
 void callbacktriggerTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
     startTimePF = msg->data[0];
     startTimeDF = msg->data[1];
@@ -492,7 +497,7 @@ void worker()
                         if (setPF_cue_MH){
                             pathPlannerPF_MH();
                         }
-                        if(plantarRun){
+                        if(false){
                             command.setModeOfOperation(maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode);
                             command.setTargetPosition(plantarNeutralPosition + plantarPosition * dirPlantar);
                             command.setTargetTorque(dirPlantar * (plantarPreTension + maxTorquePlantar * plantarTorque));
@@ -525,7 +530,7 @@ void worker()
                     }
                     else if (slave->getName() == "Dorsi"){
                         if (setGaitEventNonAffected && setGaitEventAffected){
-                            currentTimePercentage = pathPlannerDorsiflexion(reading);
+                            currentTimePercentage = pathPlannerPlantarflexion(reading);
                         }
                         if (setDF_cue_MH){
                             pathPlannerDF_MH();
@@ -533,7 +538,7 @@ void worker()
                         if (dorsiRun){
                             dorsiInputMode = dorsiMode;
                             dorsiPositionInput = dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi;
-                            dorsiTorqueInput = dirDorsi * (maxTorqueDorsi * dorsiTorque + dorsiPreTension);
+                            dorsiTorqueInput = dirDorsi * (maxTorqueDorsi * plantarTorque + dorsiPreTension);
                         }
                         else{
                             dorsiInputMode = maxon::ModeOfOperationEnum::CyclicSynchronousTorqueMode;
@@ -561,7 +566,7 @@ void worker()
                         msg_motor_dorsi.data.clear();
                         msg_motor_dorsi.data.push_back(currentTimePercentage);
                         msg_motor_dorsi.data.push_back(dorsiModeInt);
-                        msg_motor_dorsi.data.push_back(dirDorsi * (maxTorqueDorsi * dorsiTorque + dorsiPreTension));
+                        msg_motor_dorsi.data.push_back(dirDorsi * (maxTorqueDorsi * plantarTorque + dorsiPreTension));
                         msg_motor_dorsi.data.push_back(dorsiNeutralPosition + maxPositionDorsi * dorsiPosition * dirDorsi);
                         msg_motor_dorsi.data.push_back(reading.getActualCurrent());
                         msg_motor_dorsi.data.push_back(reading.getActualTorque());

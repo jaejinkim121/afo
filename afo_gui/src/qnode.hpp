@@ -126,6 +126,7 @@ private:
     ros::Publisher afo_gui_max_torque_pub;
     ros::Publisher afo_gui_rise_time_pub;
     ros::Publisher afo_gui_fall_time_pub;
+    ros::Publisher afo_gui_flat_time_pub;
     ros::Publisher afo_gui_trigger_time_pub;
     ros::Publisher afo_gui_cycle_time_pub;
     ros::Publisher afo_gui_plantar_run_pub;

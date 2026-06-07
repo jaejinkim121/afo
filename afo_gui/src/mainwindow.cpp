@@ -476,6 +476,45 @@ void MainWindow::soleCalibrationRight(){
     ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(255, 0, 0)");
 }
 
+void MainWindow::setTimeParamPreset(unsigned int num_preset){
+    float trigger{0.1};
+    float rise{0.1}
+    float flat{0.1};
+
+    if (num_preset == 1){
+        trigger = 0.1;
+        rise = 0.3;
+        flat = 0.1;
+    }
+    else if (num_preset == 2){
+        trigger = 0.0;
+        rise = 0.1;
+        flat = 0.1;
+    }
+    else if (num_preset == 3){
+        trigger = 0.0;
+        rise = 0.2;
+        flat = 0.2;
+    }
+    ui->text_target_parameter->clear();
+    
+    trigger_time[0] = trigger;
+    qnode.pubTriggerTime(trigger_time[0], trigger_time[1]);
+    updateTriggerTimeValue(true);
+
+    rise_time[0] = rise;
+    qnode.pubRiseTime(rise_time[0], rise_time[1]);
+    updateRiseTimeValue(true);
+
+    flat_time[0] = flat;
+    qnode.pubFlatTime(flat_time[0], flat_time[1]);
+    updateFallTimeValue(true);
+
+    this->updateParameterFile();
+
+
+}
+
 void MainWindow::setMaxTorque(bool is_plantar){
     float t = 1;
     try{
@@ -516,16 +555,19 @@ void MainWindow::setRiseTime(bool is_plantar){
     }
 }
 
+// Flat time 용으로 바꿔둠.
+// 반드시 fall time을 롤백해야 함.
+/// XXX
 void MainWindow::setFallTime(bool is_plantar){
     float t = 1;
     try{
         t = stof(ui->text_target_parameter->toPlainText().toStdString());
         
-        if(is_plantar) fall_time[0] = t;
-        else fall_time[1] = t;
+        if(is_plantar) flat_time[0] = t;
+        else flat_time[1] = t;
 
-        qnode.pubFallTime(fall_time[0], fall_time[1]);
-
+        qnode.pubFlatTime(flat_time[0], flat_time[1]);
+        qnode.pubFallTime(0.1, 0.05);
         ui->text_target_parameter->clear();
 
         updateFallTimeValue(is_plantar);

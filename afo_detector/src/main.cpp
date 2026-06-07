@@ -507,7 +507,7 @@ int main(int argc, char**argv)
 
     if (params[0] == 0.0) affectedSide = LEFT;
     else affectedSide = RIGHT;
-    affectedSide = LEFT;
+    affectedSide = RIGHT;
     
 
     for (int i = 0; i < 6; i++) thresholdGap[i] = params[i+1];
