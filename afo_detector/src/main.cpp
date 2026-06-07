@@ -275,6 +275,57 @@ void gaitDetector(int* result){
     }
 }
 
+
+void gaitDetector_curexo(const std_msgs::Int16MultiArray::ConstPtr& msg){
+    result[0] = 0;
+    result[1] = 0;
+
+    bool prevSwing;
+    prevSwing = rightSwing;
+    for (int i = 0; i < 20 ; i++){
+        if (msg->data[i] <= 200){
+            rightSwing = false;
+            break;
+        }
+        rightSwing = true;
+    }
+    if (rightSwing!=prevSwing){
+        result[affectedSide == RIGHT] = 1;
+        result[2+(affectedSide==RIGHT)] = (int)rightSwing + 1;  // 2 when foot-off, 1 when initial contact
+        std::cout << "Right Swing : " << rightSwing +1 << std::endl;
+        if (rightSwing){
+            timeRightSwing = system_clock::now();
+	swingTurned = false;
+
+        }
+        else{
+            timeRightStance = system_clock::now();
+	stanceTurned = false;
+        }
+    }
+    duration<double, micro> gapSwing = system_clock::now() - timeRightSwing;
+    duration<double, micro> gapStance = system_clock::now() - timeRightStance;
+    if (gapSwing.count() > oppositeTimeDiff * pow(10,6)){
+	if ((leftSwing == false) & (!swingTurned)) {
+        leftSwing  = true;
+	    swingTurned = true;
+        result[affectedSide == LEFT] = 1;
+        result[(affectedSide == LEFT) +2] = (int)leftSwing + 1;
+        std::cout << "Left Swing : " << leftSwing + 1 << std::endl;
+	}
+    }
+    if (gapStance.count() > oppositeTimeDiff * pow(10,6)){
+	if ((leftSwing == true) & (!stanceTurned)) {
+        leftSwing  = false;
+	stanceTurned = true;
+        result[affectedSide == LEFT] = 1;
+        result[(affectedSide == LEFT) +2] = (int)leftSwing + 1;
+        std::cout << "Left Swing : " << leftSwing + 1 << std::endl;
+	}
+    }
+}
+
+
 void loadForceCalibration(){
     ifstream calibFile;
     calibFile.open("/home/afo/catkin_ws/src/afo/afo_detector/sensor_calibration_data.json");
@@ -456,9 +507,13 @@ int main(int argc, char**argv)
 
     if (params[0] == 0.0) affectedSide = LEFT;
     else affectedSide = RIGHT;
+    affectedSide = LEFT;
     
+
     for (int i = 0; i < 6; i++) thresholdGap[i] = params[i+1];
-    std::cout << "assassassassassassassassassassass" << std::endl;
+
+    timeLeftSwing = system_clock::now();
+    timeRightSwing = system_clock::now();
 
     // Define ROS
     ros::init(argc, argv, "afo_detector");
@@ -480,6 +535,9 @@ int main(int argc, char**argv)
     afo_ips_force_right_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/soleForce_right", 100);
     afo_zeroing_value_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/zeroing_value", 100);
     afo_threshold_value_pub = n.advertise<std_msgs::Float32MultiArray>("/afo_detector/threshold_value", 100);
+
+    ros::Subscriber afo_curexo_sub = n.subscribe("/afo_arduino/analog_val", 1, gaitDetector_curexo);
+
     std_msgs::Int16 msg_gait_paretic, msg_gait_nonparetic;
     usleep(1000000);
     thresholdSide = LEFT;
@@ -508,14 +566,12 @@ int main(int argc, char**argv)
     timeLeftSwing = system_clock::now();
     timeRightSwing = system_clock::now();
     while(ros::ok()){
-        gaitDetector(r);
-
-        if (r[0] == 1){
-            msg_gait_nonparetic.data = r[2];
+        if (result[0] == 1){
+            msg_gait_nonparetic.data = result[2];
             afo_gait_nonparetic_pub.publish(msg_gait_nonparetic);
         }
-        if (r[1] == 1){
-            msg_gait_paretic.data = r[3];
+        if (result[1] == 1){
+            msg_gait_paretic.data = result[3];
             afo_gait_paretic_pub.publish(msg_gait_paretic);
         } 
         
