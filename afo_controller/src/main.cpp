@@ -258,7 +258,6 @@ void callbackFallTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
 
 void callbackFlatTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
     flatTimePF = msg->data[0];
-    flatTImeDF = msg->data[1];
 }
 
 void callbacktriggerTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
@@ -530,7 +529,7 @@ void worker()
                     }
                     else if (slave->getName() == "Dorsi"){
                         if (setGaitEventNonAffected && setGaitEventAffected){
-                            currentTimePercentage = pathPlannerPlantarflexion(reading);
+                            currentTimePercentage = pathPlannerPlantarflexion();
                         }
                         if (setDF_cue_MH){
                             pathPlannerDF_MH();
