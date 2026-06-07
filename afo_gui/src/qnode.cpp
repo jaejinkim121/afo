@@ -399,6 +399,7 @@ namespace afo_gui {
     }
 
     void QNode::callbackNoupdateIPS(const std_msgs::BoolConstPtr& msg){
+        return;
         noupdate_[msg->data] = 1;
         noupdateIPS();
     }
