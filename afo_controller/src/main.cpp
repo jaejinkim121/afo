@@ -686,11 +686,15 @@ int main(int argc, char**argv)
     afo_gui_max_torque = n.subscribe("/afo_gui/max_torque", 1, callbackMaxTorque);
     afo_gui_cycle_time = n.subscribe("/afo_gui/cycle_time", 1, callbackCycleTime);
     afo_gui_plantar_run = n.subscribe("/afo_gui/plantar_run", 1, callbackPlantarRun);
-ros::Subscriber afo_gui_plantar_trigger_time = n.subscribe("/afo_gui/plantar_trigger_time", 1, callbackPlantarTriggerTime);
     afo_gui_dorsi_run = n.subscribe("/afo_gui/dorsi_run", 1, callbackDorsiRun);
     afo_gui_mh_pf_run = n.subscribe("/afo_gui/run_pf_mh", 1, callbackMHPF_run);
     afo_gui_mh_df_run = n.subscribe("/afo_gui/run_df_mh", 1, callbackMHDF_run);
     afo_gui_forced_trigger = n.subscribe("/afo_gui/forced_trigger", 1, callbackForcedTrigger);
+
+    ros::Subscriber afo_gui_trigger_time = n.subscribe("/afo_gui/trigger_time", 1, callbackTriggerTime);
+    ros::Subscriber afo_gui_rise_time = n.subscribe("/afo_gui/rise_time", 1, callbackRiseTime);
+    ros::Subscriber afo_gui_flat_time = n.subscribe("/afo_gui/flat_time", 1, callbackFlatTime);
+    ros::Subscriber afo_gui_fall_time = n.subscribe("/afo_gui/fall_time", 1, callbackFallTime);
 
     afo_motor_data_plantar = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_plantar", 10);
     afo_motor_data_dorsi = n.advertise<std_msgs::Float32MultiArray>("/afo_controller/motor_data_dorsi", 10);

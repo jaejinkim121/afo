@@ -55,6 +55,7 @@ public:
     void pubMaxTorque(float p, float d);
     void pubRiseTime(float p, float d);
     void pubFallTime(float p, float d);
+    void pubFlatTime(float p, float d);
     void pubTriggerTime(float p, float d);
     void pubCycleTime(float t);
     void pubPlantarRun(bool run);
