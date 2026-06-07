@@ -260,7 +260,7 @@ void callbackFlatTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
     flatTimePF = msg->data[0];
 }
 
-void callbacktriggerTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
+void callbackTriggerTime(const std_msgs::Float32MultiArray::ConstPtr& msg){
     startTimePF = msg->data[0];
     startTimeDF = msg->data[1];
     std_msgs::Float32 m_p, m_d;

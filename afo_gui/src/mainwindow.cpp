@@ -476,44 +476,44 @@ void MainWindow::soleCalibrationRight(){
     ui->button_sole_calibration_right->setStyleSheet("background-color: rgb(255, 0, 0)");
 }
 
-void MainWindow::setTimeParamPreset(unsigned int num_preset){
-    float trigger{0.1};
-    float rise{0.1}
-    float flat{0.1};
+// void MainWindow::setTimeParamPreset(unsigned int num_preset){
+//     float trigger{0.1};
+//     float rise{0.1}
+//     float flat{0.1};
 
-    if (num_preset == 1){
-        trigger = 0.1;
-        rise = 0.3;
-        flat = 0.1;
-    }
-    else if (num_preset == 2){
-        trigger = 0.0;
-        rise = 0.1;
-        flat = 0.1;
-    }
-    else if (num_preset == 3){
-        trigger = 0.0;
-        rise = 0.2;
-        flat = 0.2;
-    }
-    ui->text_target_parameter->clear();
+//     if (num_preset == 1){
+//         trigger = 0.1;
+//         rise = 0.3;
+//         flat = 0.1;
+//     }
+//     else if (num_preset == 2){
+//         trigger = 0.0;
+//         rise = 0.1;
+//         flat = 0.1;
+//     }
+//     else if (num_preset == 3){
+//         trigger = 0.0;
+//         rise = 0.2;
+//         flat = 0.2;
+//     }
+//     ui->text_target_parameter->clear();
     
-    trigger_time[0] = trigger;
-    qnode.pubTriggerTime(trigger_time[0], trigger_time[1]);
-    updateTriggerTimeValue(true);
+//     trigger_time[0] = trigger;
+//     qnode.pubTriggerTime(trigger_time[0], trigger_time[1]);
+//     updateTriggerTimeValue(true);
 
-    rise_time[0] = rise;
-    qnode.pubRiseTime(rise_time[0], rise_time[1]);
-    updateRiseTimeValue(true);
+//     rise_time[0] = rise;
+//     qnode.pubRiseTime(rise_time[0], rise_time[1]);
+//     updateRiseTimeValue(true);
 
-    flat_time[0] = flat;
-    qnode.pubFlatTime(flat_time[0], flat_time[1]);
-    updateFallTimeValue(true);
+//     flat_time[0] = flat;
+//     qnode.pubFlatTime(flat_time[0], flat_time[1]);
+//     updateFallTimeValue(true);
 
-    this->updateParameterFile();
+//     this->updateParameterFile();
 
 
-}
+// }
 
 void MainWindow::setMaxTorque(bool is_plantar){
     float t = 1;
